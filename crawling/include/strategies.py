@@ -17,4 +17,4 @@ class CStrategiesManager(object):
 
 	def get_status( self, strategie_name )
 
-	
+	 
