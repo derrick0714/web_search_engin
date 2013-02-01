@@ -31,8 +31,10 @@ different_names = enable
 ```
 
 ###Log
+In charge of writing log to screen or files
 
 ###Status
+In charge of management all status such as runtime, donwload pages, duplicate detective times and etc. Meanwhile wirte theses data into files or remote mysql in realtime.
 
 ###Strategies
 
