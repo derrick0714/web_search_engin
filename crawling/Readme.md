@@ -1,4 +1,4 @@
-# Simple Crwaler
+# Simple Crawler
 The first project for Web Search Engine
 
 ##Core

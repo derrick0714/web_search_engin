@@ -1,4 +1,4 @@
-import engin
+from core import engine
 
 def main():
     obj = engin.Engine()
