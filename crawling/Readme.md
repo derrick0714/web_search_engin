@@ -1,8 +1,8 @@
 # Simple Crwaler
-The first project for Web Search Engin
+The first project for Web Search Engine
 
 ##Core
-The core roles in crwaler.
+The core roles in crawler.
 
 ###Engine
 
