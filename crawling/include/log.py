@@ -22,18 +22,23 @@ class Log(object):
         return "[%s] [%s] [%s - %s - %s] %s" %(self.printfNow(),level,filename,lineNo,functionName,message)
     def info(self,message): 
         message = self.getLogMessage("info",message) 
+        print(message)
         self.__logger.info(message)
     def error(self,message): 
         message = self.getLogMessage("error",message)
+        print(message)
         self.__logger.error(message)
     def warning(self,message): 
-        message = self.getLogMessage("warning",message) 
+        message = self.getLogMessage("warning",message)
+        print(message) 
         self.__logger.warning(message)
     def debug(self,message): 
         message = self.getLogMessage("debug",message) 
+        print(message)
         self.__logger.debug(message)
     def critical(self,message): 
         message = self.getLogMessage("critical",message) 
+        print(message)
         self.__logger.critical(message)
     def printfNow(self): 
         return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
