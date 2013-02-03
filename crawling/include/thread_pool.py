@@ -45,7 +45,7 @@ class Worker(Thread):
 
 class ThreadPool():
     """ Consuming tasks using threads in poll"""
-    def __init__(self, threads_num, task_queue_max):
+    def __init__(self, threads_num, task_queue_max=None):
         self._threads_num   = threads_num
         self._tasks         = deque()
         self._threads       = []
