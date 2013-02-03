@@ -13,12 +13,12 @@ import inspect
 class Log(object):	 
     def __init__(self): 
         self.__logger = logging.getLogger() 
-        path = os.path.abspath("/Log-error.log") 
+        path = os.path.abspath("/Log.log") 
         handler=logging.FileHandler(path) 
         self.__logger.addHandler(handler) 
         self.__logger.setLevel(logging.NOTSET)
     def getLogMessage(self,level,message):
-        filename,lineNo,functionName = inspect.stack()[2]
+        frame,filename,lineNo,functionName,code,otherinfo = inspect.stack()[2]        
         return "[%s] [%s] [%s - %s - %s] %s" %(self.printfNow(),level,filename,lineNo,functionName,message)
     def info(self,message): 
         message = self.getLogMessage("info",message) 
@@ -50,5 +50,4 @@ if __name__ == "__main__":
     logger = Log() 
     logger.info("hello")
     logger.warning("hello")
-    print("wait a sec")
 
