@@ -1,4 +1,11 @@
 
+"""
+Created on Feb 2, 2013
+
+@author: derrick
+
+This is a thread pool
+"""
 from queue import deque
 from threading import Thread
 from threading import Condition
