@@ -5,7 +5,7 @@ Created on Feb 2, 2013
 '''
 import configparser
 
-class setting(object):   
+class Setting(object):   
     
     def load(self, path):
         self.path = path 
@@ -35,7 +35,7 @@ class setting(object):
 
     
 if __name__ == "__main__": 
-    config = setting() 
+    config = Setting() 
     config.load("c:\\config.ini" );
     print (config.get_section("log"))
     config.set_param("log", "L1", "trial")   
