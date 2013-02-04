@@ -20,7 +20,7 @@ class Downloader:
 	    self.__workers_pool	 = ThreadPool(self.__num_threads)
 	    
 
-	def download(self, resoure):
+	def download(self, resoure ):
 		__workers_pool.start()
 	def stop(self):
 		__workers_pool.start()
@@ -28,7 +28,7 @@ class Downloader:
 	def download_one(sefl, url):
 		req = urllib.request.Request(url)
 		data = urllib.request.urlopen(req)
-		return data
+		return data.read().decode('utf-8')
 
 	def get_pages(self):
 		pass
