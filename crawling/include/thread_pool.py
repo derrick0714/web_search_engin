@@ -28,12 +28,12 @@ class Worker(Thread):
     def run(self):
         """ask and do works from task pool  """
         while (self._is_dying == False):
-            func, args = self._pool.get_new_task()      
+            func, args, callback = self._pool.get_new_task()      
             if func == None: #no task, have a rest
                 sleep(self._rest_time)
             else:
                 try:
-                    func(args)
+                    func(args, callback)
                 except (Exception) as e: 
                     print (e) #change to log in the further
                 ++self._work_times
@@ -84,11 +84,11 @@ class ThreadPool():
         finally:
             self._task_lock.release()
 
-    def queue_task(self, task, args=None):
+    def queue_task(self, task, args, callback):
         self._task_lock.acquire()
         try:
             self._task_num += 1
-            self._tasks.append((task, args))
+            self._tasks.append((task, args, callback))
         finally:
             self._task_lock.release()
 
@@ -96,7 +96,7 @@ class ThreadPool():
         self._task_lock.acquire()
         try:
             if (self._task_num <= 0):
-                return ( None, None )
+                return ( None, None, None )
             else:
                 self._task_num -= 1
                 return self._tasks.popleft()
