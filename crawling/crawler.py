@@ -17,7 +17,8 @@ def main():
 	crawler_engine.start( )
 
 	#load seed info from config file
-	crawler_engine.add_seed(setting.get_param('seed','first') )
+	for i in range(100):
+		crawler_engine.add_seed(setting.get_param('seed','first') )
 
 
 
