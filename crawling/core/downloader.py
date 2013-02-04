@@ -6,7 +6,7 @@ Created on Feb 2, 2013
 This is a downloader
 """
 
-
+from models.html import Html 
 from include.thread_pool import ThreadPool
 from include.log import Log
 import urllib.request
@@ -20,9 +20,12 @@ class Downloader(object):
 	    
 
 	def queue_download_task(self, url, callback):
-		result = self.download_page(url)
-		#result = self._download_workers.queue_task(, url)
-		callback( result )
+
+		html = Html( url )
+
+		self._download_workers.queue_task(self.download_page , html, callback )
+
+		#callback( result )
 
 	def start(self):
 		 self._download_workers.start()
@@ -30,13 +33,14 @@ class Downloader(object):
 	def stop(self):
 		 self._download_workers.stop()
 
-	def download_page(sefl, url):
-		req = urllib.request.Request(url)
+	def download_page(sefl, html, callback):
+		#print (html._url)
+		req = urllib.request.Request(html._url)
 		data = urllib.request.urlopen(req)
-		return data.read().decode('utf-8')
+		html._data = data.read()#.decode('utf-8')
+		#print (html._data)
+		callback( html )
 
-	def get_pages(self):
-		pass
 
 
 #test
