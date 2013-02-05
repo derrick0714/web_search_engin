@@ -1,6 +1,6 @@
 # Simple Crawler
 The first project for Web Search Engine
-
+<img src="https://raw.github.com/derrick0714/web_search_engin/master/crawling/docs/crawler_architecture.png" />
 ##Core
 The core roles in crawler.
 
