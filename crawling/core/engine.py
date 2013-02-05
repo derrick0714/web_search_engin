@@ -86,6 +86,7 @@ class Engine(object):
 				self._parse.queue_parse_task( new_parse_task._url , self.finish_parse)
 				wait for realize in parse
 				"""
+				
 				print('start to parse {0}'.format(new_parse_task._url) )
 				
 
