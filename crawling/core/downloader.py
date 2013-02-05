@@ -19,11 +19,9 @@ class Downloader(object):
 	    self._download_workers	 = ThreadPool(num_thread)
 	    
 
-	def queue_download_task(self, url, callback):
+	def queue_download_task(self, html_task , callback):
 
-		html = Html( url )
-
-		self._download_workers.queue_task(self.download_page , html, callback )
+		self._download_workers.queue_task(self.download_page , html_task , callback )
 
 		#callback( result )
 
@@ -33,13 +31,13 @@ class Downloader(object):
 	def stop(self):
 		 self._download_workers.stop()
 
-	def download_page(sefl, html, callback):
-		#print (html._url)
-		req = urllib.request.Request(html._url)
+	def download_page(sefl, html_task, callback):
+		#print (html_task._url)
+		req = urllib.request.Request(html_task._url)
 		data = urllib.request.urlopen(req)
-		html._data = data.read()#.decode('utf-8')
-		#print (html._data)
-		callback( html )
+		html_task._data = data.read()#.decode('utf-8')
+		#print (html_task._data)
+		callback( html_task )
 
 
 
