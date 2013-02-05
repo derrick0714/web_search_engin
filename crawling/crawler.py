@@ -39,9 +39,9 @@ def main():
 		crawler_engine.add_seed(setting.get_param('seed','first') )
 
 
-
+	input('')
 	
-	input('press any key to exit')
+	
 	#stop engin 
 	crawler_engine.stop()
 	

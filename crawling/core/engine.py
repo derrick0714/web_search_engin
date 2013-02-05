@@ -49,18 +49,23 @@ class Engine(object):
 		self._parse.stop()
 		self._downloader_pool_checker.join()
 		self._prase_pool_cheker.join()
+		print ("Engine is stroping")
 
 	def pause(self):
 		pass
 
-	def finish_download(self, html):
+	def finish_download(self, html_task):
 		self.download_times+=1
 		print("finish download:{0} {1}".format(self.download_times, time()-self.start_time))
+		self._prase_pool.append( html_task )
 
-	def finish_parse(self, html):
-		#self.download_times+=1
-		print("finish parse")
 		
+
+
+	def finish_parse(self, html_task):
+		#self.download_times+=1
+		print("finish parse here")
+		self._download_pool.append( html_task )
 	
 	
 	def download_pool_checker(self):
@@ -73,11 +78,16 @@ class Engine(object):
 
 	def prase_pool_cheker(self):
 		while ( self._istart == True):
-			new_parse_task = self._download_pool.pop_left()
+			new_parse_task = self._prase_pool.pop_left()
 			if ( new_parse_task == None):
 				sleep(0.1)
 			else:
+				"""
 				self._parse.queue_parse_task( new_parse_task._url , self.finish_parse)
+				wait for realize in parse
+				"""
+				print('start to parse {0}'.format(new_parse_task._url) )
+				
 
 		
 		#print(html._data)
