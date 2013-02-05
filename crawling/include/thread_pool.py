@@ -11,6 +11,7 @@ from threading import Thread
 from threading import Condition
 from threading import Lock
 from time import sleep
+from include.log import Log
 
 class Worker(Thread):
     """request new task to execute from ThreadPool"""
@@ -23,25 +24,28 @@ class Worker(Thread):
         self._is_dying      = False
         self._work_times    = 0
         self._rest_time     = 0.01
+        self._log           = Log()
         
 
     def run(self):
-        """ask and do works from task pool  """
+        """ask and do works from task pool"""
         while (self._is_dying == False):
+            """get the function name, parameter and the callback function"""
             func, args, callback = self._pool.get_new_task()      
             if func == None: #no task, have a rest
                 sleep(self._rest_time)
             else:
                 try:
+                    """run the function with its parameter and the callback function"""
                     func(args, callback)
                 except (Exception) as e: 
-                    print (e) #change to log in the further
+                    print (e) 
+                    self._log.error(e)
                 ++self._work_times
 
     def goaway(self):
-        """ stop myself """
-        self._is_dying = True;
-
+        """ stop myself, this lead to the end of the run function, which will kill the thread"""
+        self._is_dying = True
 
 class ThreadPool():
     """ Consuming tasks using threads in poll"""
@@ -59,9 +63,9 @@ class ThreadPool():
         self._thead_lock.acquire()
         try:
             for i in range(self._threads_num): 
+                """start workers from here, pass itself as thread pool to the new started worker"""
                 new_thread = Worker(self, i)
                 self._threads.append(new_thread)
-                #start new thread
                 new_thread.start()
         finally:
             self._thead_lock.release()
@@ -88,6 +92,7 @@ class ThreadPool():
         self._task_lock.acquire()
         try:
             self._task_num += 1
+            """the task queue store the function name, parameters and callback function"""
             self._tasks.append((task, args, callback))
         finally:
             self._task_lock.release()
@@ -99,6 +104,7 @@ class ThreadPool():
                 return ( None, None, None )
             else:
                 self._task_num -= 1
+                """pop out the new task and return"""
                 return self._tasks.popleft()
         finally:
             self._task_lock.release()
@@ -108,17 +114,18 @@ class ThreadPool():
 #test
 if __name__ == "__main__":
 
-    def test_task1(num):
-        print("this is taks 1: do {0}".format(num))
+    def test_task1(num,callback):
+        print("this is task 1: do {0}".format(num))
+        callback()
 
-    def test_task2(data):
-        print("this is taks 2")
+    def test_task2():
+        print("this is task 2")
 
     pool = ThreadPool(3, 10)
 
     pool.start()
     for i in range(10):  
-        pool.queue_task(test_task1,i)
+        pool.queue_task(test_task1,i,test_task2)
         i += 1
     sleep(0.5)
     input('press any key to exit')
