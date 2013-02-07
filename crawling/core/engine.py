@@ -63,14 +63,13 @@ class Engine(object):
 
 	def finish_download(self, html_task):
 		self.download_times+=1
-		print("finish download:{0} {1}".format(self.download_times, time()-self.start_time))
+		#print("finish download:{0} {1}".format(self.download_times, time()-self.start_time))
 		"""After downloading, pass the data(still using the html objects) to the parse pool"""
 		self._parse_pool.append(html_task)
 
 		
 	def finish_parse(self, html_task):
 		self.parse_times+=1
-		print("finish parse here")
 		"""After parsing, pass the urls to be downloaded to the download pool"""
 		self._download_pool.append(html_task)
 		
@@ -94,7 +93,6 @@ class Engine(object):
 				sleep(0.1)
 			else:	
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
-				self._log.info("parse pool check assigning jobs")
 
 				
 

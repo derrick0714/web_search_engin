@@ -7,19 +7,20 @@ from models.html import Html
 from include.thread_pool import ThreadPool
 from include.log import Log
 from include.setting import Setting
+import urllib, formatter
+import html.parser
 import urllib.request
 import urllib.parse
+import re
 
 class Parser(object):
    
     def __init__(self, num_thread):
-        print("parser init")
         self._num_threads = num_thread
         self._parse_workers = ThreadPool(num_thread)
         self._log = Log()
         
     def queue_parse_task(self, html_task, callback):
-        self._log.info("calling queue_parse_task")
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
         self._parse_workers.queue_task(self.parse_page, html_task, callback)
 
@@ -31,9 +32,10 @@ class Parser(object):
     
     def parse_page(self, html_task, callback):
         
-        self._log.info(html_task._data)
-        self._log.info("parsing pages")
-        print("parsing pages")        
-        callback(html_task)
+        for i in re.findall(b'''href=["'](.[^"']+)["']''', html_task._data, re.I): 
+            print(i.decode("utf-8"))       
+#            self._log.info(i)
+            html_tasks = Html(i.decode("utf-8"))      
+            callback(html_tasks)
         
         

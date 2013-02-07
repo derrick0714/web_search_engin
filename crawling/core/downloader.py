@@ -33,12 +33,9 @@ class Downloader(object):
 		self._download_workers.stop()
 
 	def download_page(self, html_task, callback):
-		self._log.info("downloading pages")
-		#print (html_task._url)
 		req = urllib.request.Request(html_task._url)
 		data = urllib.request.urlopen(req)
 		html_task._data = data.read()#.decode('utf-8')
-		#print (html_task._data)
 		callback(html_task)
 
 #test
