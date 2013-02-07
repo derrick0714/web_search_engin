@@ -16,11 +16,19 @@ import urllib.parse
 
 class Downloader(object):
 	def __init__(self, num_thread):
+<<<<<<< HEAD
 		self.__num_threads	  	 = num_thread
 		self._download_workers	 = ThreadPool(num_thread)
 
 	def queue_download_task(self, html_task , callback):
+=======
+		self._num_threads	  	 = num_thread
+		self._download_workers	 = ThreadPool(num_thread)
+>>>>>>> adding some comments, still working on parser
 
+	def queue_download_task(self, html_task, callback):
+		
+		"""assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
 		self._download_workers.queue_task(self.download_page , html_task , callback )
 
 		#callback( result )
