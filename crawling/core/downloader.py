@@ -15,12 +15,13 @@ import urllib.parse
 
 
 class Downloader(object):
+	
 	def __init__(self, num_thread):
 		self._num_threads	  	 = num_thread
 		self._download_workers	 = ThreadPool(num_thread)
+		self._log = Log()
 
-	def queue_download_task(self, html_task, callback):
-		
+	def queue_download_task(self, html_task, callback):		
 		"""assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
 		self._download_workers.queue_task(self.download_page , html_task , callback )
 
@@ -32,6 +33,7 @@ class Downloader(object):
 		self._download_workers.stop()
 
 	def download_page(self, html_task, callback):
+		self._log.info("downloading pages")
 		#print (html_task._url)
 		req = urllib.request.Request(html_task._url)
 		data = urllib.request.urlopen(req)

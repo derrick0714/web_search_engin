@@ -6,7 +6,8 @@ Created on Feb 2, 2013
 
 """
 from threading import Thread	    
-from include import log, setting, status
+from include import setting, status
+from include.log import Log
 from core.downloader import Downloader
 from core.parser import Parser
 from models.html import Html
@@ -27,9 +28,10 @@ class Engine(object):
 		self.start_time		= time() # for 
 		self.download_times	= 0 # for test
 		self.parse_times = 0
+		self._log = Log()
 
 		"""The target is the function passed in to run in the thread"""
-		"""Those two threads keep checking and assigning jobs to """
+		"""Those two threads keep checking and assigning jobs to the two thread pools"""
 		self._downloader_pool_checker = Thread( target=self.download_pool_checker )
 		self._parse_pool_checker = Thread( target=self.parse_pool_checker)
 		
@@ -53,7 +55,7 @@ class Engine(object):
 		self._parse.stop()
 		""""Those two checker threads will end when the thread who calls them ends"""
 		self._downloader_pool_checker.join()
-		self._parse_pool_cheker.join()
+		self._parse_pool_checker.join()
 		print ("Engine is stopping")
 
 	def pause(self):
@@ -92,7 +94,7 @@ class Engine(object):
 				sleep(0.1)
 			else:	
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
-				print("right here")
+				self._log.info("parse pool check assigning jobs")
 
 				
 
