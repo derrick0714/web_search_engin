@@ -4,7 +4,8 @@ Created on Feb 5, 2013
 @author: derrick
 
 """
-from queue import deque
+#from queue import deque #python3.3
+from collections import deque
 from threading import Condition
 from threading import Lock
 

@@ -13,7 +13,7 @@ import inspect
 class Log(object):	 
     def __init__(self): 
         self.__logger = logging.getLogger() 
-        path = os.path.abspath("/Log.log") 
+        path = os.path.abspath("Log.log") 
         handler=logging.FileHandler(path) 
         self.__logger.addHandler(handler) 
         self.__logger.setLevel(logging.NOTSET)

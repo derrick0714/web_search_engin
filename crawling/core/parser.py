@@ -8,9 +8,6 @@ from include.thread_pool import ThreadPool
 from include.log import Log
 from include.setting import Setting
 import urllib, formatter
-import html.parser
-import urllib.request
-import urllib.parse
 import re
 
 class Parser(object):

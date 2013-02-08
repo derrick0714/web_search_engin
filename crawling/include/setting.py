@@ -3,7 +3,8 @@ Created on Feb 2, 2013
 
 @author: Adam
 '''
-import configparser
+#import configparser #python3.3
+import ConfigParser
 
 class Setting(object):   
     
@@ -11,23 +12,27 @@ class Setting(object):
         self.path = path 
               
     def get_section(self, section):
-        conf = configparser.ConfigParser()
+        #conf = configparser.ConfigParser() #python3.3
+        conf = ConfigParser.ConfigParser()
         conf.read(self.path)
         return conf.items(section)
     
     def get_param(self, section, param):
-        conf = configparser.ConfigParser()
+        #conf = configparser.ConfigParser() #python3.3
+        conf = ConfigParser.ConfigParser()
         conf.read(self.path)
         return conf.get(section,param)
     
     def set_param(self, section, param, new_value):
-        conf = configparser.ConfigParser()
+        #conf = configparser.ConfigParser() #python3.3
+        conf = ConfigParser.ConfigParser()
         conf.read(self.path)
         conf.set(section, param, new_value)
         conf.write(open(self.path, "w"))
         
     def add_param(self, section, new_param, new_value):
-        conf = configparser.ConfigParser()
+        #conf = configparser.ConfigParser() #python3.3
+        conf = ConfigParser.ConfigParser()
         conf.read(self.path)
         conf.set(section, new_param, new_value)
         conf.write(open(self.path, "w"))  

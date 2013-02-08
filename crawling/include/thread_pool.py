@@ -6,7 +6,8 @@ Created on Feb 2, 2013
 
 This is a thread pool
 """
-from queue import deque
+#from queue import deque #python 3.3
+from collections import deque #python 2.7
 from threading import Thread
 from threading import Condition
 from threading import Lock

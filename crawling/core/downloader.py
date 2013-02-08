@@ -10,8 +10,9 @@ from models.html import Html
 from include.thread_pool import ThreadPool
 from include.log import Log
 from include.setting import Setting
-import urllib.request
-import urllib.parse
+import urllib #python2.7
+#import urllib.request #python3.3
+#import urllib.parse #python3.3
 
 
 class Downloader(object):
@@ -33,12 +34,13 @@ class Downloader(object):
 		self._download_workers.stop()
 
 	def download_page(self, html_task, callback):
-		req = urllib.request.Request(html_task._url)
-		data = urllib.request.urlopen(req)
-		html_task._data = data.read()#.decode('utf-8')
+		#req = urllib.request.Request(html_task._url) #python3.3
+		#data = urllib.request.urlopen(req) #python3.3
+		#html_task._data = data.read()#.decode('utf-8') #python3.3
+		data = urllib.urlopen(html_task._url)
+		html_task._data = data.read()
 		callback(html_task)
 
 #test
 if __name__ == "__main__":
-	downloader = Downloader(Setting())
-	print(downloader.download())
+	print("test")
