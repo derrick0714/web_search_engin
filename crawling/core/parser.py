@@ -7,15 +7,21 @@ from models.html import Html
 from include.thread_pool import ThreadPool
 from include.log import Log
 from include.setting import Setting
+from strategies.linksextractor import LinksExtractor
+from models.safe_queue import SafeQueue
 import urllib, formatter
-import re
+#import re
+
 
 class Parser(object):
    
     def __init__(self, num_thread):
         self._num_threads = num_thread
         self._parse_workers = ThreadPool(num_thread)
-        self._log = Log()
+        self._log = Log()      
+        self._links = []
+        self._format = formatter.NullFormatter()
+        self._htmlparser = LinksExtractor(self._format)
         
     def queue_parse_task(self, html_task, callback):
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
@@ -29,10 +35,21 @@ class Parser(object):
     
     def parse_page(self, html_task, callback):
         
-        for i in re.findall(b'''href=["'](.[^"']+)["']''', html_task._data, re.I): 
+        #format = formatter.NullFormatter()       
+        self._htmlparser.feed(html_task._data)
+        self._htmlparser.close()
+        links = self._htmlparser.get_links()
+        
+        """for i in re.findall(b'''href=["'](.[^"']+)["']''', html_task._data, re.I): 
             print(i.decode("utf-8"))       
 #            self._log.info(i)
+            
             html_tasks = Html(i.decode("utf-8"))      
+            callback(html_tasks)
+        """
+        for link in links:
+            print (link)
+            html_tasks = Html(link)
             callback(html_tasks)
         
         
