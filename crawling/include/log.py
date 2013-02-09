@@ -9,6 +9,7 @@ import os
 import time 
 import logging 
 import inspect
+import sys, traceback
 
 class Log(object):	 
     def __init__(self): 
@@ -16,7 +17,7 @@ class Log(object):
         path = os.path.abspath("Log.log") 
         handler=logging.FileHandler(path) 
         self.__logger.addHandler(handler) 
-        self.__logger.setLevel(logging.NOTSET)
+        self.__logger.setLevel(logging.WARNING)
     def getLogMessage(self,level,message):
         frame,filename,lineNo,functionName,code,otherinfo = inspect.stack()[2]        
         return "[%s] [%s] [%s - %s - %s] %s" %(self.printfNow(),level,filename,lineNo,functionName,message)
@@ -34,6 +35,7 @@ class Log(object):
         self.__logger.warning(message)
     def debug(self,message): 
         message = self.getLogMessage("debug",message) 
+        traceback.print_exc(file=sys.stdout)
         print(message)
         self.__logger.debug(message)
     def critical(self,message): 

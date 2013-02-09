@@ -14,6 +14,7 @@ from threading import Lock
 from time import sleep
 from include.log import Log
 
+
 class Worker(Thread):
     """request new task to execute from ThreadPool"""
 
@@ -39,9 +40,9 @@ class Worker(Thread):
                 try:
                     """run the function with its parameter and the callback function"""
                     func(args, callback)
-                except (Exception) as e: 
-                    print (e) 
-                    self._log.error(e)
+                except (Exception) as e:  
+                    self._log.debug(e)
+                    #sys.exit(1)
                 ++self._work_times
 
     def goaway(self):
