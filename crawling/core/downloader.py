@@ -6,6 +6,7 @@ Created on Feb 2, 2013
 This is a downloader
 """
 
+import time
 from models.html import Html 
 from include.thread_pool import ThreadPool
 from include.log import Log
@@ -37,10 +38,11 @@ class Downloader(object):
 		#req = urllib.request.Request(html_task._url) #python3.3
 		#data = urllib.request.urlopen(req) #python3.3
 		#html_task._data = data.read()#.decode('utf-8') #python3.3
-		data = urllib.urlopen(html_task._url)
-		html_task._data = data.read()
+		netowrk_object 			= urllib.urlopen(html_task._url)
+		html_task._data 		= netowrk_object.read()
+		html_task._crawled_time = time.localtime() 
+		html_task._return_code	= netowrk_object.getcode()
+		netowrk_object.close()
+
 		callback(html_task)
 
-#test
-if __name__ == "__main__":
-	print("test")
