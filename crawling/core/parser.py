@@ -54,7 +54,7 @@ class Parser(object):
             #print (link)
             html_task = Html(link)
 
-            #load all strategies to determine this link can be download
+            """load all strategies to determine if this link can be download"""
             if self.parse_link( html_task ) == True:
                 callback(html_task)
 

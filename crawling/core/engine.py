@@ -33,13 +33,12 @@ class Engine(object):
 		self._log 			= Log()
 
 
-		"""init data saving path """
+		"""init the path for saving data, if the folder don't exist, create it"""
 		self._path			= setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
 		print(self._path)
 		if not os.path.exists(self._path):
    			os.makedirs(self._path)
 		
-
 
 		"""The target is the function passed in to run in the thread"""
 		"""Those two threads keep checking and assigning jobs to the two thread pools"""
@@ -74,15 +73,20 @@ class Engine(object):
 
 	def finish_download(self, html_task):
 		self.download_times+=1
+
+		"""caculate the path for saving files"""
 		full_path = self._path+"{0}".format(self.download_times)+".html"
 		print(full_path+"finish download:{0} {1}".format(self.download_times, time()-self.start_time))
-		"""After downloading, pass the data(still using the html objects) to the parse pool"""
-		self._parse_pool.append(html_task)
+		
 
-		#save html data to files
+		"""save html data to files"""
 		f= open(full_path, 'w')
 		f.write(html_task._data);
 		f.close()
+
+
+		"""After downloading, pass the data(still using the html objects) to the parse pool"""
+		self._parse_pool.append(html_task)
 		
 
 

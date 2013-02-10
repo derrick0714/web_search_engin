@@ -38,6 +38,8 @@ class Downloader(object):
 		#req = urllib.request.Request(html_task._url) #python3.3
 		#data = urllib.request.urlopen(req) #python3.3
 		#html_task._data = data.read()#.decode('utf-8') #python3.3
+
+		"""pull html data,fill the info into html model"""
 		netowrk_object 			= urllib.urlopen(html_task._url)
 		html_task._data 		= netowrk_object.read()
 		html_task._crawled_time = time.localtime() 
