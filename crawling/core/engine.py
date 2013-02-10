@@ -75,13 +75,13 @@ class Engine(object):
 		self.download_times+=1
 
 		"""caculate the path for saving files"""
-		full_path = self._path+"{0}".format(self.download_times)+".html"
-		print(full_path+"finish download:{0} {1}".format(self.download_times, time()-self.start_time))
-		
+		full_path = self._path+"[No.{0}]_".format(self.download_times)+".html"
+		print("[No.{0}] time:{1:0.1f} http-status: {2} data-size: {3}byes url:{4}".format(self.download_times, time()-self.start_time,\
+			html_task._return_code, html_task._data_size, html_task._url))
 
 		"""save html data to files"""
 		f= open(full_path, 'w')
-		f.write(html_task._data);
+		f.write(html_task._data)
 		f.close()
 
 

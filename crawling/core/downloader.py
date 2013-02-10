@@ -44,6 +44,7 @@ class Downloader(object):
 		html_task._data 		= netowrk_object.read()
 		html_task._crawled_time = time.localtime() 
 		html_task._return_code	= netowrk_object.getcode()
+		html_task._data_size	= len(html_task._data)
 		netowrk_object.close()
 
 		callback(html_task)
