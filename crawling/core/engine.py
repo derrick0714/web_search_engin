@@ -117,8 +117,10 @@ class Engine(object):
 
 		"""caculate the path for saving files"""
 		full_path = self._path+"[No.{0}]_".format(self.download_times)+".html"
-		print("[No.{0}] time:{1:0.1f} http-status: {2} data-size: {3}byes url:{4}".format(self.download_times, time()-self.start_time,\
-			html_task._return_code, html_task._data_size, html_task._url))
+		
+		html_task._id = self.download_times
+		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}".format(self.download_times,time()-self.start_time,html_task._depth,\
+			html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
 
 		"""save html data to files"""
 		f= open(full_path, 'w')

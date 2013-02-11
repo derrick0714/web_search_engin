@@ -18,6 +18,8 @@ class Parser(object):
     def __init__(self, num_thread):
         self._num_threads = num_thread
         self._parse_workers = ThreadPool(num_thread)
+        self._parsing_depth = 0
+        self._parsing_id = 0
         
         """  this is mutil-threads, can not use like this  
         self._log = Log()  
@@ -40,6 +42,8 @@ class Parser(object):
         links = []
         format = formatter.NullFormatter()
         htmlparser = LinksExtractor(format)
+        self._parsing_depth = html_task._depth
+        self._parsing_id = html_task._id
         try:     
             htmlparser.feed(html_task._data)
             htmlparser.close()
@@ -52,11 +56,15 @@ class Parser(object):
 
         for link in links:
             #print (link)
-            html_task = Html(link)
-
+            html_task_child = Html(link)
+            html_task_child._depth = self._parsing_depth+1
+            html_task_child._parent = self._parsing_id
+            
+            
+            
             """load all strategies to determine if this link can be download"""
-            if self.parse_link( html_task ) == True:
-                callback(html_task)
+            if self.parse_link( html_task_child ) == True:
+                callback(html_task_child)
 
         
     def parse_link(self, html_task ):

@@ -31,6 +31,9 @@ class Html(object):
 		self._path			= ""
 		self._query_string	= ""
 		self._md5			= ""
+		self._id  			= 0 #increase at engine.finishdownload
+		self._depth			= 0 #increase at parser parse_page
+		self._parent		= -1 #increase at parser parse_page
 
 
 		""" analyse url """
