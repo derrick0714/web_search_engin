@@ -26,12 +26,11 @@ def main():
 	#load seed info from config file
 
 	for i in range(10):
-		#crawler_engine.add_seed(setting.get_param('seed','first') )
-		crawler_engine.add_seed(links[i])
+		#crawler_engine.add_seed(links[i])
+		print links[i]
 
 
-	input('')
-
+	raw_input(" ")
 
 	#stop engin 
 	crawler_engine.stop()

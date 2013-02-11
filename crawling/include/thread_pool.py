@@ -78,7 +78,7 @@ class ThreadPool():
         try:
             for one_thread in self._threads: 
                 one_thread.goaway()
-            self._threads.clear()
+            self._threads = []
             self._threads_num = 0
         finally:
             self._thead_lock.release()

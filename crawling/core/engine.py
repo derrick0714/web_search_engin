@@ -61,7 +61,7 @@ class Engine(object):
 	def stop(self):
 		self._istart = False
 		self._downloader.stop()
-		self._parse.stop()
+		self._parser.stop()
 		""""Those two checker threads will end when the thread who calls them ends"""
 		self._downloader_pool_checker.join()
 		self._parse_pool_checker.join()
