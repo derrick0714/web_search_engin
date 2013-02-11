@@ -146,7 +146,10 @@ class Engine(object):
 			"""for the engine to get the result to put into the parse pool, we need to pass the function finish_download down as a callback"""
 			if (new_download_task == None):
 				sleep(0.1)
+			elif (self.check_visited(new_download_task) == True):				
+				sleep(0.1)
 			else:
+				self._visited_dic[new_download_task._md5] = new_download_task._url
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
 
 	def parse_pool_checker(self):
@@ -155,9 +158,9 @@ class Engine(object):
 			if (new_parse_task == None):
 				#print("sleeping")
 				sleep(0.1)
-			elif (self.check_visited(new_parse_task) == True):
+			#elif (self.check_visited(new_parse_task) == True):
 				
-				sleep(0.1)
+			#	sleep(0.1)
 				
 			else:
 				self._visited_dic[new_parse_task._md5] = new_parse_task._url	
@@ -169,6 +172,5 @@ class Engine(object):
 		else: 
 			return False
 		
-   
 
 
