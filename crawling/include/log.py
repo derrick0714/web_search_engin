@@ -35,8 +35,8 @@ class Log(object):
         self.__logger.warning(message)
     def debug(self,message): 
         message = self.getLogMessage("debug",message) 
-        traceback.print_exc(file=sys.stdout)
         print(message)
+        traceback.print_exc(file=sys.stdout)
         self.__logger.debug(message)
     def critical(self,message): 
         message = self.getLogMessage("critical",message) 

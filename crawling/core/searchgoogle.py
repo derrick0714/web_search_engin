@@ -6,6 +6,7 @@ Created on Feb 10, 2013
 
 import urllib2,urllib
 import json
+from include.log import Log
 
 class SearchGoogle(object):
     def __init__(self, searchstr = 'NYU'):
@@ -24,11 +25,14 @@ class SearchGoogle(object):
                 results = json.load(response)
                 info = results['responseData']['results']
             except Exception,e:
-                print e
+                Log().debug(e)
             else:
                 for minfo in info:
                     self._links.append(minfo['url'])
                     print(minfo['url'])
+            finally:
+                response.close()
+
         return self._links        
                 
 if __name__ == "__main__": 
