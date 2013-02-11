@@ -14,14 +14,15 @@ from models.html import Html
 from models.safe_queue import SafeQueue
 from time import time, sleep,localtime,strftime
 import os
+from core.searchgoogle import SearchGoogle
 
 class Engine(object):
 	def __init__( self, setting ):
-		self._seed 			= []
 		self._istart		= False
 		#self._stauts		= Status()
-		self._downloader	= Downloader( int(setting.get_param("Downloader","Threadnum")) )
-		self._parser		= Parser(int(setting.get_param("Parser","Threadnum")))
+		self._setting		= setting
+		self._downloader	= Downloader( int(self._setting.get_param("Downloader","Threadnum")) )
+		self._parser		= Parser(int(self._setting.get_param("Parser","Threadnum")))
 		"""Store the html objects to be downloaded by the downloader"""
 		self._download_pool	= SafeQueue()
 		"""Store the html objects to be parsed by the parser"""
@@ -30,36 +31,72 @@ class Engine(object):
 		self.download_times	= 0 # for test
 		self.parse_times 	= 0
 		self._log 			= Log()
+		self._keywords		= ""
+		self._keywords_links=[]
+		self._result_num	= 0
 
 
 		"""init the path for saving data, if the folder don't exist, create it"""
-		self._path			= setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
-		print("download html to:"+self._path)
+		self._path			= self._setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
-
 
 		"""The target is the function passed in to run in the thread"""
 		"""Those two threads keep checking and assigning jobs to the two thread pools"""
 		self._downloader_pool_checker = Thread( target=self.download_pool_checker )
 		self._parse_pool_checker = Thread( target=self.parse_pool_checker)
 
-	"""Called by the engine, add the url from the user to the download pool"""
-	def add_seed(self, url):
-		self._seed.append(url)
-		html_task = Html(url)
-		self._download_pool.append(html_task)
+
+	def load_seeds(self):
+		#load seed info from config file	
+		self._keywords = self._setting.get_param("seed","keywords") #"NBA HOUSTON"
+		self._result_num = int(self._setting.get_param("seed","result_num"))
+		contacter = SearchGoogle(self._keywords)
+		self._keywords_links = contacter.getURLs()
+		#append seeds, which from google search result, into download pool
+
+		i = 0
+		for url in self._keywords_links:
+			if i < self._result_num:
+				html_task = Html(url)
+				self._download_pool.append(html_task)
+			else:
+
+				break
+			i+=1
+
+	def show_welcome(self):
+		print("download folder:"+self._path)
+		print "key words:"+self._keywords
+		print "Load 10 results from google search:"
+		
+		i = 0
+		for url in self._keywords_links:
+			if i < self._result_num:
+				print ("[{0}]".format(i)+url)
+			i+=1
+		print""
+
+		raw_input("press any key to start crawling, press second key to stop")
+
 
 	def start(self):
 		self._istart = True
+		self.load_seeds()	#load seeds from google search 
+		self.show_welcome()
 		self._downloader.start()
 		self._parser.start()
 		self._downloader_pool_checker.start()
 		self._parse_pool_checker.start()
-
-
+		
+		
 	def stop(self):
 		self._istart = False
+		""""clear download and parse popl"""
+		self._download_pool.clear()
+		self._parse_pool.clear()
+
+		"""stop downloader and parser threads"""
 		self._downloader.stop()
 		self._parser.stop()
 		""""Those two checker threads will end when the thread who calls them ends"""

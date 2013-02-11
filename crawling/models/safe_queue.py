@@ -31,3 +31,10 @@ class SafeQueue( object ):
 			return self._data_queue.popleft()
 		finally:
 			self._lock.release()
+
+	def clear(self):
+		self._lock.acquire()
+		try:
+			self._data_queue.clear()
+		finally:
+			self._lock.release()
