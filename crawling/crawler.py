@@ -2,6 +2,7 @@ from core.engine import Engine
 from include.setting import Setting
 #from include.commond import Commond
 from time import sleep
+from strategies.searchgoogle import SearchGoogle
 
 
 def main():
@@ -33,10 +34,16 @@ def main():
 	
 	#start engine 
 	crawler_engine.start( )
+	
+	keywords = "NYU POLY"
+	contacter = SearchGoogle(keywords)
+	links = contacter.getURLs()
 
 	#load seed info from config file
+	
 	for i in range(10):
-		crawler_engine.add_seed(setting.get_param('seed','first') )
+		#crawler_engine.add_seed(setting.get_param('seed','first') )
+		crawler_engine.add_seed(links[i])
 
 
 	input('')
@@ -48,4 +55,3 @@ def main():
 if __name__ == "__main__":
 	#main(sys.argv[1:])
 	main()
-ain()
