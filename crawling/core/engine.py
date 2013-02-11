@@ -37,19 +37,19 @@ class Engine(object):
 		print(self._path)
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
-		
+
 
 		"""The target is the function passed in to run in the thread"""
 		"""Those two threads keep checking and assigning jobs to the two thread pools"""
 		self._downloader_pool_checker = Thread( target=self.download_pool_checker )
 		self._parse_pool_checker = Thread( target=self.parse_pool_checker)
-		
+
 	"""Called by the engine, add the url from the user to the download pool"""
 	def add_seed(self, url):
 		self._seed.append(url)
 		html_task = Html(url)
 		self._download_pool.append(html_task)
-		
+
 	def start(self):
 		self._istart = True
 		self._downloader.start()
@@ -86,16 +86,16 @@ class Engine(object):
 
 		"""After downloading, pass the data(still using the html objects) to the parse pool"""
 		self._parse_pool.append(html_task)
-		
 
 
-		
+
+
 	def finish_parse(self, html_task):
 		self.parse_times+=1
 		"""After parsing, pass the urls to be downloaded to the download pool"""
 		self._download_pool.append(html_task)
-		
-	
+
+
 	def download_pool_checker(self):
 		while (self._istart == True):
 			new_download_task = self._download_pool.pop_left()
@@ -116,8 +116,7 @@ class Engine(object):
 			else:	
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
-				
 
 
 
-		
+
