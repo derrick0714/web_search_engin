@@ -30,6 +30,7 @@ class Html(object):
 		self._port			= 0
 		self._path			= ""
 		self._query_string	= ""
+		self._md5			= ""
 
 
 		""" analyse url """
@@ -51,7 +52,11 @@ class Html(object):
 		self._port			= parse_result.port
 		self._path			= parse_result.path
 		self._query_string	= parse_result.query
-
+		
+		md5 = hashlib.md5()
+		md5.update(self._url)
+		self._md5 = md5.hexdigest()	
+		#print(self._md5)
 
 
 

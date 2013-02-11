@@ -37,6 +37,6 @@ class SearchGoogle(object):
         return self._links        
                 
 if __name__ == "__main__": 
-    contacter = SearchGoogle("NYU Courant",15)    
+    contacter = SearchGoogle("Torsten Suel",15)    
     print(contacter.getURLs())
     

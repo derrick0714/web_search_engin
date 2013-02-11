@@ -13,8 +13,8 @@ from core.parser import Parser
 from models.html import Html
 from models.safe_queue import SafeQueue
 from time import time, sleep,localtime,strftime
-import os
 from core.searchgoogle import SearchGoogle
+import os,hashlib
 
 class Engine(object):
 	def __init__( self, setting ):
@@ -34,6 +34,7 @@ class Engine(object):
 		self._keywords		= ""
 		self._keywords_links=[]
 		self._result_num	= 0
+		self._visited_dic   ={}
 
 
 		"""init the path for saving data, if the folder don't exist, create it"""
@@ -60,6 +61,10 @@ class Engine(object):
 			if i < self._result_num:
 				html_task = Html(url)
 				self._download_pool.append(html_task)
+				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
+				'''however, the dic should be safe with a lock'''
+				#self._visited_dic[html_task._md5] = html_task._url 
+				#print(len(self._visited_dic))
 			else:
 
 				break
@@ -150,10 +155,20 @@ class Engine(object):
 			if (new_parse_task == None):
 				#print("sleeping")
 				sleep(0.1)
-			else:	
+			elif (self.check_visited(new_parse_task) == True):
+				
+				sleep(0.1)
+				
+			else:
+				self._visited_dic[new_parse_task._md5] = new_parse_task._url	
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
-
-
+	def check_visited(self, html_task):
+		if  self._visited_dic.has_key(html_task._md5):
+			return True
+		else: 
+			return False
+		
+   
 
 
