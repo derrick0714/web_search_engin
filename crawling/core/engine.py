@@ -13,7 +13,6 @@ from core.parser import Parser
 from models.html import Html
 from models.safe_queue import SafeQueue
 from time import time, sleep,localtime,strftime
- 
 import os
 
 class Engine(object):
@@ -37,7 +36,7 @@ class Engine(object):
 		self._path			= setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
 		print(self._path)
 		if not os.path.exists(self._path):
-   			os.makedirs(self._path)
+			os.makedirs(self._path)
 		
 
 		"""The target is the function passed in to run in the thread"""

@@ -25,7 +25,7 @@ class LinksExtractor(htmllib.HTMLParser):
 if __name__ == "__main__":
     
         format = formatter.NullFormatter()
-        htmlparser = LinksExtractor(format)
+        htmlparser = LinksExtractor(format)       
         data = urllib.urlopen("http://cis.poly.edu/index.htm")
         htmlparser.feed(data.read())
         htmlparser.close()

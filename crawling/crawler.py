@@ -2,7 +2,7 @@ from core.engine import Engine
 from include.setting import Setting
 #from include.commond import Commond
 from time import sleep
-from strategies.searchgoogle import SearchGoogle
+from core.searchgoogle import SearchGoogle
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
 	#start engine 
 	crawler_engine.start( )
 	
-	keywords = "NYU POLY"
+	keywords = "NBA HOUSTON"
 	contacter = SearchGoogle(keywords)
 	links = contacter.getURLs()
 

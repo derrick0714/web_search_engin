@@ -28,7 +28,7 @@ class SearchGoogle(object):
             else:
                 for minfo in info:
                     self._links.append(minfo['url'])
-                    #print(minfo['url'])
+                    print(minfo['url'])
         return self._links        
                 
 if __name__ == "__main__": 
