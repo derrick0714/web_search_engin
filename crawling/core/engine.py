@@ -34,7 +34,7 @@ class Engine(object):
 
 		"""init the path for saving data, if the folder don't exist, create it"""
 		self._path			= setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
-		print(self._path)
+		print("download html to:"+self._path)
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
 
