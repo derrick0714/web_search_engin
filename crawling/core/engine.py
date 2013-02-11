@@ -51,7 +51,7 @@ class Engine(object):
 		#load seed info from config file	
 		self._keywords = self._setting.get_param("seed","keywords") #"NBA HOUSTON"
 		self._result_num = int(self._setting.get_param("seed","result_num"))
-		contacter = SearchGoogle(self._keywords)
+		contacter = SearchGoogle(self._keywords, self._result_num)
 		self._keywords_links = contacter.getURLs()
 		#append seeds, which from google search result, into download pool
 
@@ -68,7 +68,7 @@ class Engine(object):
 	def show_welcome(self):
 		print("download folder:"+self._path)
 		print "key words:"+self._keywords
-		print "Load 10 results from google search:"
+		print "Load " +str(self._result_num)+" results from google search:"
 		
 		i = 0
 		for url in self._keywords_links:

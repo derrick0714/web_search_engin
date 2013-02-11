@@ -9,16 +9,17 @@ import json
 from include.log import Log
 
 class SearchGoogle(object):
-    def __init__(self, searchstr = 'NYU'):
+    def __init__(self, searchstr = 'NYU', resultnum = 10):
         self._keywords = searchstr
         self._links = []
+        self._result_num = resultnum
     def getURLs(self):
-        for x in range(2):   
-            start = x*5           
+        for x in range(self._result_num):   
+            #start = x*1           
             url = ('https://ajax.googleapis.com/ajax/services/search/web'
-                  '?v=1.0&q=%s&rsz=5&start=%s') % (urllib.quote(self._keywords),start)
+                  '?v=1.0&q=%s&rsz=1&start=%s') % (urllib.quote(self._keywords),x)
             try:
-                request = urllib2.Request(url, None)
+                request = urllib2.Request(url, None, {'Referer':'http://www.poly.edu'})
                 response = urllib2.urlopen(request)
 
                 """Process the JSON string."""
@@ -36,6 +37,6 @@ class SearchGoogle(object):
         return self._links        
                 
 if __name__ == "__main__": 
-    contacter = SearchGoogle("NYU Courant")    
+    contacter = SearchGoogle("NYU Courant",15)    
     print(contacter.getURLs())
     
