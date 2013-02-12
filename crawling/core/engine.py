@@ -8,6 +8,7 @@ Created on Feb 2, 2013
 from threading import Thread	    
 from include import setting, status
 from include.log import Log
+from include.database import Databse
 from core.downloader import Downloader
 from core.parser import Parser
 from models.html import Html
@@ -31,6 +32,7 @@ class Engine(object):
 		self.download_times	= 0 # for test
 		self.parse_times 	= 0
 		self._log 			= Log()
+
 		self._keywords		= ""
 		self._keywords_links=[]
 		self._result_num	= 0
@@ -42,11 +44,17 @@ class Engine(object):
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
 
+		self._database		= Databse(self._setting)
+
 		"""The target is the function passed in to run in the thread"""
 		"""Those two threads keep checking and assigning jobs to the two thread pools"""
 		self._downloader_pool_checker = Thread( target=self.download_pool_checker )
 		self._parse_pool_checker = Thread( target=self.parse_pool_checker)
+		"""every second, this thread post runtime info to remote mysql"""
+		self._status_update = Thread( target=self.status_update)
 
+		
+		
 
 	def load_seeds(self):
 		#load seed info from config file	
@@ -93,6 +101,7 @@ class Engine(object):
 		self._parser.start()
 		self._downloader_pool_checker.start()
 		self._parse_pool_checker.start()
+		self._status_update.start()
 		
 		
 	def stop(self):
@@ -107,6 +116,7 @@ class Engine(object):
 		""""Those two checker threads will end when the thread who calls them ends"""
 		self._downloader_pool_checker.join()
 		self._parse_pool_checker.join()
+		self._status_update.join()
 		print ("Engine is stopping")
 
 	def pause(self):
@@ -117,8 +127,8 @@ class Engine(object):
 
 		"""caculate the path for saving files"""
 		full_path = self._path+"[No.{0}]_".format(self.download_times)+".html"
-		print("[No.{0}] time:{1:0.1f} http-status: {2} data-size: {3}byes url:{4}".format(self.download_times, time()-self.start_time,\
-			html_task._return_code, html_task._data_size, html_task._url))
+		#print("[No.{0}] time:{1:0.1f} http-status: {2} data-size: {3}byes url:{4}".format(self.download_times, time()-self.start_time,\
+		#	html_task._return_code, html_task._data_size, html_task._url))
 
 		"""save html data to files"""
 		f= open(full_path, 'w')
@@ -168,6 +178,15 @@ class Engine(object):
 			return True
 		else: 
 			return False
+
+	#~~~just for test~~~ see result at dengxu.me/websearch/test.php
+	def status_update(self):
+		while (self._istart == True):
+
+			sql = "UPDATE  `status` SET  `crawled_url_count` =  '{0}' ,`update_time`=now(), `key_words`= '{1}' WHERE  `status`.`id` =1".format(self.download_times, self._keywords)
+			self._database.execute(sql)
+			sleep(1)
+	
 		
    
 

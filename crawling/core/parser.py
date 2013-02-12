@@ -6,7 +6,6 @@ Created on Feb 6, 2013
 from models.html import Html 
 from include.thread_pool import ThreadPool
 from include.log import Log
-from include.setting import Setting
 from strategies.linksextractor import LinksExtractor
 from models.safe_queue import SafeQueue
 import urllib, formatter
@@ -18,13 +17,7 @@ class Parser(object):
     def __init__(self, num_thread):
         self._num_threads = num_thread
         self._parse_workers = ThreadPool(num_thread)
-        
-        """  this is mutil-threads, can not use like this  
-        self._log = Log()  
-        self._links = []  
-        self._format = formatter.NullFormatter()
-        self._htmlparser = LinksExtractor(self._format)
-        """
+
     def queue_parse_task(self, html_task, callback):
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
         self._parse_workers.queue_task(self.parse_page, html_task, callback)

@@ -18,7 +18,7 @@ def main():
 		#start engine 
 		crawler_engine.start( )
 
-
+		#hold the main thread here, wait for any input to finish
 		raw_input("")
 		#stop engin 
 		crawler_engine.stop()
