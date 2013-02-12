@@ -13,6 +13,7 @@ from core.downloader import Downloader
 from core.parser import Parser
 from models.html import Html
 from models.safe_queue import SafeQueue
+from models.safe_loop_array import SafeLoopArray
 from time import time, sleep,localtime,strftime
 from core.searchgoogle import SearchGoogle
 import os,hashlib
@@ -37,6 +38,9 @@ class Engine(object):
 		self._keywords_links=[]
 		self._result_num	= 0
 		self._visited_dic   ={}
+
+
+		self._last_log		= SafeLoopArray( Html("#"),10)
 
 
 		"""init the path for saving data, if the folder don't exist, create it"""
@@ -129,8 +133,11 @@ class Engine(object):
 		full_path = self._path+"[No.{0}]_".format(self.download_times)+".html"
 		
 		html_task._id = self.download_times
-		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}".format(self.download_times,time()-self.start_time,html_task._depth,\
-		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
+	#	print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}".format(self.download_times,time()-self.start_time,html_task._depth,\
+	#	html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
+
+		#add to log array, post to mysql
+		self._last_log.add(html_task)
 
 		"""save html data to files"""
 		f= open(full_path, 'w')
@@ -183,10 +190,34 @@ class Engine(object):
 
 	#~~~just for test~~~ see result at dengxu.me/websearch/test.php
 	def status_update(self):
-		while (self._istart == True):
 
-			sql = "UPDATE  `status` SET  `crawled_url_count` =  '{0}' ,`update_time`=now(), `key_words`= '{1}' WHERE  `status`.`id` =1".format(self.download_times, self._keywords)
+			
+		sql = "UPDATE  `configuation` SET  `downloader_thread` =  {0} ,`downloader_folder`= '{1}', `parser_thread`= {2}, `seed_keywords`='{3}', `seed_resultnum`={4} WHERE  `configuation`.`id` =1".\
+				format(self._setting.get_param("Downloader","Threadnum"), self._path, self._setting.get_param("Parser","Threadnum"),self._keywords,self._result_num)
+		
+		self._database.execute(sql)
+		
+		"""update result url"""
+		sql = "DELETE FROM `key_words`"
+		self._database.execute(sql)
+		for links in self._keywords_links:
+			sql = "INSERT INTO `web_search_engine`.`key_words` (`id`, `url`) VALUES (NULL, '{0}')".format(links)
 			self._database.execute(sql)
+
+		while (self._istart == True):
+			sql = "UPDATE  `status` SET  `crawled_url_count` =  '{0}'  WHERE  `status`.`id` =1".format(self.download_times)
+			self._database.execute(sql)
+
+
+			for i in range(10):
+				html_task = self._last_log.get(i)
+				if html_task._url != "#":
+					sql = "INSERT INTO `web_search_engine`.`log` (`url`, `download_time`, `data_size`, `code`, `parent`, `depth`)\
+						VALUES ('{0}', now(), '{2}', '{3}', '{4}', '{5}')".format\
+						(html_task._url, html_task._crawled_time, html_task._data_size, html_task._return_code, html_task._parent, html_task._depth)
+					
+					self._database.execute(sql)
+
 			sleep(1)
 	
 		

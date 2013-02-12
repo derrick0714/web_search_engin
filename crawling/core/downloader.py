@@ -42,7 +42,7 @@ class Downloader(object):
 		"""pull html data,fill the info into html model"""
 		netowrk_object 			= urllib.urlopen(html_task._url)
 		html_task._data 		= netowrk_object.read()
-		html_task._crawled_time = time.localtime() 
+		html_task._crawled_time = time.time() 
 		html_task._return_code	= netowrk_object.getcode()
 		html_task._data_size	= len(html_task._data)
 		netowrk_object.close()
