@@ -19,7 +19,7 @@ class Databse(object):
 			conn.autocommit(True)
 			cur = conn.cursor()
 			#sql="select * from `status`" 
-			print sql
+			#print sql
   			cur.execute(sql)
 			for row in cur.fetchall() :
    				 print row[1]
