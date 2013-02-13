@@ -17,6 +17,7 @@ from models.safe_loop_array import SafeLoopArray
 from models.safe_dic import SafeDictionary
 from time import time, sleep,localtime,strftime
 from core.searchgoogle import SearchGoogle
+from strategies.robothandler import RobotHandler
 import os
 
 class Engine(object):
@@ -39,8 +40,7 @@ class Engine(object):
 		self._result_num	= 0
 		"""this dic stores normlized url(md5) and the original url"""
 		self._visited_dic   =SafeDictionary()
-		"""for robot exclusion rules parser"""
-		self._host_name     =SafeQueue()
+		self._robothandler  =RobotHandler()
 		
 		self._last_log		= SafeLoopArray( Html("#"),10)
 
@@ -50,14 +50,14 @@ class Engine(object):
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
 
-		self._database		= Databse(self._setting)
+		#self._database		= Databse(self._setting)
 
 		"""The target is the function passed in to run in the thread"""
 		"""Those two threads keep checking and assigning jobs to the two thread pools"""
 		self._downloader_pool_checker = Thread( target=self.download_pool_checker )
 		self._parse_pool_checker = Thread( target=self.parse_pool_checker)
 		"""every second, this thread post runtime info to remote mysql"""
-		self._status_update = Thread( target=self.status_update)
+		#self._status_update = Thread( target=self.status_update)
 
 		
 		
@@ -107,7 +107,7 @@ class Engine(object):
 		self._parser.start()
 		self._downloader_pool_checker.start()
 		self._parse_pool_checker.start()
-		self._status_update.start()
+		#self._status_update.start()
 		
 		
 	def stop(self):
@@ -122,7 +122,7 @@ class Engine(object):
 		""""Those two checker threads will end when the thread who calls them ends"""
 		self._downloader_pool_checker.join()
 		self._parse_pool_checker.join()
-		self._status_update.join()
+		#self._status_update.join()
 		print ("Engine is stopping")
 
 	def pause(self):
@@ -167,7 +167,14 @@ class Engine(object):
 			"""for the engine to get the result to put into the parse pool, we need to pass the function finish_download down as a callback"""
 			if (new_download_task == None):
 				sleep(0.1)
+			elif (self.check_visited(new_download_task) == True):
+				
+				sleep(0.1)
+			elif (self._robothandler.is_allowed(new_download_task) == False):
+				print("blocked by the Robot.txt, so don't download", new_download_task._url)			
+				sleep(0.1)
 			else:
+				self._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
 
 	def parse_pool_checker(self):
@@ -175,18 +182,18 @@ class Engine(object):
 			new_parse_task = self._parse_pool.pop_left()
 			if (new_parse_task == None):
 				#print("sleeping")
-				sleep(0.1)
-			elif (self.check_visited(new_parse_task) == True):
-				
-				sleep(0.1)
-				
-			else:
-				#self._visited_dic[new_parse_task._md5] = new_parse_task._url
-				self._visited_dic.addorupdate(new_parse_task._md5, new_parse_task._url)	
+				sleep(0.1)				
+			else:												
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
 	def check_visited(self, html_task):
 		if  self._visited_dic.has_key(html_task._md5):
+			return True
+		else: 
+			return False
+		
+	def check_hostname(self, html_task):
+		if  self._hostname_pool.has_value(html_task._scheme + "://" + html_task._hostname):
 			return True
 		else: 
 			return False

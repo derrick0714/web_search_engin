@@ -51,6 +51,7 @@ class Html(object):
 		parse_result 		= urlparse(self._url)
 		self._scheme 		= parse_result.scheme
 		self._hostname		= parse_result.hostname
+		self._homesiteurl	= str(parse_result.scheme) + "://" + str(parse_result.hostname)
 		#self._hostname_hash	= hashlib.sha256( parse_result.hostname )
 		self._port			= parse_result.port
 		self._path			= parse_result.path
@@ -63,4 +64,4 @@ class Html(object):
 
 if __name__=="__main__":
 	html = Html("http://www.nba.com/standings/team_record_comparison/conferenceNew_Std_Cnf.html")
-	print html._hostname
+	print html._homesiteurl

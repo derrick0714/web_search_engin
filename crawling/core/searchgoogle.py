@@ -19,7 +19,7 @@ class SearchGoogle(object):
             url = ('https://ajax.googleapis.com/ajax/services/search/web'
                   '?v=1.0&q=%s&rsz=1&start=%s') % (urllib.quote(self._keywords),x)
             try:
-                request = urllib2.Request(url, None, {'Referer':'http://www.poly.edu'})
+                request = urllib2.Request(url, None, {'Referer':'http://www.nyu.edu'})
                 response = urllib2.urlopen(request)
 
                 """Process the JSON string."""
