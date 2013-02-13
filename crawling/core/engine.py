@@ -19,6 +19,7 @@ from time import time, sleep,localtime,strftime
 from core.searchgoogle import SearchGoogle
 from strategies.robothandler import RobotHandler
 from strategies.earlyvisithandler import EarlyVisitHandler
+from strategies.cgihandler import CGIHandler
 import os
 
 class Engine(object):
@@ -39,11 +40,14 @@ class Engine(object):
 		self._keywords		= ""
 		self._keywords_links= []
 		self._result_num	= 0		
+		
+		"""---strategies---"""
 		self._earlyvisithandler = EarlyVisitHandler()
-		self._robothandler  =RobotHandler()		
+		self._robothandler  =RobotHandler()
+		self._cgihandler	=CGIHandler()				
+		"""---strategies---"""
+
 		self._last_log		= SafeLoopArray( Html("#"),10)
-
-
 		"""init the path for saving data, if the folder don't exist, create it"""
 		self._path			= self._setting.get_param("Downloader","SavePath")+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
 		if not os.path.exists(self._path):
@@ -165,6 +169,10 @@ class Engine(object):
 			"""else pop the new task, and download it"""
 			"""for the engine to get the result to put into the parse pool, we need to pass the function finish_download down as a callback"""
 			if (new_download_task == None):
+				sleep(0.1)
+				
+			elif (self._cgihandler.FindCGI(new_download_task._url)==True):
+				print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
 				sleep(0.1)
 			elif (self._earlyvisithandler.check_visited(new_download_task) == True):
 				

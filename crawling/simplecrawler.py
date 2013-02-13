@@ -24,3 +24,5 @@ for i in re.findall(b'''href=["'](.[^"']+)["']''', urllib.urlopen("http://cis.po
 textfile.close()
 
 """
+url = "http://www.google.com/cgi.test.cgi.cgicgicgi"
+print (url.find("cgi"))

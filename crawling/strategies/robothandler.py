@@ -10,7 +10,7 @@ class RobotHandler(object):
     
     def __init__(self):
         self._hostname_pool =   SafeDictionary()
-        self._user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.57 Safari/537.17"
+        self._user_agent = "Mozilla/5.0"
         
     def check_hostname(self, html_task):
         if  (self._hostname_pool.has_key(html_task._homesiteurl)==True):
@@ -26,6 +26,7 @@ class RobotHandler(object):
                 self._hostname_pool.addorupdate(html_task._homesiteurl,rerp) 
             else:
                 rerp = self._hostname_pool.valueofkey(html_task._homesiteurl)       
-            return rerp.is_allowed(self._user_agent, html_task._url)                    
+            return rerp.is_allowed(self._user_agent, html_task._url) 
+            #return rerp.is_allowed(html_task._url)                   
         except Exception:
             return True
