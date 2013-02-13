@@ -38,6 +38,8 @@ class Engine(object):
 		self._keywords_links=[]
 		self._result_num	= 0
 		self._visited_dic   ={}
+		"""for robot exclusion rules parser"""
+		self._host_name     =SafeQueue()
 
 
 		self._last_log		= SafeLoopArray( Html("#"),10)
@@ -133,8 +135,8 @@ class Engine(object):
 		full_path = self._path+"[No.{0}]_".format(self.download_times)+".html"
 		
 		html_task._id = self.download_times
-	#	print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}".format(self.download_times,time()-self.start_time,html_task._depth,\
-	#	html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
+		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}".format(self.download_times,time()-self.start_time,html_task._depth,\
+		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
 
 		#add to log array, post to mysql
 		self._last_log.add(html_task)

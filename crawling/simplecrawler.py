@@ -8,7 +8,9 @@ import re
 import urllib
 import lxml
 
-textfile = open("c:\\depth_1.txt","wt")
+"""
+
+textfile = open("depth_1.txt","wt")
 
 #for i in re.findall(b'''href=["'](.[^"']+)["']''', urllib.request.urlopen("http://cis.poly.edu/cs6913/").read(), re.I):
 for i in re.findall(b'''href=["'](.[^"']+)["']''', urllib.urlopen("http://cis.poly.edu/cs6913/").read(), re.I):
@@ -20,3 +22,5 @@ for i in re.findall(b'''href=["'](.[^"']+)["']''', urllib.urlopen("http://cis.po
         textfile.write(ee.decode("utf-8")+'\n')
 
 textfile.close()
+
+"""
