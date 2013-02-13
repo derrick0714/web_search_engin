@@ -20,6 +20,7 @@ from core.searchgoogle import SearchGoogle
 from strategies.robothandler import RobotHandler
 from strategies.earlyvisithandler import EarlyVisitHandler
 from strategies.cgihandler import CGIHandler
+from strategies.nestlevelhandler import NestLevelHandler
 import os
 
 class Engine(object):
@@ -29,6 +30,7 @@ class Engine(object):
 		self._setting		= setting
 		self._downloader	= Downloader( int(self._setting.get_param("Downloader","Threadnum")) )
 		self._parser		= Parser(int(self._setting.get_param("Parser","Threadnum")))
+		self._nestlevel		= int(self._setting.get_param("Parser","Nestlevel"))
 		"""Store the html objects to be downloaded by the downloader"""
 		self._download_pool	= SafeQueue()
 		"""Store the html objects to be parsed by the parser"""
@@ -44,7 +46,8 @@ class Engine(object):
 		"""---strategies---"""
 		self._earlyvisithandler = EarlyVisitHandler()
 		self._robothandler  =RobotHandler()
-		self._cgihandler	=CGIHandler()				
+		self._cgihandler	=CGIHandler()
+		self._nestlevelhandler =NestLevelHandler()				
 		"""---strategies---"""
 
 		self._last_log		= SafeLoopArray( Html("#"),10)
@@ -171,11 +174,16 @@ class Engine(object):
 			if (new_download_task == None):
 				sleep(0.1)
 				
-			elif (self._cgihandler.FindCGI(new_download_task._url)==True):
+			elif (self._cgihandler.FindCGI(new_download_task)==True):
 				print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
 				sleep(0.1)
-			elif (self._earlyvisithandler.check_visited(new_download_task) == True):
 				
+			elif (self._nestlevelhandler.checknestlevel(new_download_task,self._nestlevel)==True):
+				print("Ingore the link nested too much, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
+				sleep(0.1)
+				
+			elif (self._earlyvisithandler.check_visited(new_download_task) == True):
+				print("Ingore the link visited before, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
 				sleep(0.1)
 			elif (self._robothandler.is_allowed(new_download_task) == False):
 				print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)			
