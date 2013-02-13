@@ -38,3 +38,9 @@ class SafeQueue( object ):
 			self._data_queue.clear()
 		finally:
 			self._lock.release()
+			
+	def has_value(self,value):
+			if value in self._data_queue:
+				return True
+			else:
+				return False

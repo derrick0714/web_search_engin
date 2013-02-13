@@ -14,9 +14,10 @@ from core.parser import Parser
 from models.html import Html
 from models.safe_queue import SafeQueue
 from models.safe_loop_array import SafeLoopArray
+from models.safe_dic import SafeDictionary
 from time import time, sleep,localtime,strftime
 from core.searchgoogle import SearchGoogle
-import os,hashlib
+import os
 
 class Engine(object):
 	def __init__( self, setting ):
@@ -33,15 +34,14 @@ class Engine(object):
 		self.download_times	= 0 # for test
 		self.parse_times 	= 0
 		self._log 			= Log()
-
 		self._keywords		= ""
-		self._keywords_links=[]
+		self._keywords_links= []
 		self._result_num	= 0
-		self._visited_dic   ={}
+		"""this dic stores normlized url(md5) and the original url"""
+		self._visited_dic   =SafeDictionary()
 		"""for robot exclusion rules parser"""
 		self._host_name     =SafeQueue()
-
-
+		
 		self._last_log		= SafeLoopArray( Html("#"),10)
 
 
@@ -181,7 +181,8 @@ class Engine(object):
 				sleep(0.1)
 				
 			else:
-				self._visited_dic[new_parse_task._md5] = new_parse_task._url	
+				#self._visited_dic[new_parse_task._md5] = new_parse_task._url
+				self._visited_dic.addorupdate(new_parse_task._md5, new_parse_task._url)	
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
 	def check_visited(self, html_task):
