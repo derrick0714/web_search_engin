@@ -18,6 +18,7 @@ from models.safe_dic import SafeDictionary
 from time import time, sleep,localtime,strftime
 from core.searchgoogle import SearchGoogle
 from strategies.robothandler import RobotHandler
+from strategies.earlyvisithandler import EarlyVisitHandler
 import os
 
 class Engine(object):
@@ -37,11 +38,9 @@ class Engine(object):
 		self._log 			= Log()
 		self._keywords		= ""
 		self._keywords_links= []
-		self._result_num	= 0
-		"""this dic stores normlized url(md5) and the original url"""
-		self._visited_dic   =SafeDictionary()
-		self._robothandler  =RobotHandler()
-		
+		self._result_num	= 0		
+		self._earlyvisithandler = EarlyVisitHandler()
+		self._robothandler  =RobotHandler()		
 		self._last_log		= SafeLoopArray( Html("#"),10)
 
 
@@ -167,14 +166,14 @@ class Engine(object):
 			"""for the engine to get the result to put into the parse pool, we need to pass the function finish_download down as a callback"""
 			if (new_download_task == None):
 				sleep(0.1)
-			elif (self.check_visited(new_download_task) == True):
+			elif (self._earlyvisithandler.check_visited(new_download_task) == True):
 				
 				sleep(0.1)
 			elif (self._robothandler.is_allowed(new_download_task) == False):
-				print("blocked by the Robot.txt, so don't download", new_download_task._url)			
+				print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)			
 				sleep(0.1)
 			else:
-				self._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
+				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
 
 	def parse_pool_checker(self):
@@ -186,17 +185,6 @@ class Engine(object):
 			else:												
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
-	def check_visited(self, html_task):
-		if  self._visited_dic.has_key(html_task._md5):
-			return True
-		else: 
-			return False
-		
-	def check_hostname(self, html_task):
-		if  self._hostname_pool.has_value(html_task._scheme + "://" + html_task._hostname):
-			return True
-		else: 
-			return False
 
 	#~~~just for test~~~ see result at dengxu.me/websearch/test.php
 	def status_update(self):
