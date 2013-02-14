@@ -229,14 +229,10 @@ class Engine(object):
 				#print("No task remaining in download_pool")
 				sleep(0.1)
 			else:
-				self._earlyvisithandler.add_entry(new_download_task._md5, new_download_task._url)
+				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
-<<<<<<< HEAD
 
 
-=======
-							
->>>>>>> 4517846c8fb6b02561bcbe9d9a04274e135ab4ec
 	def parse_pool_checker(self):
 		while (self._istart == True):
 			new_parse_task = self._parse_pool.pop_left()
@@ -259,7 +255,7 @@ class Engine(object):
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
-		 	,self._download_pool.size(), self._parse_pool.size(),self._status._abandon)
+		 	,self._downloader.len(), self._downloader.len(),self._status._abandon)
 
 
 

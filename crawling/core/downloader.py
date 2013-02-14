@@ -35,6 +35,9 @@ class Downloader(object):
 	def stop(self):
 		self._download_workers.stop()
 
+	def len(self):
+		return self._download_workers.get_queue_count()
+
 	def download_page(self, html_task, callback):
 		#req = urllib.request.Request(html_task._url) #python3.3
 		#data = urllib.request.urlopen(req) #python3.3

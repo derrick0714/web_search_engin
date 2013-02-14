@@ -73,6 +73,13 @@ class ThreadPool():
             self._thead_lock.release()
 
     def stop(self):
+        #clear the task
+        self._task_lock.acquire()
+        try:
+            self._tasks.clear(); 
+        finally:
+            self._task_lock.release()
+            
         """stop all threads """
         self._thead_lock.acquire()
         try:
@@ -83,12 +90,7 @@ class ThreadPool():
         finally:
             self._thead_lock.release()
 
-        #clear the task
-        self._task_lock.acquire()
-        try:
-            self._tasks.clear(); 
-        finally:
-            self._task_lock.release()
+      
 
     def queue_task(self, task, args, callback):
         self._task_lock.acquire()
@@ -108,6 +110,13 @@ class ThreadPool():
                 self._task_num -= 1
                 """pop out the new task and return"""
                 return self._tasks.popleft()
+        finally:
+            self._task_lock.release()
+
+    def get_queue_count(self):
+        self._task_lock.acquire()
+        try:
+            return len(self._tasks)
         finally:
             self._task_lock.release()
 

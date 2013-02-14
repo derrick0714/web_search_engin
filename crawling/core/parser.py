@@ -32,6 +32,9 @@ class Parser(object):
 
     def stop(self):
         self._parse_workers.stop()
+
+    def len(self):
+        return self._parse_workers.get_queue_count()
     
     def parse_page(self, html_task, callback):
         
