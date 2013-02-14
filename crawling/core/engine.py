@@ -32,6 +32,10 @@ from strategies.robothandler import RobotHandler
 from strategies.earlyvisithandler import EarlyVisitHandler
 from strategies.cgihandler import CGIHandler
 from strategies.nestlevelhandler import NestLevelHandler
+from strategies.schemehandler import SchemeHandler
+from strategies.filetypehandler import FileTypeHandler
+from strategies.urlextender import URLExtender
+
 
 
 class Engine(object):
@@ -61,23 +65,25 @@ class Engine(object):
 		self._status_update = Thread( target=self.status_update) #every second, this thread post runtime info to remote mysql
 
 		""" ---strategies--- """
-		self._earlyvisithandler = EarlyVisitHandler()
-		self._robothandler  =RobotHandler()
-		self._cgihandler	=CGIHandler()
-		self._nestlevelhandler =NestLevelHandler()				
+		self._earlyvisithandler	=	EarlyVisitHandler()
+		self._robothandler  	=	RobotHandler()
+		self._cgihandler		=	CGIHandler()
+		self._nestlevelhandler 	=	NestLevelHandler()
+		self._schemehandler    	=	SchemeHandler()
+		self._filetypehandler	=	FileTypeHandler()
+		self._urlextender		=	URLExtender()			
 	
 		""" ---init the path for saving data, if the folder don't exist, create it ---"""
 		self._path			= self._config._down_path+"/"+ strftime('%Y-%m-%d', localtime())+"/"+ strftime('%H-%M-%S', localtime())+"/"
 		if not os.path.exists(self._path):
 			os.makedirs(self._path)
-		self._config._down_path = self._path
 
+		self._config._down_path = self._path
+		
 		self._keywords_links= []
 
 		""" ---Mysql Manager--- """
-		self.sqlex			= DatabseManager(self._config)
-
-
+		self.sqlex      = DatabseManager(self._config)
 
 	def load_seeds(self):
 		#load seed info from config file	
@@ -91,9 +97,13 @@ class Engine(object):
 		for url in self._keywords_links:
 			if i < self._config._result_num:
 				html_task = Html(url)
-				if(self._cgihandler.FindCGI(html_task)==True):
+				if(self._schemehandler.SchemeChecker(html_task)==False):
+					#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					self._status._scheme+=1
+					continue
+				elif(self._cgihandler.FindCGI(html_task)==True):
+					#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					self._status._cgi+=1
-					print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				elif(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
 					self._status._nestlv +=1
@@ -108,6 +118,7 @@ class Engine(object):
 					print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				else:
+					self._earlyvisithandler.add_entry(html_task._md5, html_task._url)
 					self._download_pool.append(html_task)
 				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
 				'''however, the dic should be safe with a lock'''
@@ -131,7 +142,7 @@ class Engine(object):
 		print""
 
 		raw_input("press any key to start crawling, press second key to stop")
-
+	
 	def wait_for_start(self):
 		print "ready for start:"
 		while( self.sqlex.read_if_start()!= True):
@@ -139,7 +150,7 @@ class Engine(object):
 
 	def start(self):
 		try:
-			self.wait_for_start()
+			#self.wait_for_start()
 
 			self._istart = True
 			
@@ -162,6 +173,7 @@ class Engine(object):
 			Log().debug("start failed")
 			raise(e)
 			return False
+
 		
 		
 	def stop(self):
@@ -185,9 +197,9 @@ class Engine(object):
 	def finish_download(self, html_task):
 			
 		
-		#print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
-		#	.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
-		#html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
+		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
+			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
+		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
 
 
 		"""caculate the path for saving files"""
@@ -208,7 +220,11 @@ class Engine(object):
 	def finish_parse(self, html_task):
 		
 		"""After parsing, pass the urls to be downloaded to the download pool"""
-		if(self._cgihandler.FindCGI(html_task)==True):
+		if(self._schemehandler.SchemeChecker(html_task)==False):
+			#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			self._status._scheme_type+=1
+			return
+		elif(self._cgihandler.FindCGI(html_task)==True):
 			#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 			self._status._cgi+=1
 			return
@@ -225,6 +241,7 @@ class Engine(object):
 			self._status._robot +=1
 			return
 		else:
+			self._earlyvisithandler.add_entry(html_task._md5, html_task._url)
 			self._download_pool.append(html_task)
 		
 
@@ -241,7 +258,6 @@ class Engine(object):
 				#print("No task remaining in download_pool")
 				sleep(0.1)
 			else:
-				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
 
 

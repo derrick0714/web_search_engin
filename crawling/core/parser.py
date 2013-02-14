@@ -68,25 +68,24 @@ class Parser(object):
                 callback(html_task_child)
 
 
-
         
     def parse_link(self, html_task ):
         self._status._parse_times+=1
         
-        """
-        simple filter of no _scheme & _hostname for test
-        """
+        '''
+        #simple filter of no _scheme & _hostname for test
+        
         if (html_task._scheme =="") | (html_task._hostname == ""):
             #print("no _scheme & _hostname ")
-            self._status._scheme_type+=1
+            self._status._abandon+=1
             return False
       
-        """
-        simple filter of type of scheme for test
-        """
+        
+        #simple filter of type of scheme for test
+        
         if html_task._scheme !="http":
             #print(" html_task._scheme={0}".format(html_task._scheme))
-            self._status._scheme_type+=1
+            self._status._abandon+=1
             return False
-
+        '''
         return True
