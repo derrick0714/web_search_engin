@@ -29,13 +29,15 @@ class Status:
 		self._cgi				= 0;
 		self._robot				= 0;
 		self._nestlv			= 0;
-		self._abandon			= 0;
+		self._scheme_type		= 0;
 
+		"""--- queue ---"""
+		self._download_queue	= 0;
+		self._parse_queue		= 0;
 
 	def get_new_id(self):
 		self._download_id = self._download_id+1
 		return self._download_id
-
 
 	    
 	    
