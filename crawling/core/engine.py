@@ -80,7 +80,20 @@ class Engine(object):
 		for url in self._keywords_links:
 			if i < self._result_num:
 				html_task = Html(url)
-				self._download_pool.append(html_task)
+				if(self._cgihandler.FindCGI(html_task)==True):
+					print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					continue
+				elif(self._nestlevelhandler.checknestlevel(html_task,self._nestlevel)==True):
+					print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					continue
+				elif(self._earlyvisithandler.check_visited(html_task) == True):
+					print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					continue
+				elif(self._robothandler.is_allowed(html_task) == False):
+					print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					continue
+				else:
+					self._download_pool.append(html_task)
 				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
 				'''however, the dic should be safe with a lock'''
 				#self._visited_dic[html_task._md5] = html_task._url 
@@ -162,7 +175,20 @@ class Engine(object):
 	def finish_parse(self, html_task):
 		self.parse_times+=1
 		"""After parsing, pass the urls to be downloaded to the download pool"""
-		self._download_pool.append(html_task)
+		if(self._cgihandler.FindCGI(html_task)==True):
+			print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			return
+		elif(self._nestlevelhandler.checknestlevel(html_task,self._nestlevel)==True):
+			print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			return
+		elif(self._earlyvisithandler.check_visited(html_task) == True):
+			print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			return
+		elif(self._robothandler.is_allowed(html_task) == False):
+			print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			return
+		else:
+			self._download_pool.append(html_task)
 
 
 	def download_pool_checker(self):
@@ -172,8 +198,12 @@ class Engine(object):
 			"""else pop the new task, and download it"""
 			"""for the engine to get the result to put into the parse pool, we need to pass the function finish_download down as a callback"""
 			if (new_download_task == None):
+				print("No task remaining in download_pool")
 				sleep(0.1)
-				
+			else:
+				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
+				self._downloader.queue_download_task(new_download_task , self.finish_download)
+			"""	
 			elif (self._cgihandler.FindCGI(new_download_task)==True):
 				print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
 				sleep(0.1)
@@ -188,10 +218,11 @@ class Engine(object):
 			elif (self._robothandler.is_allowed(new_download_task) == False):
 				print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)			
 				sleep(0.1)
+			
 			else:
 				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
-
+			"""
 	def parse_pool_checker(self):
 		while (self._istart == True):
 			new_parse_task = self._parse_pool.pop_left()
