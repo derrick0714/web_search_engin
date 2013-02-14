@@ -201,28 +201,9 @@ class Engine(object):
 				print("No task remaining in download_pool")
 				sleep(0.1)
 			else:
-				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
+				self._earlyvisithandler.add_entry(new_download_task._md5, new_download_task._url)
 				self._downloader.queue_download_task(new_download_task , self.finish_download)
-			"""	
-			elif (self._cgihandler.FindCGI(new_download_task)==True):
-				print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
-				sleep(0.1)
-				
-			elif (self._nestlevelhandler.checknestlevel(new_download_task,self._nestlevel)==True):
-				print("Ingore the link nested too much, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
-				sleep(0.1)
-				
-			elif (self._earlyvisithandler.check_visited(new_download_task) == True):
-				print("Ingore the link visited before, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)
-				sleep(0.1)
-			elif (self._robothandler.is_allowed(new_download_task) == False):
-				print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(new_download_task._parent), new_download_task._url)			
-				sleep(0.1)
-			
-			else:
-				self._earlyvisithandler._visited_dic.addorupdate(new_download_task._md5, new_download_task._url)
-				self._downloader.queue_download_task(new_download_task , self.finish_download)
-			"""
+							
 	def parse_pool_checker(self):
 		while (self._istart == True):
 			new_parse_task = self._parse_pool.pop_left()

@@ -17,4 +17,6 @@ class EarlyVisitHandler(object):
             return True
         else: 
             return False
-        
+    
+    def add_entry(self,key,value):
+        self._visited_dic.addorupdate(key, value)
