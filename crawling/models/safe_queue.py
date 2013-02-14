@@ -40,7 +40,18 @@ class SafeQueue( object ):
 			self._lock.release()
 			
 	def has_value(self,value):
+		self._lock.acquire()
+		try:
 			if value in self._data_queue:
 				return True
 			else:
 				return False
+		finally:
+			self._lock.release()
+
+	def size(self):
+		self._lock.acquire()
+		try:
+			return len(self._data_queue)
+		finally:
+			self._lock.release()

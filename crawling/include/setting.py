@@ -6,6 +6,7 @@ Created on Feb 2, 2013
 #import configparser #python3.3
 import ConfigParser
 
+
 class Setting(object):   
     
     def load(self, path):
@@ -19,9 +20,12 @@ class Setting(object):
     
     def get_param(self, section, param):
         #conf = configparser.ConfigParser() #python3.3
-        conf = ConfigParser.ConfigParser()
-        conf.read(self.path)
-        return conf.get(section,param)
+        try:
+            conf = ConfigParser.ConfigParser()
+            conf.read(self.path)
+            return conf.get(section,param)
+        except (Exception) as e:
+            raise(e)
     
     def set_param(self, section, param, new_value):
         #conf = configparser.ConfigParser() #python3.3

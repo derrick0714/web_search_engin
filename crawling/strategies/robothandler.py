@@ -21,11 +21,13 @@ class RobotHandler(object):
         try:
             rerp = RobotExclusionRulesParser()
             if (self.check_hostname(html_task) == False):
-                print ("home_site for Robot", html_task._homesiteurl)
+               # print ("home_site for Robot", html_task._homesiteurl)
                 rerp.fetch(html_task._homesiteurl + "/robots.txt")
                 self._hostname_pool.addorupdate(html_task._homesiteurl,rerp) 
             else:
-                rerp = self._hostname_pool.valueofkey(html_task._homesiteurl)       
+               # print "in is_allowed1".html_task._homesiteurl
+                rerp = self._hostname_pool.valueofkey(html_task._homesiteurl)
+                #print "in is_allowed 2"      
             return rerp.is_allowed(self._user_agent, html_task._url) 
             #return rerp.is_allowed(html_task._url)                   
         except Exception:

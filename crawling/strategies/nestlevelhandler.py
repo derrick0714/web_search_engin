@@ -10,7 +10,7 @@ from models.html import Html
 class NestLevelHandler(object):
     
     def checknestlevel(self, html_task, level):
-        
+
         if (len(list(set(urlsplit(html_task._url).path.split('/')))) - 1 >= level):
             #print len(list(set(urlsplit(html_task._url).path.split('/')))) - 1
             return True

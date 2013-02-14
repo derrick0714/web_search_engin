@@ -10,23 +10,19 @@ from include.setting import Setting
 from strategies.linksextractor import LinksExtractor
 from models.safe_queue import SafeQueue
 import urllib, formatter
+from models.status import Status
 #import re
 
 
 class Parser(object):
    
-    def __init__(self, num_thread):
+    def __init__(self, num_thread, status):
         self._num_threads = num_thread
         self._parse_workers = ThreadPool(num_thread)
         self._parsing_depth = 0
         self._parsing_id = 0
+        self._status            = status
         
-        """  this is mutil-threads, can not use like this  
-        self._log = Log()  
-        self._links = []  
-        self._format = formatter.NullFormatter()
-        self._htmlparser = LinksExtractor(self._format)
-        """
     def queue_parse_task(self, html_task, callback):
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
         self._parse_workers.queue_task(self.parse_page, html_task, callback)
@@ -54,33 +50,39 @@ class Parser(object):
         finally:
             del html_task
 
+
         for link in links:
             #print (link)
+
             html_task_child = Html(link)
             html_task_child._depth = self._parsing_depth+1
             html_task_child._parent = self._parsing_id
             
             
-            
             """load all strategies to determine if this link can be download"""
             if self.parse_link( html_task_child ) == True:
+
                 callback(html_task_child)
+
 
         
     def parse_link(self, html_task ):
-
+        self._status._parse_times+=1
+        
         """
         simple filter of no _scheme & _hostname for test
         """
         if (html_task._scheme =="") | (html_task._hostname == ""):
             #print("no _scheme & _hostname ")
+            self._status._abandon+=1
             return False
-
+      
         """
         simple filter of type of scheme for test
         """
         if html_task._scheme !="http":
             #print(" html_task._scheme={0}".format(html_task._scheme))
+            self._status._abandon+=1
             return False
 
         return True

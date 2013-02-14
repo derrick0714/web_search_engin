@@ -13,6 +13,7 @@ class EarlyVisitHandler(object):
         self._visited_dic   = SafeDictionary()
         
     def check_visited(self, html_task):
+    
         if  self._visited_dic.has_key(html_task._md5):
             return True
         else: 

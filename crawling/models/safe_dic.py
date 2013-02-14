@@ -38,13 +38,21 @@ class SafeDictionary( object ):
             self._lock.release()
             
     def has_key(self, key):
-        if self._data_dic.has_key(key):
-            return True
-        else:
-            return False
+        self._lock.acquire()
+        try:
+            if self._data_dic.has_key(key):
+                return True
+            else:
+                return False
+        finally:
+            self._lock.release()
             
     def valueofkey(self,key):
-        if not self.has_key(key):
-            return None
-        else:
-            return self._data_dic[key]
+        self._lock.acquire()
+        try:
+            if not self._data_dic.has_key(key):
+                return None
+            else:
+                return self._data_dic[key]
+        finally:
+            self._lock.release()

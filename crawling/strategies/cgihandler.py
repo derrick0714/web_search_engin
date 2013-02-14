@@ -7,7 +7,8 @@ Created on Feb 13, 2013
 class CGIHandler(object):
 
     def FindCGI(self, html_task):
-        if html_task._url.find("cgi")==-1:
+ 
+        if html_task._url.find(".cgi")==-1:
             return False
         else:
             return True

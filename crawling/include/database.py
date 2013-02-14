@@ -1,21 +1,25 @@
+"""
+Created on Feb 12, 2013
+
+@author: derrick
+
+"""
 import MySQLdb
 from include.log import Log
-from include.setting import Setting
+from inlcude.configuration import Configuration
 
 class Databse(object):
-	def __init__(self, setting):
-		self._host 		= setting.get_param("Mysql","host")
-		self._user  	= setting.get_param("Mysql","user")
-		self._passwd  	= setting.get_param("Mysql","passwd")
-		self._db 		= setting.get_param("Mysql","db")
+	def __init__(self, config ):
+		self._config 		= config._host
+
 
 
   	def execute(self, sql):
   		try: 
-			conn = MySQLdb.connect(host=self._host,	# your host, usually localhost
-                 user=self._user , # your username
-                  passwd=self._passwd , # your password
-                  db=self._db) # name of the data base
+			conn = MySQLdb.connect(host=self._config._host,	# your host, usually localhost
+                 user=self._config._user , # your username
+                  passwd=self._config._passwd , # your password
+                  db=self._config._db) # name of the data base
 			conn.autocommit(True)
 			cur = conn.cursor()
 			#sql="select * from `status`" 

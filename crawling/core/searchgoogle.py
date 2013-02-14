@@ -30,7 +30,7 @@ class SearchGoogle(object):
             else:
                 for minfo in info:
                     self._links.append(minfo['url'])
-                    print(minfo['url'])
+                   # print(minfo['url'])
             finally:
                 response.close()
 

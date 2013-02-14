@@ -48,6 +48,8 @@ class Html(object):
 
 
 	def parse_url(self):
+		
+		
 		parse_result 		= urlparse(self._url)
 		self._scheme 		= parse_result.scheme
 		self._hostname		= parse_result.hostname
@@ -61,7 +63,7 @@ class Html(object):
 		md5.update(self._url)
 		self._md5 = md5.hexdigest()	
 		#print(self._md5)
-
+		
 if __name__=="__main__":
 	html = Html("http://www.nba.com/standings/team_record_comparison/conferenceNew_Std_Cnf.html")
 	print html._homesiteurl
