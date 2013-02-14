@@ -202,7 +202,10 @@ class Engine(object):
 				self._parser.queue_parse_task(new_parse_task, self.finish_parse)
 
 
-	#~~~just for test~~~ see result at dengxu.me/websearch/test.php
+
+
+
+	#~~~see result at http://dengxu.me/crawling/
 	def status_update(self):
 
 			
