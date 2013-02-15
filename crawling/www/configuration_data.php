@@ -35,6 +35,23 @@ $result = mysql_query($sql);
 
     <div class="my_span"></div>
 	<div class="my_content">
+
+    
+	<div class="my_content">
+		<table class="table table-bordered">
+		  <thead>
+		    <tr>
+		      <th olspan="2"><b>Seed:</b></th>
+		    </tr>
+		  </thead>
+		  <tbody>
+
+		    <tr>
+		      <td width="200"><b>  result count : </b></td>
+		      <td> <input type="text" name="result_count" value="10"></td>
+		  	</tr>
+		</div>
+		 <div class="my_span"></div>
 		<table class="table table-bordered">
 		  <thead>
 		    <tr>
@@ -44,12 +61,12 @@ $result = mysql_query($sql);
 		  <tbody>
 		    <tr>
 		      <td width="200"><b>  thread num: </b></td>
-		      <td> <?=$row['downloader_thread']?></td>
+		      <td>  <input type="text" name="down_thread" value="1"></td>
 
 		    </tr>
 		    <tr>
 		      <td>download folder:</td>
-		      <td><?=$row['downloader_folder']?></td>
+		      <td>./data</td>
 
 		    </tr>
 		  </tbody>
@@ -66,11 +83,11 @@ $result = mysql_query($sql);
 		  <tbody>
 		    <tr>
 		      <td width="200"><b>  thread num: </b></td>
-		      <td> <?=$row['parser_thread']?></td>
+		      <td> <input type="text" name="parse_thread" value="1"></td>
 		    </tr>
 		</table>	
 	</div>
-
+	
 	<div class="my_span"></div>
 	<div class="my_content">
 		<table class="table table-bordered">
@@ -94,8 +111,7 @@ $result = mysql_query($sql);
 					{
 						echo  "<tr><td width='200'>".$i++."</td> <td>".$array['url']."</td></tr>";			
 					}
-		    ?>
-		</table>	
+		    ?>	
 	</div>
 
  </div>
