@@ -11,6 +11,7 @@ from strategies.linksextractor import LinksExtractor
 from models.safe_queue import SafeQueue
 import urllib, formatter
 from models.status import Status
+from models.configuration import Configuration
 from strategies.cgihandler import CGIHandler
 from strategies.nestlevelhandler import NestLevelHandler
 from strategies.schemehandler import SchemeHandler
@@ -33,6 +34,8 @@ class Parser(object):
         self._filetypehandler    =    FileTypeHandler()
         self._bookmarkhandler    =    BookMarkHandler()
         self._urlextender        =    URLExtender()
+        self._filetypehandler   =   FileTypeHandler()
+        self._config            =   Configuration()
                 
     def queue_parse_task(self, html_task, callback):
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
@@ -85,11 +88,13 @@ class Parser(object):
                 #print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
                 self._status._cgi+=1
                 continue        
-            if(self._nestlevelhandler.checknestlevel(html_task_child,6)==True):
+            if(self._nestlevelhandler.checknestlevel(html_task_child,self._config._parser_nlv)==True):
                 #print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
                 self._status._nestlv +=1
                 continue        
-           
+            if(self._filetypehandler.FileTypeChecker(html_task_child)==False):
+                self._status._file_type +=1
+                continue
             if(html_task_child._scheme == "" and html_task_child._hostname==None and html_task_child._path!=""):
                 self._urlextender.ExtendURL(html_task_child, html_task)
             
