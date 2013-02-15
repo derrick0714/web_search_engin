@@ -49,7 +49,7 @@ class Engine(object):
 		self._config 		= Configuration();
 	
 		"""--- core object ----"""
-		self._downloader	= Downloader( self._config._down_num, self._status)
+		self._downloader	= None
 		self._parser		= Parser( self._config._down_num, self._status )
 
 		"""--- memory models --- """
@@ -91,39 +91,47 @@ class Engine(object):
 
 	def load_seeds(self):
 		#load seed info from config file	
-
+		#print "load_seeds 1"
 		#load seed from 
 		contacter = SearchGoogle(self._config._keywords, self._config._result_num)
 		self._keywords_links = contacter.getURLs()
 		#append seeds, which from google search result, into download pool
-		
+		#print "load_seeds 2"
 		#self._keywords_links.insert(0, "https://twitter.com/")
 		#self._keywords_links.insert(0, "https://twitter.com/signup?context=login")
 		
 		i = 0
 		for url in self._keywords_links:
 			if i < self._config._result_num:
+				#print "@@{0}".format(url)
 				html_task = Html(url)
-				html_task.Do_MD5()
+
+				#print "@@1"
 				if(self._schemehandler.SchemeChecker(html_task)==False):
 					#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print "@@2"
 					self._status._scheme+=1
 					continue
 				if(self._bookmarkhandler.BookMarkChecker(html_task)==True):
 					#print("Ingore bookmark link, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print "@@3"
 					self._status._bookmark+=1
 					continue
 				if(self._cgihandler.FindCGI(html_task)==True):
 					#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print "@@4"
 					self._status._cgi+=1
 					continue
 				if(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
 					self._status._nestlv +=1
+					#print "@@5"
 					#print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				if(self._filetypehandler.FileTypeChecker(html_task)==False):
+					#print "@@6"
 					self._status._file_type +=1
 					continue
+				#print "@@7"
 				'''
 				if(self._earlyvisithandler.check_visited(html_task) == True):
 					self._status._early_visit +=1
@@ -131,25 +139,32 @@ class Engine(object):
 					continue
 				'''
 				self._omitindex.Omit(html_task)
+				"""
+				print "@@8"
 				if(self._robothandler.is_allowed(html_task) == False):
+					print "@@9"
 					self._status._robot +=1
 					#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
-				
+				print "@@10"
+				"""
 				self._earlyvisithandler.add_entry(html_task._md5, html_task)
 				self._download_pool.append(html_task)
 				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
 				'''however, the dic should be safe with a lock'''
 				#self._visited_dic[html_task._md5] = html_task._url 
 				#print(len(self._visited_dic))
+				#print "@@11"
 			else:
 
 				break
 			i+=1
-
+		#print "load_seeds 3"
 	def show_welcome(self):
 		print("download folder:"+self._path)
 		print "key words:"+self._config._keywords
+		print "donload thread num: {0}".format(self._config._down_num)
+		print "parse thread num: {0}".format(self._config._parser_num)
 		print "Load " +str(self._config._result_num)+" results from google search:"
 		
 		i = 0
@@ -157,35 +172,41 @@ class Engine(object):
 			if i < self._config._result_num:
 				print ("[{0}]".format(i)+url)
 			i+=1
-		print""
+		
 
-		raw_input("press any key to start crawling, press second key to stop")
+		#raw_input("press any key to start crawling, press second key to stop")
 	
 	def wait_for_start(self):
-		print "ready for start:"
-		while( self.sqlex.read_if_start()!= True):
+		print "ready for start....."
+		while( self.sqlex.read_if_start(self._config)!= True):
 			sleep(1)
+		print "starting crawling engine...."
 
 	def start(self):
 		try:
-			#self.wait_for_start()
+			self.wait_for_start()
 
 			self._istart = True
 			
 			"""load seed """
 			self.load_seeds()	#load seeds from google search 
 
+			
 			"""show welcome info"""
 			self.show_welcome()
 			self._status._sys_start	= time()
 
 			"""start threads"""
+			self._downloader = Downloader( self._config._down_num, self._status)
 			self._downloader.start()
 			self._parser.start()
 			self._downloader_pool_checker.start()
 			self._parse_pool_checker.start()
 			self._status_update.start()
 
+
+			"""notify mysql, i am started"""
+			self.sqlex.write_if_start()
 			
 		except (Exception) as e:
 			Log().debug("start failed")
@@ -214,11 +235,11 @@ class Engine(object):
 
 	def finish_download(self, html_task):
 			
-		
+		"""
 		print("Downloaded:[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
 			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
 		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
-		
+		"""
 
 		"""caculate the path for saving files"""
 		full_path = self._path+"[No.{0}]_".format(self._status._download_times)+".html"
@@ -293,7 +314,7 @@ class Engine(object):
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
 			
-			print "[time: {0:0.1f}],queue:{8}, dowloaded: {1}, total_size: {2:0.1f}MB | queue:{9}, parsed: {3}, scheme:{10}, cig: {4}, bookmark: {11} File_Type {12} visited: {5}, robot: {6},nestlv: {7}"\
+			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3}, scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
@@ -302,6 +323,8 @@ class Engine(object):
 			"""update status tp mysql"""
 			self.sqlex.write_status(self._status)
 			
+			"""update recent download url"""
+			self.sqlex.write_recent_download(self._status)
 			
 			sleep(1)
 	"""	

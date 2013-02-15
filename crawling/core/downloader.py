@@ -11,7 +11,10 @@ from models.html import Html
 from include.thread_pool import ThreadPool
 from include.log import Log
 from models.status import Status
-import urllib #python2.7
+import urllib
+import socket
+
+ #python2.7
 #import urllib.request #python3.3
 #import urllib.parse #python3.3
 
@@ -44,10 +47,12 @@ class Downloader(object):
 		#html_task._data = data.read()#.decode('utf-8') #python3.3
 		try:
 			"""download files"""
+			#print "before download"+html_task._url
+			#`socket.setdefaulttimeout(3)
 			netowrk_object 			= urllib.urlopen(html_task._url)
 			html_task._data 		= netowrk_object.read()
 			netowrk_object.close()
-
+			#print "finish download"+html_task._url
 			"""pull html data,fill the info into html model"""
 			html_task._id 			= self._status.get_new_id()
 			html_task._crawled_time = time.time() 
@@ -61,7 +66,7 @@ class Downloader(object):
 			self._status._download_times+=1
 			self._status._download_size+=html_task._data_size
 		except (Exception) as e:
-			Log().debug("download_page failed")
+			#Log().debug("download_page failed")
 			raise(e)
 		
 		finally:	

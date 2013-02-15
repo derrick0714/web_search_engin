@@ -7,7 +7,7 @@ class OmitIndex(object):
     def Omit(self, html_task):
         
         url = html_task._url
-          
+
         url = url.replace('index.htm','')
         url = url.replace('index.html','')
         url = url.replace('index.jsp','')
@@ -20,6 +20,6 @@ class OmitIndex(object):
         url = url.replace('main.asp','')
         url = url.replace('main.php','')
         
-        html_task._url = url
-        
+        html_task.update_url(url)
+  
         del url

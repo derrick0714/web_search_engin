@@ -35,6 +35,8 @@ class Status:
 		self._file_type			= 0
 
 
+
+
 	def get_new_id(self):
 		self._download_id = self._download_id+1
 		return self._download_id

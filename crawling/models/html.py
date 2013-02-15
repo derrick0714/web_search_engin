@@ -46,20 +46,20 @@ class Html(object):
 		self._crawled_time	= 0		#html download time
 		
 
+	def update_url(self,url):
+		self._url 			= url
+		self.parse_url()
 
 	def parse_url(self):
-		
-		
+			
 		parse_result 		= urlparse(self._url)
 		self._scheme 		= parse_result.scheme
 		self._hostname		= parse_result.hostname
 		self._homesiteurl	= str(parse_result.scheme) + "://" + str(parse_result.hostname)
 		#self._hostname_hash	= hashlib.sha256( parse_result.hostname )
-		self._port			= parse_result.port
+		#self._port			= parse_result.port
 		self._path			= parse_result.path
 		self._query_string	= parse_result.query
-		
-	def Do_MD5(self):
 		md5 = hashlib.md5()
 		md5.update(self._url)
 		self._md5 = md5.hexdigest()	
