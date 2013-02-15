@@ -11,7 +11,12 @@ from strategies.linksextractor import LinksExtractor
 from models.safe_queue import SafeQueue
 import urllib, formatter
 from models.status import Status
-#import re
+from strategies.cgihandler import CGIHandler
+from strategies.nestlevelhandler import NestLevelHandler
+from strategies.schemehandler import SchemeHandler
+from strategies.filetypehandler import FileTypeHandler
+from strategies.bookmarkhandler import BookMarkHandler
+from strategies.urlextender import URLExtender
 
 
 class Parser(object):
@@ -22,7 +27,13 @@ class Parser(object):
         self._parsing_depth = 0
         self._parsing_id = 0
         self._status            = status
-        
+        self._cgihandler        =    CGIHandler()
+        self._nestlevelhandler     =    NestLevelHandler()
+        self._schemehandler        =    SchemeHandler()
+        self._filetypehandler    =    FileTypeHandler()
+        self._bookmarkhandler    =    BookMarkHandler()
+        self._urlextender        =    URLExtender()
+                
     def queue_parse_task(self, html_task, callback):
         """assign the tasks(function, parameter, and callback) to the workers(thread pool)"""
         self._parse_workers.queue_task(self.parse_page, html_task, callback)
@@ -49,30 +60,50 @@ class Parser(object):
             links = htmlparser.get_links()
         except (Exception) as e:
             #print(html_task._data)
+            print(html_task._url)
             Log().debug(e)
-        finally:
-            del html_task
+        #finally:
+        #    del html_task
 
 
         for link in links:
             #print (link)
-
+            
             html_task_child = Html(link)
+
+            """load all strategies to determine if this link can be download"""
+            if(self._schemehandler.SchemeChecker(html_task_child)==False):
+                #print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+                self._status._scheme_type+=1
+                continue                  
+            if(self._bookmarkhandler.BookMarkChecker(html_task_child)==True):
+                #print("Ingore bookmark link, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+                self._status._bookmark+=1
+                continue
+            if(self._cgihandler.FindCGI(html_task_child)==True):
+                #print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+                self._status._cgi+=1
+                continue        
+            if(self._nestlevelhandler.checknestlevel(html_task_child,6)==True):
+                #print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+                self._status._nestlv +=1
+                continue        
+           
+            if(html_task_child._scheme == "" and html_task_child._hostname==None and html_task_child._path!=""):
+                self._urlextender.ExtendURL(html_task_child, html_task)
+                                    
+            #if self.parse_link( html_task_child ) == True:
+            self._status._parse_times+=1
             html_task_child._depth = self._parsing_depth+1
             html_task_child._parent = self._parsing_id
-            
-            
-            """load all strategies to determine if this link can be download"""
-            if self.parse_link( html_task_child ) == True:
+            callback(html_task_child)
 
-                callback(html_task_child)
-
-
-        
+        del html_task
+    '''      
     def parse_link(self, html_task ):
         self._status._parse_times+=1
         
-        '''
+        '
         #simple filter of no _scheme & _hostname for test
         
         if (html_task._scheme =="") | (html_task._hostname == ""):
@@ -87,5 +118,6 @@ class Parser(object):
             #print(" html_task._scheme={0}".format(html_task._scheme))
             self._status._abandon+=1
             return False
-        '''
+        
         return True
+    '''

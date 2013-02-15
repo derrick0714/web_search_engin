@@ -34,6 +34,7 @@ from strategies.cgihandler import CGIHandler
 from strategies.nestlevelhandler import NestLevelHandler
 from strategies.schemehandler import SchemeHandler
 from strategies.filetypehandler import FileTypeHandler
+from strategies.bookmarkhandler import BookMarkHandler
 from strategies.urlextender import URLExtender
 
 
@@ -71,6 +72,7 @@ class Engine(object):
 		self._nestlevelhandler 	=	NestLevelHandler()
 		self._schemehandler    	=	SchemeHandler()
 		self._filetypehandler	=	FileTypeHandler()
+		self._bookmarkhandler	=	BookMarkHandler()
 		self._urlextender		=	URLExtender()			
 	
 		""" ---init the path for saving data, if the folder don't exist, create it ---"""
@@ -101,25 +103,29 @@ class Engine(object):
 					#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					self._status._scheme+=1
 					continue
-				elif(self._cgihandler.FindCGI(html_task)==True):
+				if(self._bookmarkhandler.BookMarkChecker(html_task)==True):
+					#print("Ingore bookmark link, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					self._status._bookmark+=1
+					continue
+				if(self._cgihandler.FindCGI(html_task)==True):
 					#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					self._status._cgi+=1
 					continue
-				elif(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
+				if(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
 					self._status._nestlv +=1
-					print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
-				elif(self._earlyvisithandler.check_visited(html_task) == True):
+				if(self._earlyvisithandler.check_visited(html_task) == True):
 					self._status._early_visit +=1
-					print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
-				elif(self._robothandler.is_allowed(html_task) == False):
+				if(self._robothandler.is_allowed(html_task) == False):
 					self._status._robot +=1
-					print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
-				else:
-					self._earlyvisithandler.add_entry(html_task._md5, html_task._url)
-					self._download_pool.append(html_task)
+
+				self._earlyvisithandler.add_entry(html_task._md5, html_task)
+				self._download_pool.append(html_task)
 				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
 				'''however, the dic should be safe with a lock'''
 				#self._visited_dic[html_task._md5] = html_task._url 
@@ -200,7 +206,7 @@ class Engine(object):
 		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
 			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
 		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
-
+		
 
 		"""caculate the path for saving files"""
 		full_path = self._path+"[No.{0}]_".format(self._status._download_times)+".html"
@@ -220,29 +226,17 @@ class Engine(object):
 	def finish_parse(self, html_task):
 		
 		"""After parsing, pass the urls to be downloaded to the download pool"""
-		if(self._schemehandler.SchemeChecker(html_task)==False):
-			#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
-			self._status._scheme_type+=1
-			return
-		elif(self._cgihandler.FindCGI(html_task)==True):
-			#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
-			self._status._cgi+=1
-			return
-		elif(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
-			#print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
-			self._status._nestlv +=1
-			return
-		elif(self._earlyvisithandler.check_visited(html_task) == True):
+		if(self._earlyvisithandler.check_visited(html_task) == True):
 			#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 			self._status._early_visit +=1
 			return
-		elif(self._robothandler.is_allowed(html_task) == False):
+		if(self._robothandler.is_allowed(html_task) == False):
 			#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 			self._status._robot +=1
 			return
-		else:
-			self._earlyvisithandler.add_entry(html_task._md5, html_task._url)
-			self._download_pool.append(html_task)
+		
+		self._earlyvisithandler.add_entry(html_task._md5, html_task)
+		self._download_pool.append(html_task)
 		
 
 
@@ -282,16 +276,18 @@ class Engine(object):
 
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
-			print "[time: {0:0.1f}],queue:{8}, dowloaded: {1}, total_size: {2:0.1f}MB | queue:{9}, parsed: {3}, abandon:{10}, cig: {4}, visited: {5}, robot: {6},nestlv: {7}"\
+			'''
+			print "[time: {0:0.1f}],queue:{8}, dowloaded: {1}, total_size: {2:0.1f}MB | queue:{9}, parsed: {3}, scheme:{10}, cig: {4}, bookmark: {11} visited: {5}, robot: {6},nestlv: {7}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
-		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type)
-
+		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark)
+			'''
 			"""update status tp mysql"""
 			self.sqlex.write_status(self._status)
-
-		 	sleep(1)
+			
+			
+			sleep(1)
 	"""	
 		sql = "UPDATE  `configuation` SET  `downloader_thread` =  {0} ,`downloader_folder`= '{1}', `parser_thread`= {2}, `seed_keywords`='{3}', `seed_resultnum`={4} WHERE  `configuation`.`id` =1".\
 				format(self._setting.get_param("Downloader","Threadnum"), self._path, self._setting.get_param("Parser","Threadnum"),self._keywords,self._result_num)

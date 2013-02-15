@@ -64,6 +64,8 @@ class Html(object):
 		self._md5 = md5.hexdigest()	
 		#print(self._md5)
 		
+		
+		
 if __name__=="__main__":
 	html = Html("http://www.nba.com/standings/team_record_comparison/conferenceNew_Std_Cnf.html")
 	print html._homesiteurl

@@ -12,14 +12,14 @@ class Status:
 	def __init__(self):
 		
 		"""--- system ---"""
-		self._sys_start			=0;
+		self._sys_start			= 0
 
 
 		"""--- downloads ---"""
-		self._download_id		= 0;
-		self._download_times 	= 0;
-		self._download_size 	= 0;
-		self._sites				= 0;
+		self._download_id		= 0
+		self._download_times 	= 0
+		self._download_size 	= 0
+		self._sites				= 0
 		self._recent_url		= SafeLoopArray( Html("#"),10)
 		
 
@@ -31,6 +31,7 @@ class Status:
 		self._nestlv			= 0
 		self._abandon			= 0
 		self._scheme_type		= 0
+		self._bookmark			= 0
 		self._file_type			= 0
 
 

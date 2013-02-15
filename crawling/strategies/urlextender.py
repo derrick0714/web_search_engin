@@ -5,5 +5,5 @@ Created on Feb 14, 2013
 '''
 class URLExtender(object):
     def ExtendURL(self, child, parent):
-        return child
+        child._url = parent._url + child._url
         
