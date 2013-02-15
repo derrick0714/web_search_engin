@@ -24,9 +24,9 @@ class SafeDictionary( object ):
     def pop_left(self):
         self._lock.acquire()
         try:
-            if ( len(self._data_queue) == 0 ):
+            if ( len(self._data_dic) == 0 ):
                 return None
-            return self._data_queue.popleft()
+            return self._data_dic.popleft()
         finally:
             self._lock.release()
             
