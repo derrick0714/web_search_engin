@@ -18,6 +18,7 @@ from strategies.schemehandler import SchemeHandler
 from strategies.filetypehandler import FileTypeHandler
 from strategies.bookmarkhandler import BookMarkHandler
 from strategies.urlextender import URLExtender
+from strategies.omitindex import OmitIndex
 
 
 class Parser(object):
@@ -35,6 +36,7 @@ class Parser(object):
         self._bookmarkhandler    =    BookMarkHandler()
         self._urlextender        =    URLExtender()
         self._filetypehandler   =   FileTypeHandler()
+        self._omitindex            =    OmitIndex()
         self._config            =   Configuration()
                 
     def queue_parse_task(self, html_task, callback):
@@ -95,6 +97,9 @@ class Parser(object):
             if(self._filetypehandler.FileTypeChecker(html_task_child)==False):
                 self._status._file_type +=1
                 continue
+            
+            self._omitindex.Omit(html_task)
+            
             if(html_task_child._scheme == "" and html_task_child._hostname==None and html_task_child._path!=""):
                 self._urlextender.ExtendURL(html_task_child, html_task)
             

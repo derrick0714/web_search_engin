@@ -22,3 +22,6 @@ if __name__ =="__main__":
     h = Html("http://www.test.com/1/2/3/4/5/6")
     n = NestLevelHandler()
     print n.checknestlevel(h,4)
+    
+    list = "http://www.test.com/1/2/3/4/5/6"
+    print list.replace('6','')

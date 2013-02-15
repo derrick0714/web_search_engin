@@ -36,6 +36,7 @@ from strategies.schemehandler import SchemeHandler
 from strategies.filetypehandler import FileTypeHandler
 from strategies.bookmarkhandler import BookMarkHandler
 from strategies.urlextender import URLExtender
+from strategies.omitindex import OmitIndex
 
 
 
@@ -73,6 +74,7 @@ class Engine(object):
 		self._schemehandler    	=	SchemeHandler()
 		self._filetypehandler	=	FileTypeHandler()
 		self._bookmarkhandler	=	BookMarkHandler()
+		self._omitindex			=	OmitIndex()
 		self._urlextender		=	URLExtender()			
 	
 		""" ---init the path for saving data, if the folder don't exist, create it ---"""
@@ -125,6 +127,7 @@ class Engine(object):
 					#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				'''
+				self._omitindex.Omit(html_task)
 				if(self._robothandler.is_allowed(html_task) == False):
 					self._status._robot +=1
 					#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
@@ -237,7 +240,7 @@ class Engine(object):
 		'''
 		"""After parsing, pass the urls to be downloaded to the download pool"""
 		if(self._earlyvisithandler.check_visited(html_task) == True):
-			#print("Ingore the link visited before, this link is within page {0} , so don't put it in queue".format(html_task._parent), html_task._url)
+			print("Ingore the link visited before, this link is within page {0} , so don't put it in queue".format(html_task._parent), html_task._url)
 			self._status._early_visit +=1
 			return
 		if(self._robothandler.is_allowed(html_task) == False):
