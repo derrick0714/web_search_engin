@@ -16,11 +16,7 @@ if (!$conn)
 
 mysql_select_db($db,$conn);
 
-$sql = "UPDATE `configuation` SET `seed_keywords`= '".$_GET["key_words"]."',`downloader_thread` ='".$_GET["down_thread"].
-"',`parser_thread` ='".$_GET["parse_thread"]."',`seed_resultnum` ='".$_GET["result_count"]."', `is_start` = 1, 
-`key_word_start`=0,`status_start` = 0 WHERE id = 1";
-
-
+$sql = "UPDATE `configuation` SET `seed_keywords`= '".$_GET["key_words"]."', `is_start` = 1, `key_word_start`=0,`status_start` = 0 WHERE id = 1";
 $result = mysql_query($sql);
 
 

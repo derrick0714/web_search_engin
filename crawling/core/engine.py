@@ -93,19 +93,19 @@ class Engine(object):
 				html_task = Html(url)
 				if(self._cgihandler.FindCGI(html_task)==True):
 					self._status._cgi+=1
-					#print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					print("Ingore the link contain cgi, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				elif(self._nestlevelhandler.checknestlevel(html_task,self._config._parser_nlv)==True):
 					self._status._nestlv +=1
-					#print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				elif(self._earlyvisithandler.check_visited(html_task) == True):
 					self._status._early_visit +=1
-					#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				elif(self._robothandler.is_allowed(html_task) == False):
 					self._status._robot +=1
-					#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+					print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
 				else:
 					self._download_pool.append(html_task)
@@ -134,7 +134,7 @@ class Engine(object):
 
 	def wait_for_start(self):
 		print "ready for start....."
-		while( self.sqlex.read_if_start(self._config)!= True):
+		while( self.sqlex.read_if_start()!= True):
 			sleep(1)
 		print "starting crawling engine...."
 
