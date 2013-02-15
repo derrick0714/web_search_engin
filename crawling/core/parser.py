@@ -70,6 +70,7 @@ class Parser(object):
             #print (link)
             
             html_task_child = Html(link)
+            
 
             """load all strategies to determine if this link can be download"""
             if(self._schemehandler.SchemeChecker(html_task_child)==False):
@@ -91,7 +92,8 @@ class Parser(object):
            
             if(html_task_child._scheme == "" and html_task_child._hostname==None and html_task_child._path!=""):
                 self._urlextender.ExtendURL(html_task_child, html_task)
-                                    
+            
+            html_task_child.Do_MD5()                        
             #if self.parse_link( html_task_child ) == True:
             self._status._parse_times+=1
             html_task_child._depth = self._parsing_depth+1

@@ -99,6 +99,7 @@ class Engine(object):
 		for url in self._keywords_links:
 			if i < self._config._result_num:
 				html_task = Html(url)
+				html_task.Do_MD5()
 				if(self._schemehandler.SchemeChecker(html_task)==False):
 					#print("Ingore the wrong scheme, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					self._status._scheme+=1
@@ -115,15 +116,17 @@ class Engine(object):
 					self._status._nestlv +=1
 					#print("Ingore the link nested too much, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
+				'''
 				if(self._earlyvisithandler.check_visited(html_task) == True):
 					self._status._early_visit +=1
 					#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
+				'''
 				if(self._robothandler.is_allowed(html_task) == False):
 					self._status._robot +=1
 					#print("Blocked by the Robot.txt, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
 					continue
-
+				
 				self._earlyvisithandler.add_entry(html_task._md5, html_task)
 				self._download_pool.append(html_task)
 				'''If use the following two line of code, then the program won't run, which means checking for revisit works'''
@@ -203,7 +206,7 @@ class Engine(object):
 	def finish_download(self, html_task):
 			
 		
-		print("[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
+		print("Downloaded:[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
 			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
 		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
 		
@@ -224,10 +227,14 @@ class Engine(object):
 
 
 	def finish_parse(self, html_task):
-		
+		'''
+		print("parsed:[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-status: {4} data-size: {5}byes url:{6}"\
+			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
+		html_task._parent,html_task._return_code, html_task._data_size, html_task._url))
+		'''
 		"""After parsing, pass the urls to be downloaded to the download pool"""
 		if(self._earlyvisithandler.check_visited(html_task) == True):
-			#print("Ingore the link visited before, this link is within page {0} , so don't download".format(html_task._parent), html_task._url)
+			print("Ingore the link visited before, this link is within page {0} , so don't put it in queue".format(html_task._parent), html_task._url)
 			self._status._early_visit +=1
 			return
 		if(self._robothandler.is_allowed(html_task) == False):
