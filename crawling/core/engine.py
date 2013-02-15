@@ -96,7 +96,10 @@ class Engine(object):
 		contacter = SearchGoogle(self._config._keywords, self._config._result_num)
 		self._keywords_links = contacter.getURLs()
 		#append seeds, which from google search result, into download pool
-
+		
+		#self._keywords_links.insert(0, "https://twitter.com/")
+		#self._keywords_links.insert(0, "https://twitter.com/signup?context=login")
+		
 		i = 0
 		for url in self._keywords_links:
 			if i < self._config._result_num:
@@ -240,7 +243,7 @@ class Engine(object):
 		'''
 		"""After parsing, pass the urls to be downloaded to the download pool"""
 		if(self._earlyvisithandler.check_visited(html_task) == True):
-			print("Ingore the link visited before, this link is within page {0} , so don't put it in queue".format(html_task._parent), html_task._url)
+			#print("Ingore the link visited before, this link is within page {0} , so don't put it in queue".format(html_task._parent), html_task._url)
 			self._status._early_visit +=1
 			return
 		if(self._robothandler.is_allowed(html_task) == False):
@@ -289,13 +292,13 @@ class Engine(object):
 
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
-			'''
+			
 			print "[time: {0:0.1f}],queue:{8}, dowloaded: {1}, total_size: {2:0.1f}MB | queue:{9}, parsed: {3}, scheme:{10}, cig: {4}, bookmark: {11} File_Type {12} visited: {5}, robot: {6},nestlv: {7}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
-		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark, self_status._file_type)
-			'''
+		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark, self._status._file_type)
+			
 			"""update status tp mysql"""
 			self.sqlex.write_status(self._status)
 			

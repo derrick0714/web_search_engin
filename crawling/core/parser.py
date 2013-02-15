@@ -100,7 +100,7 @@ class Parser(object):
             
             self._omitindex.Omit(html_task)
             
-            if(html_task_child._scheme == "" and html_task_child._hostname==None and html_task_child._path!=""):
+            if(html_task_child._scheme == "" and html_task_child._hostname==None):
                 self._urlextender.ExtendURL(html_task_child, html_task)
             
             html_task_child.Do_MD5()                        
