@@ -194,9 +194,9 @@ class Engine(object):
 		full_path = self._path+"[No.{0}]_".format(self._status._download_times)+".html"
 
 		"""save html data to files"""
-		f= open(full_path, 'w')
-		f.write(html_task._data)
-		f.close()
+		#f= open(full_path, 'w')
+		#f.write(html_task._data)
+		#f.close()
 
 
 		"""After downloading, pass the data(still using the html objects) to the parse pool"""

@@ -43,6 +43,6 @@ class DatabseManager(object):
 		
 		if(result != None):
 			return result[0][0]
-		else
+		else:
 			return None
 
