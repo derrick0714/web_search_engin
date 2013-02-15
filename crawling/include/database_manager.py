@@ -41,20 +41,8 @@ class DatabseManager(object):
 
 		result = self._database.execute(sql)	
 		
-		if(result[0][0] == True):
-			sql = "UPDATE `web_search_engine`.`configuation` SET `is_start` = '0' WHERE `configuation`.`id` = 1"
-			self._database.execute(sql)
-
-
 		if(result != None):
 			return result[0][0]
 		else:
 			return None
-
-	def write_if_start(self):
-		 
-		sql = "UPDATE `web_search_engine`.`configuation` SET `key_word_start` = '1', `status_start` = '1' WHERE `configuation`.`id` = 1" 
-		result = self._database.execute(sql)	
-		
-
 
