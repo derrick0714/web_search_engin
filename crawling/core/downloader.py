@@ -60,7 +60,7 @@ class Downloader(object):
 
 			#print "download url :"+url
 			
-			netowrk_object 			= urllib2.urlopen(req,None)
+			netowrk_object 			= urllib2.urlopen(req,None,timeout)
 			html_task._data 		= netowrk_object.read()
 			netowrk_object.close()
 			#print "finish download"+html_task._url
@@ -77,24 +77,27 @@ class Downloader(object):
 			self._status._download_size+=html_task._data_size
 
 			callback(html_task)
-		except urllib2.URLError as e:
+		#except urllib2.URLError as e:
 			#print "Url error:"
 			#Log().debug(e)
 			#print "url error: url="+url+", code={0}".format(e.code)+" ,resaon="+e.reason
-			return
+			#print e
+			#print url
+			#print html_task._parent_url
+			#return
 		except urllib2.HTTPError as e:
 			if e.code == 404:
-				self._status._404+=1
-			#print "HTTP error:"
-			#Log().debug(e)
-			#print "http error: "+url
+				self._status._404+=1	
+			#print "url error: url="+html_task._url+", code={0}".format(e.code)+" ,resaon="+e.reason
 			return
 		except socket.error: 
 			#print('socket time out')
 			self._status._socket_timeout+=1
+			#print "time out: "+html_task._url
 			return
 		except (Exception) as e:
 			#Log().debug("download_page failed")
+			#print e
 			return
 		
 		#finally:	

@@ -5,6 +5,7 @@ Created on Feb 12, 2013
 '''
 from models.safe_dic import SafeDictionary
 from strategies.robotexclusionrulesparser import RobotExclusionRulesParser
+import socket
 
 class RobotHandler(object):
     
@@ -19,6 +20,9 @@ class RobotHandler(object):
             return False
     def is_allowed(self,html_task):
         try:
+            timeout = 2
+            socket.setdefaulttimeout(timeout)
+            
             rerp = RobotExclusionRulesParser()
             if (self.check_hostname(html_task) == False):
                # print ("home_site for Robot", html_task._homesiteurl)

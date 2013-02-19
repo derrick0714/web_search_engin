@@ -52,8 +52,8 @@ class DatabseManager(object):
 			config._parser_num = result[0][3]
 			config._result_num = result[0][4]
 
-			print "####"
-			print config._down_num
+			#print "####"
+			#print config._down_num
 
 
 		if(result != None):

@@ -50,7 +50,7 @@ class Engine(object):
 	
 		"""--- core object ----"""
 		self._downloader	= None
-		self._parser		= Parser( self._config._down_num, self._status )
+		self._parser		= None
 
 		"""--- memory models --- """
 		self._download_pool	= SafeQueue() #Store the html objects to be downloaded by the downloader
@@ -199,6 +199,7 @@ class Engine(object):
 			"""start threads"""
 			self._downloader = Downloader( self._config._down_num, self._status)
 			self._downloader.start()
+			self._parser     = Parser(self._config._parser_num, self._status )
 			self._parser.start()
 			self._downloader_pool_checker.start()
 			self._parse_pool_checker.start()
@@ -314,7 +315,7 @@ class Engine(object):
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
 			
-			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3},scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7} | error: 404: {11} , timeout: {12}"\
+			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3},scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7} | error: 404: {13} , timeout: {14}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\

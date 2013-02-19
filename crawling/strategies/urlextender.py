@@ -6,19 +6,16 @@ Created on Feb 14, 2013
 class URLExtender(object):
     def ExtendURL(self, child, parent):
 
-      count =0 
-       # parent._url = parent._url
+      # if root folder
       if child._url[0] == '/':
-        count += 1
-      if parent._url[len(parent._url)-1] == '/':
-        count += 1
+        child.update_url(parent._homesiteurl + child._url)
 
-      if(count == 2):	
-        child._url = child._url[1:]
-      if( count == 0):
-        parent._url =  parent._url + '/'
+      else :
+        if parent._url[len(parent._url)-1] != '/':
+          parent._url =  parent._url + '/'
+        child.update_url(parent._url + child._url)
        		#print child._url 
       #print "extentd url: "+ parent._url + " *** "+child._url
-      child.update_url(parent._url + child._url)
+     # child.update_url(parent._url + child._url)
        # child._url
-        
+    

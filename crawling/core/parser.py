@@ -65,8 +65,9 @@ class Parser(object):
             links = htmlparser.get_links()
         except (Exception) as e:
             #print(html_task._data)
-            print(html_task._url)
-            Log().debug(e)
+            #print(html_task._url)
+            #Log().debug(e)
+            return
         #finally:
         #    del html_task
 
@@ -108,6 +109,9 @@ class Parser(object):
            
             html_task_child._depth = self._parsing_depth+1
             html_task_child._parent = self._parsing_id
+
+            #for test
+            html_task_child._parent_url = html_task._url
             callback(html_task_child)
 
         del html_task

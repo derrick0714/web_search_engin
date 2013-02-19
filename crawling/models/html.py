@@ -36,6 +36,8 @@ class Html(object):
 		self._depth			= 0 #increase at parser parse_page
 		self._parent		= -1 #increase at parser parse_page
 
+		self._parent_url	= "" # for test
+
 
 		""" analyse url """
 		self.parse_url()
