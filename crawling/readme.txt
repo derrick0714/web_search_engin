@@ -23,13 +23,10 @@ Filelist:
 	models.safe_loop_array.py				implementation of array with lock
 	models.status.py					system global variables
 	
-	include.command.py
 	include.database_manager.py				interact with remote mysql
 	include.database.py					sql executer
 	include.log.py						implementation of logger
-	include.misc.py
 	include.setting.py					read program parameters from local configuration file
-	include.strategies.py
 	include.thread_pool.py					implementation of a thread pool		
 	
 	strategies.bookmarkhandler.py				handle page anchor
