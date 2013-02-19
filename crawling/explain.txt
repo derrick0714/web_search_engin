@@ -1,0 +1,34 @@
+Bugs:
+
+
+
+
+
+Desgin:
+	
+	# Engine 
+	----------------------
+		Engine is the main controller in the crawler.
+		
+		It has a downloader object and a parser object, also two safe queues each for the download and parse tasks, 
+		a status object holding the global status variables for the crawler and a mysql manager.
+		
+		Once the Engine starts up:
+		
+			it first loads seeds from the Google API into the download queue;
+			it starts two threads each keep checking the download queue and parse queue, 
+			once a html task is found in the queues, it is then assigned to the downloader or the parser; 
+			The downloader will return html tasks to be parse and push them into the parse queue, 
+			and the parser will return the html tasks to be download and push them into the download queue;
+		
+		
+		
+		
+	
+
+
+
+Special features beyond basic requirement:
+	# user could decide the num of threads of downloader and parser
+	# webpage interface and mysql for the crawler
+	# good visualization of runtime status of the crawler 

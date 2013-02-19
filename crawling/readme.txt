@@ -17,7 +17,7 @@ Filelist:
 	core.searchgoogle.py					Google search API implementation
 	
 	models.configuration.py					load all configurations from local file and remote mysql
-	models.html.py						the data structure maintain the crawed page infomation
+	models.html.py						the data structure maintain the crawled page infomation
 	models.safe_dic.py					implementation of dictionary with lock
 	models.safe_queue.py					implementation of queue with lock
 	models.safe_loop_array.py				implementation of array with lock
