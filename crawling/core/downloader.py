@@ -11,7 +11,7 @@ from models.html import Html
 from include.thread_pool import ThreadPool
 from include.log import Log
 from models.status import Status
-import urllib
+import urllib2
 import socket
 
  #python2.7
@@ -46,10 +46,21 @@ class Downloader(object):
 		#data = urllib.request.urlopen(req) #python3.3
 		#html_task._data = data.read()#.decode('utf-8') #python3.3
 		try:
+			timeout = 2
+			socket.setdefaulttimeout(timeout)
 			"""download files"""
-			#print "before download"+html_task._url
-			#`socket.setdefaulttimeout(3)
-			netowrk_object 			= urllib.urlopen(html_task._url)
+
+			#decode url
+			url = urllib2.unquote(html_task._url)
+			req = urllib2.Request(url)
+
+			#set refer and user-agent
+			req.add_header('Referer', 'http://www.poly.edu/')
+			req.add_header('User-agent', 'Mozilla/5.0')
+
+			#print "download url :"+url
+			
+			netowrk_object 			= urllib2.urlopen(req,None)
 			html_task._data 		= netowrk_object.read()
 			netowrk_object.close()
 			#print "finish download"+html_task._url
@@ -60,15 +71,32 @@ class Downloader(object):
 			html_task._data_size	= len(html_task._data)
 
 
-
 			"""fill information to status model"""
 			self._status._recent_url.add(html_task)
 			self._status._download_times+=1
 			self._status._download_size+=html_task._data_size
+
+			callback(html_task)
+		except urllib2.URLError as e:
+			#print "Url error:"
+			#Log().debug(e)
+			#print "url error: url="+url+", code={0}".format(e.code)+" ,resaon="+e.reason
+			return
+		except urllib2.HTTPError as e:
+			if e.code == 404:
+				self._status._404+=1
+			#print "HTTP error:"
+			#Log().debug(e)
+			#print "http error: "+url
+			return
+		except socket.error: 
+			#print('socket time out')
+			self._status._socket_timeout+=1
+			return
 		except (Exception) as e:
 			#Log().debug("download_page failed")
-			raise(e)
+			return
 		
-		finally:	
-			callback(html_task)
+		#finally:	
+			#callback(html_task)
 

@@ -7,6 +7,7 @@ Created on Feb 4, 2013
 import hashlib
 from urlparse import urlparse
 
+
 """ URL model :http://www.webreference.com/html/tutorial2/2.html
 http://WebReference.com:80/html/tutorial2/2.html?query
 |--|   |--------------||-||--------------------||----|
@@ -51,7 +52,8 @@ class Html(object):
 		self.parse_url()
 
 	def parse_url(self):
-			
+		
+		
 		parse_result 		= urlparse(self._url)
 		self._scheme 		= parse_result.scheme
 		self._hostname		= parse_result.hostname

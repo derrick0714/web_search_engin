@@ -314,11 +314,12 @@ class Engine(object):
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
 			
-			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3}, scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7}"\
+			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3},scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7} | error: 404: {11} , timeout: {12}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
-		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark, self._status._file_type)
+		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark, self._status._file_type\
+		 	,self._status._404,self._status._socket_timeout)
 			
 			"""update status tp mysql"""
 			self.sqlex.write_status(self._status)

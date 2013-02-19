@@ -22,6 +22,7 @@ class Status:
 		self._sites				= 0
 		self._recent_url		= SafeLoopArray( Html("#"),10)
 		
+		
 
 		"""--- parse ---"""
 		self._parse_times		= 0
@@ -33,6 +34,10 @@ class Status:
 		self._scheme_type		= 0
 		self._bookmark			= 0
 		self._file_type			= 0
+
+		"""--- error ---"""
+		self._socket_timeout	= 0
+		self._404				= 0
 
 
 
