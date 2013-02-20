@@ -89,6 +89,8 @@ class Engine(object):
 		""" ---Mysql Manager--- """
 		self.sqlex      = DatabseManager(self._config)
 
+		#self.f= open("data.txt", 'w')
+
 	def load_seeds(self):
 		#load seed info from config file	
 		#print "load_seeds 1"
@@ -237,10 +239,16 @@ class Engine(object):
 	def finish_download(self, html_task):
 			
 		
-		print("Downloaded:[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-code: {4} data-size: {5}byes url: {6}")\
+		
+		
+		sentence = "Downloaded:[No.{0}] time:{1:0.1f} page:depth_parent {2}_{3} http-code: {4} data-size: {5}byes url: {6}"\
 			.format(self._status._download_times,time()-self._status._sys_start,html_task._depth,\
 		html_task._parent,html_task._return_code, html_task._data_size, html_task._url )
-		
+
+		#if self._status._download_times <= 500 :
+		#	self.f.write(sentence+"\n")
+			
+
 
 		"""caculate the path for saving files"""
 		full_path = self._path+"[No.{0}]_".format(self._status._download_times)+".html"
@@ -316,15 +324,19 @@ class Engine(object):
 			self._status._download_queue = self._downloader.len()
 			self._status._parse_queue = self._parser.len()
 			
-			"""
-			print "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3},scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7} | error: 404: {13} , timeout: {14}"\
+			
+			sentence = "[time: {0:0.1f}],queue:{8}, down: {1}, total: {2:0.1f}MB | queue:{9}, parsed: {3},scheme:{10}, cig: {4}, bookmark: {11} type {12} visited: {5}, robot: {6},nestlv: {7} | error: 404: {13} , timeout: {14}"\
 			.format( time()-self._status._sys_start,\
 		 	self._status._download_times, float(self._status._download_size)/1024/1024, self._status._parse_times\
 		 	,self._status._cgi, self._status._early_visit, self._status._robot, self._status._nestlv\
 		 	,self._downloader.len(), self._parser.len(),self._status._scheme_type, self._status._bookmark, self._status._file_type\
 		 	,self._status._404,self._status._socket_timeout)
 			
-			"""
+			print sentence
+
+			#if( self._status._download_times > 500):
+			#	self.f.write( sentence+"\n")
+			
 
 			"""update status tp mysql"""
 			self.sqlex.write_status(self._status)
