@@ -48,11 +48,11 @@ Xu Deng, Qi Wang
 	strategies.schemehandler.py				scheme whitelist
 	strategies.urlextender.py				extend partial url
 	
-	www/index.html							input the keywords and download & parser threads
-	www/commit.php							write configuration info into mysql and set the start flag to true,then redirect to realtime page
-	www/realtime.html						display realtime info of crawler
+	www/index.html						input the keywords and download & parser threads
+	www/commit.php						write configuration info into mysql and set the start flag to true,then redirect to realtime page
+	www/realtime.html					display realtime info of crawler
 	www/realtime_data.php					realtime ajax data which fetch from mysql
-	www/about.html							author info
+	www/about.html						author info
 	
 [Program parameters:]
 	
