@@ -4,7 +4,14 @@ HomeWork 1
 
 Xu Deng, Qi Wang
 
-Filelist:
+[How to run the program:]
+
+1.cd to the root folder of source code 
+2.excute python crawler.py
+3.Go to the http://dengxu.me/crawling/ input the keywords and threads numbers, click search
+
+
+[Filelist:]
 	
 	readme.txt
 	explain.txt
@@ -41,9 +48,13 @@ Filelist:
 	strategies.schemehandler.py				scheme whitelist
 	strategies.urlextender.py				extend partial url
 	
-	www.
+	www/index.html							input the keywords and download & parser threads
+	www/commit.php							write configuration info into mysql and set the start flag to true,then redirect to realtime page
+	www/realtime.html						display realtime info of crawler
+	www/realtime_data.php					realtime ajax data which fetch from mysql
+	www/about.html							author info
 	
-Program parameters:
+[Program parameters:]
 	
 The config.ini file contains runtime parameters:
 	Downloader.Threadnum					The number of thread for download
