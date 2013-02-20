@@ -174,15 +174,19 @@ class Engine(object):
 			if i < self._config._result_num:
 				print ("[{0}]".format(i)+url)
 			i+=1
-		
+		print "\n------------------------------------------------------------------------\n"
 
 		#raw_input("press any key to start crawling, press second key to stop")
 	
 	def wait_for_start(self):
 		print "ready for start....."
+		print "go to http://dengxu.me/crawling/ to input some key words & see the result "
+
 		while( self.sqlex.read_if_start(self._config)!= True):
 			sleep(1)
+		print "\n------------------------------------------------------------------------\n"
 		print "starting crawling engine...."
+
 
 	def start(self):
 		try:
@@ -345,35 +349,7 @@ class Engine(object):
 			self.sqlex.write_recent_download(self._status)
 			
 			sleep(1)
-	"""	
-		sql = "UPDATE  `configuation` SET  `downloader_thread` =  {0} ,`downloader_folder`= '{1}', `parser_thread`= {2}, `seed_keywords`='{3}', `seed_resultnum`={4} WHERE  `configuation`.`id` =1".\
-				format(self._setting.get_param("Downloader","Threadnum"), self._path, self._setting.get_param("Parser","Threadnum"),self._keywords,self._result_num)
-		
-		self._database.execute(sql)
-		
-		#update result url
-		sql = "DELETE FROM `key_words`"
-		self._database.execute(sql)
-		for links in self._keywords_links:
-			sql = "INSERT INTO `web_search_engine`.`key_words` (`id`, `url`) VALUES (NULL, '{0}')".format(links)
-			self._database.execute(sql)
 
-		while (self._istart == True):
-			sql = "UPDATE  `status` SET  `crawled_url_count` =  '{0}'  WHERE  `status`.`id` =1".format(self.download_times)
-			self._database.execute(sql)
-
-
-			for i in range(10):
-				html_task = self._last_log.get(i)
-				if html_task._url != "#":
-					sql = "INSERT INTO `web_search_engine`.`log` (`url`, `download_time`, `data_size`, `code`, `parent`, `depth`)\
-						VALUES ('{0}', now(), '{2}', '{3}', '{4}', '{5}')".format\
-						(html_task._url, html_task._crawled_time, html_task._data_size, html_task._return_code, html_task._parent, html_task._depth)
-					
-					self._database.execute(sql)
-
-			sleep(1)
-	"""
 
 		
    

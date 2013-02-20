@@ -20,7 +20,7 @@ def main():
 		crawler_engine.stop()
 
 	except (Exception) as e:  
-		Log().debug(e)
+		#Log().debug(e)
 		sys.exit(0)
 		
 if __name__ == "__main__":

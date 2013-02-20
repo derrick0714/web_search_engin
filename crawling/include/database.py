@@ -25,7 +25,7 @@ class Database(object):
      		#		 print row[1]
       return cur.fetchall()
     except (Exception) as e: 
-  			Log().debug(e)
+#  			Log().debug(e)
   			return None
     finally:
       if conn:
