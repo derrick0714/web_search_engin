@@ -14,7 +14,7 @@ public:
 	Lexicon();
 	virtual ~Lexicon();
 private:
-	string 	word;
+	int 	word_id;
 	long	startpos;
 	long	endpos;
 	int		numofdoc;

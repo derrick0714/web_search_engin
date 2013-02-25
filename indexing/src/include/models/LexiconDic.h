@@ -17,7 +17,7 @@ public:
 	virtual ~LexiconDic();
 private:
 	static LexiconDic instance;
-	map<int, Lexicon> map;
+	map<string, Lexicon> map;
 
 
 };
