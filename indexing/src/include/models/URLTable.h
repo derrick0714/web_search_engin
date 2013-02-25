@@ -7,6 +7,7 @@
 
 #ifndef URLTABLE_H_
 #define URLTABLE_H_
+#include <map>
 using namespace std;
 
 class URLTable {
@@ -15,7 +16,7 @@ public:
 	virtual ~URLTable();
 private:
 	static URLTable instance;
-	std::list<URL> list;
+	map<string, int> map;
 };
 
 #endif /* URLTABLE_H_ */

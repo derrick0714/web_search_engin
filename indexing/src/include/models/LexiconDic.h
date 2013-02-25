@@ -7,6 +7,7 @@
 
 #ifndef LEXICONDIC_H_
 #define LEXICONDIC_H_
+#include <map>
 using namespace std;
 
 
@@ -16,7 +17,7 @@ public:
 	virtual ~LexiconDic();
 private:
 	static LexiconDic instance;
-	std::list<Lexicon> list;
+	map<int, Lexicon> map;
 
 
 };

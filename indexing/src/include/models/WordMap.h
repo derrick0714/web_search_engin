@@ -7,6 +7,7 @@
 
 #ifndef WORDMAP_H_
 #define WORDMAP_H_
+#include <map>
 using namespace std;
 
 
@@ -17,7 +18,7 @@ public:
 private:
 	static WordMap instance;
 	static int capacity;
-	std::list<Word> list;
+	map<string, int> map;
 };
 
 #endif /* WORDMAP_H_ */

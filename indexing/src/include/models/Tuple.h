@@ -14,6 +14,7 @@ class Tuple {
 public:
 	Tuple();
 	virtual ~Tuple();
+
 private:
 	string 	word;
 	int		word_id;
