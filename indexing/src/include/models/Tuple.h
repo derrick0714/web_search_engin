@@ -16,7 +16,9 @@ public:
 	virtual ~Tuple();
 private:
 	string 	word;
-	int		id;
+	int		word_id;
+	int		doc_id;
+	int		freq;
 	int		pos;
 	string  content;
 
