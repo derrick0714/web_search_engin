@@ -13,7 +13,7 @@ endif
 
 VPATH= $(SRC_DIR)
 
-clean:
+clean: dist-clean
 	rm -rf *
 
 dist-clean:
@@ -28,7 +28,7 @@ lib%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
 
 %.o : %.c
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(SYS_INCLUDE_DIRS) $(INCLUDE_DIRS) -o $@ -c $<
+	$(CCx) $(CXXFLAGS) $(SYS_INCLUDE_DIRS) $(INCLUDE_DIRS) -o $@ -c $<
 
 %.o : %.cpp
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)

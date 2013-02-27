@@ -1,14 +1,16 @@
-#include "generating.h"
-#include "parser/parser.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <iostream>
-using namespace std;
+#include "parser.h"
 
-int main( char /* **argv */, int/* argc */)
+void usage()
+{
+	printf("usage: test sample.html\n");
+	exit(1);
+}
+
+int main(int argc, char* argv[])
 {
 	char *page;
 	char *pool;
@@ -17,12 +19,13 @@ int main( char /* **argv */, int/* argc */)
 	int ret;
 	char url[] = "http://cis.poly.edu/cs912/";
 
+	if (argc != 2)
+		usage();
 
-
-	fd = fopen("data/sample.html", "r");
+	fd = fopen(argv[1], "r");
 	if (fd == NULL)
 	{
-		printf("can not be opened!\n");
+		printf("%s can not be opened!\n", argv[1]);
 		exit(1);
 	}
 
@@ -44,6 +47,4 @@ int main( char /* **argv */, int/* argc */)
 
 	free(pool);
 	free(page);
-	return 0;
 }
-

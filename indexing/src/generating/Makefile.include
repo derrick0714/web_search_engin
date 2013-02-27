@@ -1,0 +1,2 @@
+generating/generating: generating/generating.o \
+					   include/parser/parser.o \
