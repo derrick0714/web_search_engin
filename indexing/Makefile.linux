@@ -1,0 +1,14 @@
+CC= gcc
+CXX= g++
+CFLAGS= -W -Wall -g
+CXXFLAGS= -W -Wall -g
+
+SYS_INCLUDE_DIRS= /usr/local/include
+SYS_LIB_DIRS= /usr/local/lib
+INCLUDE_DIRS= $(SRC_DIR)/include
+
+
+DYNAMIC_LIBS= 
+STATIC_LIBS=
+
+DIST_PREFIX= wse_

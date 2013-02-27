@@ -36,7 +36,9 @@ nosetests.xml
 
 *.pyc
 
-*.log
-*.DS_Store 
+.log
+.DS_Store 
 
 /data
+/indexing/bulid
+/indexing/dist
