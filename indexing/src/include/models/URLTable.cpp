@@ -16,40 +16,58 @@ URLTable::~URLTable() {
 	// TODO Auto-generated destructor stub
 }
 
-void URLTable::serialize( ostream &stream) {
-
-	for ( std::map<string, int>::iterator it = map.begin(); it!=map.end(); ++it){
-			stream.write(reinterpret_cast <const char*> ( it->first), sizeof(it->first));
-			stream.write(reinterpret_cast <const char*> ( it->second), sizeof(it->second));
+void URLTable::serialize(  StreamBuffer &stream ) {
+	for ( std::map<int, string>::iterator it = map.begin(); it!=map.end(); ++it){
+			char buffer[8];
+//			for( int i = 0 ; i < 8 ;i++)
+//				buffer[i]='w';
+			memcpy(buffer,&it->first,sizeof(int));
+//			sprintf (buffer,"%d",it->first);
+			int tmp = it->second.length();
+			memcpy(buffer+sizeof(int),&tmp,sizeof(int));
+//			sprintf (buffer+sizeof(int),"%d",it->second.length());
+			stream.write(buffer, 8);
+			char buffer1[it->second.length()];
+//			for( int i = 0 ; i < it->second.length() ;i++)
+//				buffer1[i]='w';
+			const char * tmpc = it->second.c_str();
+			memcpy(buffer1,tmpc,it->second.length());
+			stream.write(buffer1, it->second.length());
 	}
 
 }
 
-void URLTable::deserialize( istream &stream ){
-	for (int i=0; i<map.max_size();i++ ){
-		 //std::vector<char> buffer(sizeof())
-		 //need to extract the key and value from the stream, no fixed size, using /0?
-	}
-
+void URLTable::deserialize( StreamBuffer &stream  ){
+	map.clear();
+	char buffer[4];
+			for(int i=0; i<2; ++i){
+	            stream.read(buffer, 4);
+	            map.insert(pair<int,string>(i,&buffer[0]));
+			}
 }
 
-stringbuf& URLTable::operator<<(stringbuf &stream){
-	std::istream ibuffer(&stream);
-	deserialize(ibuffer);
+void URLTable::addentry(int doc_id, string url){
+
+	map.insert(pair<int, string>(doc_id,url));
+}
+
+StreamBuffer& operator<<(StreamBuffer &stream, URLTable &table){
+	table.deserialize(stream);
 	return stream;
 }
 
-stringbuf& URLTable::operator>>(stringbuf &stream){
-	std::ostream obuffer(&stream);
-	serialize(obuffer);
-	return stream;
+StreamBuffer& operator>>(StreamBuffer &stream, URLTable &table) {
+    table.serialize(stream);
+    return stream;
 }
 
-ostream& URLTable::operator<<(ostream &stream){
-	stream << "Container {" << std::endl;
-	for ( std::map<string, int>::iterator it = map.begin(); it!=map.end(); ++it){
-		stream << it->first << ": " << it->second << std::endl;
-	}
-	stream << "}" << std::endl << std::endl;
-	stream << "}" << std::endl << std::endl;
+
+
+std::ostream& operator<<(std::ostream &stream, URLTable &table) {
+    stream << "map {" << std::endl;
+    for( std::map<int, string>::iterator it = table.map.begin(); it!=table.map.end(); ++it){
+        stream << it->first << ": " << it->second<< std::endl;
+    }
+    stream << "}" << std::endl;
+    return stream;
 }
