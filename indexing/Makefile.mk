@@ -28,7 +28,7 @@ lib%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
 
 %.o : %.c
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
-	$(CCx) $(CXXFLAGS) $(SYS_INCLUDE_DIRS) $(INCLUDE_DIRS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(SYS_INCLUDE_DIRS) $(INCLUDE_DIRS) -o $@ -c $<
 
 %.o : %.cpp
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
@@ -38,6 +38,6 @@ lib%.so : %.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
 
 % : %.o
-	$(CXX) -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
 
 -include makefile
