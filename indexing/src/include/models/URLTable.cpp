@@ -18,32 +18,29 @@ URLTable::~URLTable() {
 
 void URLTable::serialize(  StreamBuffer &stream ) {
 	for ( std::map<int, string>::iterator it = map.begin(); it!=map.end(); ++it){
-			char buffer[8];
-//			for( int i = 0 ; i < 8 ;i++)
-//				buffer[i]='w';
-			memcpy(buffer,&it->first,sizeof(int));
-//			sprintf (buffer,"%d",it->first);
+
+			stream.write(&it->first);
 			int tmp = it->second.length();
-			memcpy(buffer+sizeof(int),&tmp,sizeof(int));
-//			sprintf (buffer+sizeof(int),"%d",it->second.length());
-			stream.write(buffer, 8);
-			char buffer1[it->second.length()];
-//			for( int i = 0 ; i < it->second.length() ;i++)
-//				buffer1[i]='w';
-			const char * tmpc = it->second.c_str();
-			memcpy(buffer1,tmpc,it->second.length());
-			stream.write(buffer1, it->second.length());
+			stream.write(&tmp);
+			stream.write(it->second.c_str(), it->second.length());
 	}
 
 }
 
 void URLTable::deserialize( StreamBuffer &stream  ){
 	map.clear();
-	char buffer[4];
-			for(int i=0; i<2; ++i){
-	            stream.read(buffer, 4);
-	            map.insert(pair<int,string>(i,&buffer[0]));
-			}
+
+	 		while(stream.active()){
+				int key;
+	            stream.read(&key);
+	            int length;
+	            stream.read(&length);
+	            char buffer[length+1];
+	            buffer[length]='\0';
+	            stream.read(buffer,length);
+	            string buf(buffer);
+	            map.insert(pair<int,string>(key,buf));
+	 		}
 }
 
 void URLTable::addentry(int doc_id, string url){

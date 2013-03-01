@@ -11,20 +11,14 @@ StreamBuffer::StreamBuffer() {
 	// TODO Auto-generated constructor stub
 	buffersize = 0;
 	mybuffer = new char[buffersize];
-	curpoz   = 0;
-	curpointer		= mybuffer;
+	offset	  = 0;
 }
 
 StreamBuffer::StreamBuffer(int size) {
 	// TODO Auto-generated constructor stub
 	buffersize = size;
 	mybuffer = new char[buffersize];
-	curpointer = mybuffer;
-	curpoz 	= 0;
-	cout <<"init"<<endl;
-	cout << static_cast<const void *>(mybuffer) << endl;
-	cout << static_cast<const void *>(curpointer) << endl;
-	cout <<"---"<<endl;
+	offset		= 0;
 }
 
 StreamBuffer::~StreamBuffer() {
@@ -37,33 +31,68 @@ int StreamBuffer::getsize(){
 	return buffersize;
 }
 
-int StreamBuffer::getcurpoz(){
-	return curpoz;
-}
-
-bool StreamBuffer::write(const char* buffer, int size){
-	if(buffer!=NULL){
-		memcpy(curpointer, buffer, size);
-		curpoz=curpoz+size;
-		curpointer = curpointer + size;
-		cout <<"write"<<endl;
-		cout << static_cast<const void *>(mybuffer) << endl;
-		cout << static_cast<const void *>(curpointer) << endl;
-		cout <<"---"<<endl;
+bool StreamBuffer::active(){
+	if(offset<buffersize)
+//	if(offset<28)
 		return true;
-	}
 	else
 		return false;
 }
 
-void StreamBuffer::read(char* buffer, int size){
-		memcpy(buffer, mybuffer, size);
+bool StreamBuffer::read(void* buffer, int size){
+		if(offset>=buffersize)
+			return false;
+		else
+		{
+		memcpy(buffer, mybuffer+offset, size);
+		offset = offset + size;
+		return true;
+		}
 }
 
-char* StreamBuffer::str(){
-	 return mybuffer;
+bool StreamBuffer::write(const void* buffer, int size){
+	if(buffer==NULL)
+		return false;
+	if(offset>=buffersize){
+			cout<<"buffer is dumped, no more using"<<endl;
+			return false;
+		}
+	if(offset+size<buffersize){
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		memcpy(mybuffer+offset, buffer, size);
+		offset = offset+size;
+		return true;
+	}
+	else if(offset+size==buffersize){
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		memcpy(mybuffer+offset, buffer, size);
+		offset = offset+size;
+		savetofile();
+		return true;
+	}
+	else{
+		savetofile();
+		cout<<"save to file:"<<offset<<endl;
+		offset = buffersize;
+		return false;
+	}
 }
+
 
 char* StreamBuffer::getcontent(int index){
 	 return mybuffer+index;
 }
+
+bool StreamBuffer::savetofile(){
+	try{
+	ofstream file ("data.bin", ios::out | ios::binary);
+	file.write(mybuffer,offset);
+	file.close();
+	return true;
+	}
+	catch(char *str){
+		cout<<str<<endl;
+		return false;
+	}
+}
+
