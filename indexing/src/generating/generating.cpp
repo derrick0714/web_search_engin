@@ -7,6 +7,7 @@ int main( char /* **argv */, int/* argc */)
 {
 	analysis_ctrl demo;
 	demo.start();
+	display::get_instance()->run();
 	
 	return 0;
 }
