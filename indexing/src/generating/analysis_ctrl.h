@@ -4,6 +4,7 @@
 #include "utility/display.h"
 #include "utility/gzip.h"
 #include "models/original_index.h"
+#include "parser/parser.h"
 
 #include <string>
 
@@ -54,8 +55,8 @@ public:
 
 private:
 	void do_it();
-	bool save_index(char* index_data, int len);
-	bool save_data(char* html_data);
+	bool save_index(char* index_data, int len, original_index& index);
+	bool parse_data(char* html_data, int len, original_index& index);
 	bool get_next_file_name(DataSet& data_set);		//get next  file name
 	int  get_new_doc_id();
 	int  get_new_word_id();
@@ -69,7 +70,6 @@ private:
 	std::string		_dataset_path;	
 	int 			_file_num;
 	int 			_doc_id;
-	original_index _original_index;
 };
 
 

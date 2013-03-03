@@ -11,18 +11,20 @@ struct original_index_content
 {
 	string url;
 	int offset;
+	int len;
 };
 
 class original_index
 {
 public:
-	bool put(int id, string url, int offset)
+	bool put(int id, string url, int offset, int len)
 	{
 		if(_original_index.find(id) != _original_index.end())
 			return false;
 		original_index_content one;
 		one.url = url;
 		one.offset = offset;
+		one.len = len;
 		_original_index[id] = one;
 	}
 	bool get(int id, original_index_content & content)
@@ -31,14 +33,24 @@ public:
 			return false;	
 		content = _original_index[id];
 	}
-	void show()
+	void set_to_start()
 	{
-		for (map<int , original_index_content>::iterator it=_original_index.begin(); it!=_original_index.end(); ++it)
-    		std::cout << it->first << " => " << it->second.url << " "<<it->second.offset<<'\n';
+		_it = _original_index.begin();
+	}
+
+	bool get_next(int& id,original_index_content& content)
+	{
+		if( _it == _original_index.end())
+			return false;
+		content = _it->second;
+		id = _it->first;
+		_it++;
+		return true;
 	}
 
 private:
 	map<int , original_index_content> _original_index;
+	map<int , original_index_content>::iterator _it;
 };
 
 #endif //__ORIGINAL_INDEX_H__

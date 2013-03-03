@@ -16,8 +16,7 @@ public:
 private:
 	int 	word_id;
 	long	startpos;
-	long	endpos;
-	int		numofdoc;
+	int		doc_id;
 };
 
 #endif /* LEXICON_H_ */

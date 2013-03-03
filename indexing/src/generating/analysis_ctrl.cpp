@@ -68,15 +68,13 @@ void analysis_ctrl::do_it()
             continue;
         }
 
+        original_index index;
 
-        if( !save_index( index_data,  already_len) )
+        if( !save_index( index_data, already_len, index) )
         {
             cout<<"save index data error"<<endl;
             continue;
         }
-
-        _original_index.show();
-
 
         //get html data from file
         char* html_data = gzip::uncompress_from_file(data_set._data.c_str(), DATA_CHUNK, already_len);
@@ -86,9 +84,9 @@ void analysis_ctrl::do_it()
             continue;
         }
 
-        if(!save_data( html_data ))
+        if(!parse_data( html_data, already_len, index))
         {
-            cout<<"save index data error"<<endl;
+            cout<<"parse index data error"<<endl;
             continue;
         }
     }
@@ -112,7 +110,7 @@ bool analysis_ctrl::parse()
 
 }
 
-bool analysis_ctrl::save_index(char* index_data , int len )
+bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index)
 {
     if( index_data == NULL || len == 0)
         return false;
@@ -121,26 +119,63 @@ bool analysis_ctrl::save_index(char* index_data , int len )
     int offset_val =0;
     while(pos < len)
     {
-        string host ="", ip="", port="", sub_url="",state="",offset="";  
+        string host ="", ip="", port="", sub_url="",state="",len="";  
         //get host
         get_one_word(index_data,pos,host);     
         get_one_word(index_data,pos,ip);
         get_one_word(index_data,pos,port);
         get_one_word(index_data,pos,sub_url);
         get_one_word(index_data,pos,state);
-        get_one_word(index_data,pos,offset);
-        offset_val += atoi(offset.c_str());
-
-        _original_index.put(get_new_doc_id(),(host+sub_url).c_str(), offset_val);
-       
+        get_one_word(index_data,pos,len);
+        int len_val = atoi(len.c_str());
+        index.put(get_new_doc_id(),(host+sub_url).c_str(), offset_val,len_val);
+        offset_val+=len_val;
         
     }
     return true;
 }
 
-bool analysis_ctrl::save_data(char* html_data)
+bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
 {
-    return true;
+    original_index_content index_val;
+    int index_id =0;
+
+    index.set_to_start();
+    index.get_next(index_id ,index_val);
+    while(index.get_next(index_id ,index_val))
+    {
+      
+        cout<<"parsing: "<<index_id<<" => "<<index_val.url<<":"<<index_val.offset<<":"<<index_val.len<<endl;
+
+        char *pool;
+
+        pool = (char*)malloc(2*index_val.len+1);
+
+        //parsing page
+        char* page = new char[index_val.len];
+        
+        memcpy(page, html_data+index_val.offset, index_val.len);
+        
+
+        int ret = parser((char*)index_val.url.c_str(), page , pool, 2*index_val.len+1);
+        delete page;
+
+        
+        //output words and their contexts
+        if (ret > 0)
+        {
+            //printf("%s", pool);
+            //save pool
+            save_data(pool );
+        }
+       
+        
+        free(pool);
+
+       
+    }
+     return true;
+    
 }
 
 
