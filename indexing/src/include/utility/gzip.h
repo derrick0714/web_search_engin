@@ -8,7 +8,7 @@ public:
 	gzip();
 	~gzip();
 public:
-	char* uncompress_from_file(char* file_name, int size, int& already_len );
+	static char* uncompress_from_file(const char* file_name, int size, int& already_len );
 
 };
 

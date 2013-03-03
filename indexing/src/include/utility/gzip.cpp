@@ -12,7 +12,7 @@ gzip::~gzip()
 
 }
 
-char* gzip::uncompress_from_file(char* file_name, int size, int& already_len )
+char* gzip::uncompress_from_file(const char* file_name, int size, int& already_len )
 {
 	if( file_name == NULL)
 		return false;
