@@ -3,4 +3,6 @@ generating/generating: generating/generating.o \
 					   include/utility/display.o \
 					   include/utility/shell.o \
 					   include/utility/timer.o  \
-					   generating/analysis_ctrl.o
+					   include/utility/gzip.o \
+					   generating/analysis_ctrl.o \
+					   generating/make_lexicon.o 

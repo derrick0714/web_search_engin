@@ -23,7 +23,7 @@ include/%.o : CFLAGS := $(CFLAGS) -fPIC
 include/%.o : CXXFLAGS := $(CXXFLAGS) -fPIC
 lib/%.o : CFLAGS := $(CFLAGS) -fPIC
 lib/%.o : CXXFLAGS := $(CXXFLAGS) -fPIC
-lib%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
+lib/lib%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
 								-Xlinker -z -Xlinker now
 
 %.o : %.c

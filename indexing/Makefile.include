@@ -1,5 +1,5 @@
 all: generating
-
+	cp generating/generating $(MAKE_DIR)/test
 
 dist: dist-generating 
 

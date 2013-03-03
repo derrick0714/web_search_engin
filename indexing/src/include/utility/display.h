@@ -23,12 +23,12 @@ public:
 	static display* get_instance();
 	void run();
 	void set_input_call_back(d_key_event* p_call_back , int type = 0 );
+	void stop();
 private:
 	static void show(void*);
 	void show();
 	void title();
 	void body();
-	void stop();
 	void command();
 	void reg_commond(char* com_name , char* describe);
 public:

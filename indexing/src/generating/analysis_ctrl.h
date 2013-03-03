@@ -2,8 +2,9 @@
 #define __ANALYSIS_CTRL_
 
 #include "utility/display.h"
-#include <iostream>
-using namespace std;
+#include "utility/gzip.h"
+#include "make_lexicon.h"
+
 
 class analysis_ctrl : d_key_event
 {
@@ -16,6 +17,9 @@ public:
 
 	/*key input callback*/
 	void input_event( char* key );
+
+private:
+	make_lexicon _praser;
 
 };
 

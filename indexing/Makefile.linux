@@ -1,7 +1,7 @@
 CC= gcc
 CXX= g++
 CFLAGS= -W -Wall -g -lpthread
-CXXFLAGS= -W -Wall -g -lpthread
+CXXFLAGS= -W -Wall -g -lpthread -lz
 
 SYS_INCLUDE_DIRS= /usr/local/include
 SYS_LIB_DIRS= /usr/local/lib
