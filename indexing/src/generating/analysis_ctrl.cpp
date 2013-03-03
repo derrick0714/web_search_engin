@@ -9,6 +9,7 @@ analysis_ctrl::analysis_ctrl()
 {
     _dataset_path = "./dataset/";
     _file_num = 1800;
+    _doc_id = 0;
 }
 
 analysis_ctrl::~analysis_ctrl()
@@ -74,6 +75,8 @@ void analysis_ctrl::do_it()
             continue;
         }
 
+        _original_index.show();
+
 
         //get html data from file
         char* html_data = gzip::uncompress_from_file(data_set._data.c_str(), DATA_CHUNK, already_len);
@@ -115,6 +118,7 @@ bool analysis_ctrl::save_index(char* index_data , int len )
         return false;
     cout<<len<<" "<<strlen(index_data)<<endl;
     int pos = 0;
+    int offset_val =0;
     while(pos < len)
     {
         string host ="", ip="", port="", sub_url="",state="",offset="";  
@@ -125,7 +129,10 @@ bool analysis_ctrl::save_index(char* index_data , int len )
         get_one_word(index_data,pos,sub_url);
         get_one_word(index_data,pos,state);
         get_one_word(index_data,pos,offset);
+        offset_val += atoi(offset.c_str());
 
+        _original_index.put(get_new_doc_id(),(host+sub_url).c_str(), offset_val);
+       
         
     }
     return true;
@@ -136,6 +143,8 @@ bool analysis_ctrl::save_data(char* html_data)
     return true;
 }
 
+
+//get on word from file
 void analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
 {
     
@@ -166,6 +175,11 @@ void analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
         }
 
     }
+}
+
+int analysis_ctrl::get_new_doc_id()
+{
+    return _doc_id++;
 }
 
 

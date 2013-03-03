@@ -68,6 +68,7 @@ private:
 	status			_status;
 	std::string		_dataset_path;	
 	int 			_file_num;
+	int 			_doc_id;
 	original_index _original_index;
 };
 
