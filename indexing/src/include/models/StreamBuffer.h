@@ -11,6 +11,7 @@
 #include <cstring>
 #include <fstream.h>
 #include <stdio.h>
+#include <stdlib.h>
 using namespace std;
 
 class StreamBuffer {
@@ -20,6 +21,7 @@ private:
 	int offset;
 	string filename;
 	int filenum;
+	int postingsize;
 
 public:
 //	int offset;
@@ -28,20 +30,22 @@ public:
 	virtual ~StreamBuffer();
 	int getsize();
 	bool active();
-	bool write(const void* buffer, int size);
+	bool write(bool sortornot,const void* buffer, int size);
 	bool read(void* buffer, int size);
 	char* getcontent(int index);
 	template <class type>
-	bool write(const type* buffer);
+	bool write(bool sortornot,const type* buffer);
 	template <class type>
 	bool read(type* buffer);
-	bool savetofile();
+	bool savetofile(bool sortornot);
 	void setfilename(string path);
+	bool sort(int recsize, int cursize);
+	void setpostingsize(int size);
 
 };
 
 template <class type>
-bool StreamBuffer::write(const type* buffer){
+bool StreamBuffer::write(bool sortornot, const type* buffer){
 	if(buffer==NULL){
 		return false;
 		cout<<"input buffer void pointer"<<endl;
@@ -52,10 +56,10 @@ bool StreamBuffer::write(const type* buffer){
 	}
 	if(offset+sizeof(type)>buffersize){
 		cout<<"2"<<endl;
-			savetofile();
-			cout<<"Auto save file, open a new buffer"<<endl;
-			delete mybuffer;
-			mybuffer = new char[buffersize];
+			savetofile(sortornot);
+			cout<<"Auto save file, reset offset"<<endl;
+//			delete[] mybuffer;
+//			mybuffer = new char[buffersize];
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, sizeof(type));
 			offset = offset + sizeof(type);
@@ -73,9 +77,10 @@ bool StreamBuffer::write(const type* buffer){
 		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 				memcpy(mybuffer+offset, buffer, sizeof(type));
 				offset = offset+sizeof(type);
-				savetofile();
-				delete mybuffer;
-				mybuffer = new char[buffersize];
+				savetofile(sortornot);
+//				delete[] mybuffer;
+//				mybuffer = new char[buffersize];
+				cout<<"Auto save file, reset offset"<<endl;
 				offset = 0;
 				return true;
 	}
@@ -93,5 +98,11 @@ bool StreamBuffer::read(type* buffer){
 		return true;
 		}
 }
+<<<<<<< HEAD
 
 #endif /* STREAMBUFFER_H_ */
+=======
+#endif /* STREAMBUFFER_H_ */
+
+
+>>>>>>> finish sorting
