@@ -49,6 +49,8 @@ public:
 	}
 
 private:
+	//key=> doc_id
+	//value original_index_content[ "html url", "doc offset start posistion", "data len"]
 	map<int , original_index_content> _original_index;
 	map<int , original_index_content>::iterator _it;
 };

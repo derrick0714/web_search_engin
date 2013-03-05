@@ -4,7 +4,11 @@
 #include "utility/display.h"
 #include "utility/gzip.h"
 #include "models/original_index.h"
+#include "models/TempLexicon.h"
+#include "models/WordMap.h"
 #include "parser/parser.h"
+#include "models/StreamBuffer.h"
+
 
 #include <string>
 
@@ -57,9 +61,10 @@ private:
 	void do_it();
 	bool save_index(char* index_data, int len, original_index& index);
 	bool parse_data(char* html_data, int len, original_index& index);
+	bool save_data(int doc_id, char* save_data, int len);
 	bool get_next_file_name(DataSet& data_set);		//get next  file name
-	int  get_new_doc_id();
-	int  get_new_word_id();
+	int  get_doc_id(std::string doc_name);
+	int  get_word_id(std::string word);
 	bool parse();
 	void get_one_word(char* source, int& pos,string& str);
 
@@ -68,8 +73,17 @@ private:
 	
 	status			_status;
 	std::string		_dataset_path;	
-	int 			_file_num;
+	int 			_file_now;
+	int 			_file_start;
+	int 			_file_end;
 	int 			_doc_id;
+	int 			_word_id;
+	StreamBuffer* 	buffer;
+
+
+	WordMap			_word_map;
+	WordMap 		_docs_map;
+
 };
 
 
