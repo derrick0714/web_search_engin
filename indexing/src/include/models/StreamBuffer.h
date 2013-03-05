@@ -98,11 +98,6 @@ bool StreamBuffer::read(type* buffer){
 		return true;
 		}
 }
-<<<<<<< HEAD
-
-#endif /* STREAMBUFFER_H_ */
-=======
 #endif /* STREAMBUFFER_H_ */
 
 
->>>>>>> finish sorting

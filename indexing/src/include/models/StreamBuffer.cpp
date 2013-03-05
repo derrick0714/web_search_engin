@@ -135,8 +135,6 @@ bool StreamBuffer::savetofile(bool sortornot){
 void StreamBuffer::setfilename(string path){
 	filename = path;
 }
-<<<<<<< HEAD
-=======
 
 bool StreamBuffer::sort(int recsize, int cursize){
 	cout<<"sorting now..."<<endl;
@@ -148,4 +146,3 @@ bool StreamBuffer::sort(int recsize, int cursize){
 void StreamBuffer::setpostingsize(int size){
 	postingsize = size;
 }
->>>>>>> finish sorting
