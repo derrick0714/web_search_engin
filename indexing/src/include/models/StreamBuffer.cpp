@@ -12,6 +12,8 @@ StreamBuffer::StreamBuffer() {
 	buffersize = 0;
 	mybuffer = new char[buffersize];
 	offset	  = 0;
+	filename 	= "data";
+	filenum		= 0;
 }
 
 StreamBuffer::StreamBuffer(int size) {
@@ -19,6 +21,8 @@ StreamBuffer::StreamBuffer(int size) {
 	buffersize = size;
 	mybuffer = new char[buffersize];
 	offset		= 0;
+	filename	="data";
+	filenum		= 0;
 }
 
 StreamBuffer::~StreamBuffer() {
@@ -51,31 +55,44 @@ bool StreamBuffer::read(void* buffer, int size){
 }
 
 bool StreamBuffer::write(const void* buffer, int size){
-	if(buffer==NULL)
+	if(buffer==NULL){
 		return false;
-	if(offset>=buffersize){
-			cout<<"buffer is dumped, no more using"<<endl;
-			return false;
+		cout<<"input buffer void pointer"<<endl;
+	}
+	if(size>buffersize){
+		return false;
+		cout<<"buffer too small for input buffer"<<endl;
+	}
+	if(offset+size>buffersize){
+			cout<<"2"<<endl;
+			savetofile();
+			cout<<"Auto save file, open a new buffer"<<endl;
+			delete mybuffer;
+			mybuffer = new char[buffersize];
+			offset = 0;
+			memcpy(mybuffer+offset, buffer, size);
+			offset = offset + size;
+			return true;
 		}
 	if(offset+size<buffersize){
+		cout<<"1"<<endl;
 		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
 		return true;
 	}
-	else if(offset+size==buffersize){
+	if(offset+size==buffersize){
+		cout<<"3"<<endl;
 		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
 		savetofile();
+		delete mybuffer;
+		mybuffer = new char[buffersize];
+		offset = 0;
 		return true;
 	}
-	else{
-		savetofile();
-		cout<<"save to file:"<<offset<<endl;
-		offset = buffersize;
-		return false;
-	}
+	return false;
 }
 
 
@@ -85,14 +102,22 @@ char* StreamBuffer::getcontent(int index){
 
 bool StreamBuffer::savetofile(){
 	try{
-	ofstream file ("data.bin", ios::out | ios::binary);
+	char tmpname[100];
+	sprintf(tmpname, "%s%d", filename.c_str(), filenum);
+	cout<<"filename: "<<tmpname<<endl;
+	ofstream file (tmpname, ios::out | ios::binary);
 	file.write(mybuffer,offset);
 	file.close();
+	filenum++;
 	return true;
 	}
 	catch(char *str){
 		cout<<str<<endl;
 		return false;
 	}
+}
+
+void StreamBuffer::setfilename(string path){
+	filename = path;
 }
 
