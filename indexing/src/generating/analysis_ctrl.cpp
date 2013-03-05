@@ -10,12 +10,14 @@ analysis_ctrl::analysis_ctrl()
     _dataset_path = "./dataset/";
 
     _file_start = 1800;
-    _file_end = 1850;
+    _file_end = 1820;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
-    buffer = new StreamBuffer( 1*1024*1024);
-    buffer->setfilename("intermediate_posting");
+    buffer = new StreamBuffer(2*1024*1024);
+    buffer->setfilename("intermediate_posting.data");
+    buffer->setpostingsize(8);
+    buffer->set_sort(true);
 
 }
 
@@ -107,19 +109,21 @@ void analysis_ctrl::do_it()
 
    
      StreamBuffer buffer1(1*1024*1024);
+     buffer1.setfilename("word_map.data");
      buffer1>>_word_map;
-     buffer1.setfilename("word_map");
      buffer1.savetofile();
 
       //save docs map;
      StreamBuffer buffer2(1*1024*1024);
+     buffer2.setfilename("docs_map.data");
      buffer2>>_docs_map;
-     buffer2.setfilename("docs_map");
      buffer2.savetofile();
 
      //
      
      buffer->savetofile();
+
+     cout<<"ok!finish!"<<endl;
     
 }
 

@@ -18,6 +18,7 @@ StreamBuffer::StreamBuffer() {
 	filename 	= "data";
 	filenum		= 0;
 	postingsize		= 8;
+	is_sort		= false;
 }
 
 StreamBuffer::StreamBuffer(int size) {
@@ -47,6 +48,10 @@ bool StreamBuffer::active(){
 	else
 		return false;
 }
+void StreamBuffer::set_sort(bool sort)
+{
+	is_sort = sort;
+}
 
 bool StreamBuffer::read(void* buffer, int size){
 		if(offset>=buffersize)
@@ -59,7 +64,7 @@ bool StreamBuffer::read(void* buffer, int size){
 		}
 }
 
-bool StreamBuffer::write(bool sortornot, const void* buffer, int size){
+bool StreamBuffer::write(const void* buffer, int size){
 	if(buffer==NULL){
 		return false;
 		cout<<"input buffer void pointer"<<endl;
@@ -69,8 +74,8 @@ bool StreamBuffer::write(bool sortornot, const void* buffer, int size){
 		cout<<"buffer too small for input buffer"<<endl;
 	}
 	if(offset+size>buffersize){
-			cout<<"2"<<endl;
-			savetofile(sortornot);
+			//cout<<"2"<<endl;
+			savetofile();
 //			delete[] mybuffer;
 //			mybuffer = new char[buffersize];
 			cout<<"Auto save file, reset offset"<<endl;
@@ -80,18 +85,18 @@ bool StreamBuffer::write(bool sortornot, const void* buffer, int size){
 			return true;
 		}
 	if(offset+size<buffersize){
-		cout<<"1"<<endl;
-		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		//cout<<"1"<<endl;
+		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
 		return true;
 	}
 	if(offset+size==buffersize){
-		cout<<"3"<<endl;
-		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		//cout<<"3"<<endl;
+		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
-		savetofile(sortornot);
+		savetofile();
 //		delete[] mybuffer;
 //		mybuffer = new char[buffersize];
 		cout<<"Auto save file, reset offset"<<endl;
@@ -112,14 +117,14 @@ char* StreamBuffer::getcontent(int index){
 	 return mybuffer+index;
 }
 
-bool StreamBuffer::savetofile(bool sortornot){
+bool StreamBuffer::savetofile(){
 
 	try{
 	char tmpname[100];
 	sprintf(tmpname, "%s%d", filename.c_str(), filenum);
 	cout<<"filename: "<<tmpname<<endl;
 	ofstream file (tmpname, ios::out | ios::binary);
-	if(sortornot==true)
+	if(is_sort==true)
 	sort(postingsize, offset);
 	file.write(mybuffer,offset);
 	file.close();

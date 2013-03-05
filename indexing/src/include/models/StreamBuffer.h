@@ -22,6 +22,7 @@ private:
 	string filename;
 	int filenum;
 	int postingsize;
+	bool is_sort;
 
 public:
 //	int offset;
@@ -30,22 +31,23 @@ public:
 	virtual ~StreamBuffer();
 	int getsize();
 	bool active();
-	bool write(bool sortornot,const void* buffer, int size);
+	bool write(const void* buffer, int size);
 	bool read(void* buffer, int size);
 	char* getcontent(int index);
 	template <class type>
-	bool write(bool sortornot,const type* buffer);
+	bool write(const type* buffer);
 	template <class type>
 	bool read(type* buffer);
-	bool savetofile(bool sortornot);
+	bool savetofile();
 	void setfilename(string path);
 	bool sort(int recsize, int cursize);
 	void setpostingsize(int size);
+	void set_sort(bool sort);
 
 };
 
 template <class type>
-bool StreamBuffer::write(bool sortornot, const type* buffer){
+bool StreamBuffer::write(const type* buffer){
 	if(buffer==NULL){
 		return false;
 		cout<<"input buffer void pointer"<<endl;
@@ -55,8 +57,8 @@ bool StreamBuffer::write(bool sortornot, const type* buffer){
 		cout<<"buffer too small for input buffer"<<endl;
 	}
 	if(offset+sizeof(type)>buffersize){
-		cout<<"2"<<endl;
-			savetofile(sortornot);
+		//cout<<"2"<<endl;
+			savetofile();
 			cout<<"Auto save file, reset offset"<<endl;
 //			delete[] mybuffer;
 //			mybuffer = new char[buffersize];
@@ -66,18 +68,18 @@ bool StreamBuffer::write(bool sortornot, const type* buffer){
 			return true;
 		}
 	if(offset+sizeof(type)<buffersize){
-		cout<<"1"<<endl;
-		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		//cout<<"1"<<endl;
+		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, sizeof(type));
 		offset = offset+sizeof(type);
 		return true;
 	}
 	if(offset+sizeof(type)==buffersize){
-		cout<<"3"<<endl;
-		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		//cout<<"3"<<endl;
+		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 				memcpy(mybuffer+offset, buffer, sizeof(type));
 				offset = offset+sizeof(type);
-				savetofile(sortornot);
+				savetofile();
 //				delete[] mybuffer;
 //				mybuffer = new char[buffersize];
 				cout<<"Auto save file, reset offset"<<endl;
