@@ -64,22 +64,26 @@ bool StreamBuffer::write(const void* buffer, int size){
 		cout<<"buffer too small for input buffer"<<endl;
 	}
 	if(offset+size>buffersize){
+			cout<<"2"<<endl;
 			savetofile();
 			cout<<"Auto save file, open a new buffer"<<endl;
 			delete mybuffer;
 			mybuffer = new char[buffersize];
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, size);
+			offset = offset + size;
 			return true;
 		}
 	if(offset+size<buffersize){
-		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"1"<<endl;
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
 		return true;
 	}
 	if(offset+size==buffersize){
-		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"3"<<endl;
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
 		savetofile();
@@ -90,6 +94,7 @@ bool StreamBuffer::write(const void* buffer, int size){
 	}
 	return false;
 }
+
 
 char* StreamBuffer::getcontent(int index){
 	 return mybuffer+index;
@@ -115,4 +120,3 @@ bool StreamBuffer::savetofile(){
 void StreamBuffer::setfilename(string path){
 	filename = path;
 }
-

@@ -51,22 +51,26 @@ bool StreamBuffer::write(const type* buffer){
 		cout<<"buffer too small for input buffer"<<endl;
 	}
 	if(offset+sizeof(type)>buffersize){
+		cout<<"2"<<endl;
 			savetofile();
 			cout<<"Auto save file, open a new buffer"<<endl;
 			delete mybuffer;
 			mybuffer = new char[buffersize];
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, sizeof(type));
+			offset = offset + sizeof(type);
 			return true;
 		}
 	if(offset+sizeof(type)<buffersize){
-		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"1"<<endl;
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, sizeof(type));
 		offset = offset+sizeof(type);
 		return true;
 	}
 	if(offset+sizeof(type)==buffersize){
-		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"3"<<endl;
+		cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 				memcpy(mybuffer+offset, buffer, sizeof(type));
 				offset = offset+sizeof(type);
 				savetofile();
