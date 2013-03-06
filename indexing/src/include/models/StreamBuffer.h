@@ -43,6 +43,8 @@ public:
 	bool sort(int recsize, int cursize);
 	void setpostingsize(int size);
 	void set_sort(bool sort);
+	int get_offset();
+	int get_filenum();
 
 };
 
