@@ -19,22 +19,27 @@ int main(int argc)
   char filename[1024];
   int i;
 
-//  recSize = atoi(argv[1]);
-  recSize = 8;
-//  memSize = atoi(argv[2]);
-  memSize = 6*100000;
-//  memSize = 3*100;
-  bufSpace = (char *) malloc(memSize);
-//  maxDegree = atoi(argv[3]);
+  //  recSize = atoi(argv[1]);
+  // recSize is the posting size, contains docid and freq
+    recSize = 8;
+  //  memSize = atoi(argv[2]);
+  // memSize is the total memory assigned to ioBufs
+    memSize = 6*100000;
+  //  memSize = 3*100;
+    bufSpace = (char *) malloc(memSize);
+  //  maxDegree = atoi(argv[3]);
+  // masDegree is the number of files read in
   maxDegree = 6;
   ioBufs = (buffer *) malloc((maxDegree + 1) * sizeof(buffer));
   heap.arr = (int *) malloc((maxDegree + 1) * sizeof(int));
   heap.cache = (char *) malloc(maxDegree * recSize);
 
   finlist = fopen64("list.dat", "r");
-  foutlist = fopen64("list2.dat", "w");
+//  foutlist = fopen64("list2.dat", "w");
 
+  //streambuf is for the postings structure
   StreamBuffer streambuf(2000000);
+  //streambuf1 is for the index structure
   StreamBuffer streambuf1(1000000);
 //  StreamBuffer streambuf(400);
 //  StreamBuffer streambuf1(500);
@@ -51,8 +56,8 @@ int main(int argc)
     if (degree == 0) break;
 
     /* open output file (output is handled by the buffer ioBufs[degree]) */
-    sprintf(filename, "%s%d", "result", numFiles);
-    ioBufs[degree].f = fopen64(filename, "w");
+//    sprintf(filename, "%s%d", "result", numFiles);
+//    ioBufs[degree].f = fopen64(filename, "w");
 
     /* assign buffer space (all buffers same space) and init to empty */
     bufSize = memSize / ((degree + 1) * recSize);
@@ -82,14 +87,14 @@ int main(int argc)
 
     /* flush output, add output file to list, close in/output files, and next */
     writeRecord(&(ioBufs[degree]), -1, streambuf, streambuf1);
-    fprintf(foutlist, "%s\n", filename);
+//    fprintf(foutlist, "%s\n", filename);
     for (i = 0; i <= degree; i++)  fclose(ioBufs[i].f);
     numFiles++;
   }
   streambuf.savetofile();
   streambuf1.savetofile();
   fclose(finlist);
-  fclose(foutlist);
+//  fclose(foutlist);
   free(ioBufs);
   free(heap.arr);
   free(heap.cache);
