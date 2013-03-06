@@ -38,9 +38,9 @@ struct DataSet
 	void set_num(int num)
 	{
 		char temp[64] = {0};
-		sprintf ( temp, "%d_index", num );
+		sprintf ( temp, "down1_%d_index.gz", num );
 		_index = _path+temp;
-		sprintf ( temp, "%d_data", num );
+		sprintf ( temp, "down1_%d.gz", num );
 		_data = _path+temp;
 	}
 };

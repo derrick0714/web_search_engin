@@ -29,7 +29,7 @@ int main(int argc)
     bufSpace = (char *) malloc(memSize);
   //  maxDegree = atoi(argv[3]);
   // masDegree is the number of files read in
-  maxDegree = 6;
+  maxDegree = 3;
   ioBufs = (buffer *) malloc((maxDegree + 1) * sizeof(buffer));
   heap.arr = (int *) malloc((maxDegree + 1) * sizeof(int));
   heap.cache = (char *) malloc(maxDegree * recSize);
