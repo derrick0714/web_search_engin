@@ -1,4 +1,5 @@
 #include "analysis_ctrl.h"
+#include <sys/stat.h>
 #include <iostream>
 using namespace std;
 
@@ -10,13 +11,14 @@ analysis_ctrl::analysis_ctrl()
     _dataset_path = "./dataset/";
 
     _file_start = 1800;
-    _file_end = 1820;
+    _file_end = 1810;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
     buffer = new StreamBuffer(2*1024*1024);
-    buffer->setfilename("ip");
-    buffer->setpostingsize(8);
+    mkdir("intermediate", S_IRWXU|S_IRGRP|S_IXGRP);
+    buffer->setfilename("intermediate/posting.data");
+    buffer->setpostingsize(12);
     buffer->set_sort(true);
 
 }
@@ -109,13 +111,13 @@ void analysis_ctrl::do_it()
 
    
      StreamBuffer buffer1(1*1024*1024);
-     buffer1.setfilename("word_map.data");
+     buffer1.setfilename("intermediate/word_map.data");
      buffer1>>_word_map;
      buffer1.savetofile();
 
       //save docs map;
      StreamBuffer buffer2(1*1024*1024);
-     buffer2.setfilename("docs_map.data");
+     buffer2.setfilename("intermediate/docs_map.data");
      buffer2>>_docs_map;
      buffer2.savetofile();
 
@@ -127,6 +129,7 @@ void analysis_ctrl::do_it()
     
 }
 
+//read file name
 bool analysis_ctrl::get_next_file_name(DataSet& data_set)
 {
 
@@ -157,6 +160,8 @@ bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
 
     index.set_to_start();
 
+
+    // get one doc offset and id from index list 
     while(index.get_next(doc_id ,index_val))
     {
       
@@ -166,16 +171,20 @@ bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
 
         pool = (char*)malloc(2*index_val.len+1);
 
+
         //parsing page
-        char* page = new char[index_val.len];
+        char* page = new char[index_val.len+1];
         
         memcpy(page, html_data+index_val.offset, index_val.len);
+        page[index_val.len]='\0';
         
 
         int ret = parser((char*)index_val.url.c_str(), page , pool, 2*index_val.len+1);
+        
         delete page;
 
-
+       // cout<<pool<<endl;
+        //return false;
         //output words and their contexts
         if (ret > 0)
         {
@@ -190,7 +199,7 @@ bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
         }
         
         free(pool);
-
+       // break;
        
     }
      return true;
@@ -204,16 +213,20 @@ bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index
     cout<<len<<" "<<strlen(index_data)<<endl;
     int pos = 0;
     int offset_val =0;
-    while(pos < len && pos != -1)
+    while(pos < len)
     {
         string host ="", ip="", port="", sub_url="",state="",len="";  
         //get host
-        get_one_word(index_data,pos,host);     
-        get_one_word(index_data,pos,ip);
-        get_one_word(index_data,pos,port);
-        get_one_word(index_data,pos,sub_url);
-        get_one_word(index_data,pos,state);
-        get_one_word(index_data,pos,len);
+        if(
+        !get_one_word(index_data,pos,host) ||     
+        !get_one_word(index_data,pos,ip) ||
+        !get_one_word(index_data,pos,port) ||
+        !get_one_word(index_data,pos,sub_url) ||
+        !get_one_word(index_data,pos,state) ||
+        !get_one_word(index_data,pos,len)
+        )
+            break; // if read finish, break
+        
         int len_val = atoi(len.c_str());
 
         // if exit doc id, return it else create new id 
@@ -230,70 +243,81 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 {
     int pos = 0;
     int offset_val =0;
-    int count = 0;
-    int percent =( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
+
+    int percent = _file_end - _file_start == 0? 100 : ( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
     
-    while(pos < len && pos != -1)
+
+    while(pos < len )
     {
         string word="";
-        get_one_word(save_data , pos, word);
-        if( pos == -1)
-        {
-           //cout<< "save_data::get_one_word finish"<<endl;
+        string context="";
+        string positon="";
+
+        if(
+            !get_one_word(save_data , pos, word) ||
+            !get_one_word(save_data , pos, positon) ||
+            !get_one_word(save_data , pos, context)
+            )
             break;
-        }
+
+        //cout<<"["<<pos<<"]"<<"word=>"<<word<<" pos=>"<<positon<<" context=>"<<context<<endl ;
+
+
+        //continue;
         //if it is word 
-        if( count++ % 2 == 0)
-        {
-            TempLexicon new_lexicon;
+        
+        TempLexicon new_lexicon;
 
-            new_lexicon.word_id = get_word_id(word);
-            new_lexicon.doc_id = doc_id;
+        new_lexicon.word_id = get_word_id(word);
+        new_lexicon.doc_id = doc_id;
 
-            cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>"<<new_lexicon.word_id<<endl;
+        cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>"<<new_lexicon.word_id<<endl;
 
-            //save temp Lexicon
-            (*buffer)>>new_lexicon;
+        //save temp Lexicon
+        (*buffer)>>new_lexicon;
             
-        }
+        
         
     }
+    
+    //cout<<pos<<"--------------------------------"<<endl<<endl<<endl<<endl<<endl;
 
     return true;
 }
 
 //get on word from file
-void analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
+bool analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
 {
-    
+
+
     char get_num = 0;
-    while( source[pos] != 0)
+    while( source[pos] != '\0')
     {
+
         if(source[pos] == '\r' || source[pos]=='\n' || source[pos] == ' ')
         {
                 
             if( get_num == 0)
             {
                 pos++;
+
                 continue;
             }
             else
             {
                 pos++;
-                //cout<<temp<<endl;
-                return ;
+                return true;
             }
         }
         else 
         {
             str+=source[pos++];
             get_num++;
-
             //cout<<str.c_str()<<endl;
         }
     }
-    if( source[pos] == '\0')
-        pos = -1;
+    //if( source[pos] == '\0')
+    return false;
 }
 
 int analysis_ctrl::get_doc_id(string doc_name)
@@ -321,3 +345,4 @@ int analysis_ctrl::get_word_id(string word)
     return _word_id++;
 
 }   
+
