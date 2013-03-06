@@ -15,8 +15,8 @@ class TempLexicon
 {
 public:
 	int		word_id;
-//	long	startpos;
 	int		doc_id;
+	int		startpos;
 
 	TempLexicon(){word_id = 0; doc_id= 0;}
 

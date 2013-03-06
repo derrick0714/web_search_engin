@@ -125,7 +125,7 @@ bool StreamBuffer::savetofile(){
 	cout<<"filename: "<<tmpname<<endl;
 	ofstream file (tmpname, ios::out | ios::binary);
 	if(is_sort==true)
-	sort(postingsize, offset);
+		sort(postingsize, offset);
 	file.write(mybuffer,offset);
 	file.close();
 	filenum++;

@@ -66,7 +66,7 @@ private:
 	int  get_doc_id(std::string doc_name);
 	int  get_word_id(std::string word);
 	bool parse();
-	void get_one_word(char* source, int& pos,string& str);
+	bool get_one_word(char* source, int& pos,string& str);
 
 
 private:

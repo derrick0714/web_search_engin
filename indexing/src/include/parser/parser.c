@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cctype>
+#include <math.h>
 
 #define PTAG_B	1
 #define PTAG_I	2
@@ -108,12 +109,13 @@ int tag_parser(char* tag, int len, char* back_tag)
 
 int parser(char* url, char* doc, char* buf, int blen)
 {
-	char *p, *purl, *word, *ptag, *pbuf;
+	char *p, *purl, *word, *ptag, *pbuf,*pdoc_start;
 	char ch, back_tag, intag, inscript;
 	unsigned tag_flag;
 	int ret;
 
-	p = parser_init(doc);
+	pdoc_start = parser_init(doc);
+	p = pdoc_start;
 	if (p == NULL)
 		return 0;
 	pbuf = buf;
@@ -139,13 +141,17 @@ int parser(char* url, char* doc, char* buf, int blen)
 		ch = *purl;
 		*purl = '\0';
 
-		if (pbuf-buf+purl-word+3 > blen-1)
+		if (pbuf-buf+purl-word+6 > blen-1)
 			return -1;
-		sprintf(pbuf, "%s U\n", word);
-		pbuf += (purl-word)+3;
+		sprintf(pbuf, "%s -1 U\n", word);
+		pbuf += (purl-word)+6;
+
+
+
 
 		*purl = ch;
 	}
+
 
 /* parsing page */
 	tag_flag = 0;
@@ -240,6 +246,13 @@ int parser(char* url, char* doc, char* buf, int blen)
 			return -1;
 		sprintf(pbuf, "%s ", word);
 		pbuf += (p-word)+1;
+		//write the offset from real html doc start position
+
+		sprintf(pbuf, "%d ",word - pdoc_start);
+		if(word - pdoc_start > 0 )
+			pbuf += int(log10 (word - pdoc_start))+2;
+		else
+			pbuf += 2;
 
 		if (xlbit_check(tag_flag, _B_TAG))
 		{
@@ -283,6 +296,7 @@ int parser(char* url, char* doc, char* buf, int blen)
 
 		if (pbuf-buf+1> blen-1)
 			return -1;
+		
 		*pbuf = '\n';
 		pbuf++;
 		*p = ch;
