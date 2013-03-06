@@ -15,7 +15,7 @@ analysis_ctrl::analysis_ctrl()
     _doc_id = 1;
     _word_id =1;
     buffer = new StreamBuffer(2*1024*1024);
-    buffer->setfilename("intermediate_posting.data");
+    buffer->setfilename("ip");
     buffer->setpostingsize(8);
     buffer->set_sort(true);
 
