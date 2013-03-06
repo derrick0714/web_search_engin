@@ -7,27 +7,8 @@
 
 #include "StreamBuffer.h"
 
-// int intCompare(const void *r1, const void *r2)
-// { if (*(int *)r1 > *(int *)r2) 
-// 	return(1); 
-//   if (*(int *)r1 < *(int *)r2) 
-// 	return(-1); 
-//   return(0); 
-// }
 int intCompare(const void *r1, const void *r2)
-{
-	if (*(int *)r1 > *(int *)r2)
-		return(1);
-	if (*(int *)r1 < *(int *)r2)
-		return(-1);
-	if (*(int *)r1 == *(int *)r2){
-		if(*(int *)((int *)r1+1) > *(int *)((int *)r2+1))
-			return (1);
-		if(*(int *)((int *)r1+1) < *(int *)((int *)r2+1))
-			return (-1);
-	}
-	return(0);
-}
+{ if (*(long *)r1 > *(long *)r2) return(1); else if (*(long *)r1 < *(long *)r2) return(-1); else return(0); }
 
 StreamBuffer::StreamBuffer() {
 	// TODO Auto-generated constructor stub
@@ -119,12 +100,12 @@ bool StreamBuffer::write(const void* buffer, int size){
 //		delete[] mybuffer;
 //		mybuffer = new char[buffersize];
 		cout<<"Auto save file, reset offset"<<endl;
-		for (int i=0; i<buffersize;i++){
-						    	printf("%c",mybuffer[i]);
-						    	cout<<endl;
-
-						    cout<<"buffer[i]: "<<i<<endl;
-			}
+//		for (int i=0; i<buffersize;i++){
+//						    	printf("%c",mybuffer[i]);
+//						    	cout<<endl;
+//
+//						    cout<<"buffer[i]: "<<i<<endl;
+//			}
 		offset = 0;
 		return true;
 	}
@@ -144,7 +125,7 @@ bool StreamBuffer::savetofile(){
 	cout<<"filename: "<<tmpname<<endl;
 	ofstream file (tmpname, ios::out | ios::binary);
 	if(is_sort==true)
-		sort(postingsize, offset);
+	sort(postingsize, offset);
 	file.write(mybuffer,offset);
 	file.close();
 	filenum++;
@@ -169,4 +150,12 @@ bool StreamBuffer::sort(int recsize, int cursize){
 
 void StreamBuffer::setpostingsize(int size){
 	postingsize = size;
+}
+
+int StreamBuffer::get_offset(){
+	return offset;
+}
+
+int StreamBuffer::get_filenum(){
+	return filenum;
 }
