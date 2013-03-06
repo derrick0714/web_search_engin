@@ -23,37 +23,15 @@
 /* data structure for one input/output buffer */
 typedef struct {FILE *f; char* buf; int curRec; int numRec;} buffer;
 typedef struct {int *arr; char *cache; int size; } heapStruct;
+//Compare the word ID part
 #define WORD(z) (*(int *)(&(heap.cache[heap.arr[(z)]*recSize])))
+//Compare the doc ID part
 #define DOC(z) (*(int *)(&(heap.cache[heap.arr[(z)]*recSize+sizeof(int)])))
 
 buffer *ioBufs;          /* array of structures for in/output buffers */
 heapStruct heap;         /* heap structure */
 int recSize;             /* size of record (in bytes) */
 int bufSize;             /* # of records that fit in each buffer */
-
-
-/*************************************************************************/
-/* mergephase.c implements the merge phase of an I/O-efficient mergesort */
-/*      It is assumed that the first 4 bytes of each record contain an   */
-/*      integer key by which sorting occurs, and that records are of a   */
-/*      fixed size that is a multiple of 4 bytes. It reads the names of  */
-/*      the files that have to be merged from a file, and then merges    */
-/*      each group of up to d consecutive files into one, where d is     */
-/*      given as part of the command line input. Output files again have */
-/*      filenames created by adding a running number to a given prefix,  */
-/*      and the list of these filenames is written to another file.      */
-/*                                                                       */
-/* usage:  ./mergephase recsize memsize finlist outfileprefix foutlist   */
-/*             where                                                     */
-/*               recsize:  size of a record in bytes - must be mult(4)   */
-/*               memsize:  size of available memory in bytes             */
-/*               degree:   merge degree d: max # files merged into one   */
-/*               finlist:  name of file containing a list of input files */
-/*               outfileprefix:  prefix (including path and name) used   */
-/*                               to generate numbered temp output files  */
-/*               foutlist:  file to which names of temp files written    */
-/*************************************************************************/
-
 
 /* standard heapify on node i. Note that minimum is node 1. */
 void heapify(int i)
