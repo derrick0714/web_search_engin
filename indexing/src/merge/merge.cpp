@@ -35,6 +35,7 @@ int main(int argc)
   heap.cache = (char *) malloc(maxDegree * recSize);
 
   finlist = fopen64("list.dat", "r");
+
 //  foutlist = fopen64("list2.dat", "w");
 
   //streambuf is for the postings structure
@@ -45,6 +46,7 @@ int main(int argc)
 //  StreamBuffer streambuf1(500);
   streambuf1.setfilename("index");
 
+
   while (!feof(finlist))
   {
     for (degree = 0; degree < maxDegree; degree++)
@@ -52,7 +54,9 @@ int main(int argc)
       fscanf(finlist, "%s", filename);
       if (feof(finlist)) break;
       ioBufs[degree].f = fopen64(filename, "r");
+      cout<<filename<<endl;
     }
+
     if (degree == 0) break;
 
     /* open output file (output is handled by the buffer ioBufs[degree]) */
@@ -88,7 +92,11 @@ int main(int argc)
     /* flush output, add output file to list, close in/output files, and next */
     writeRecord(&(ioBufs[degree]), -1, streambuf, streambuf1);
 //    fprintf(foutlist, "%s\n", filename);
-    for (i = 0; i <= degree; i++)  fclose(ioBufs[i].f);
+    for (i = 0; i < degree; i++)  
+    {
+        cout<<"close:"<<i<<endl;
+        fclose(ioBufs[i].f);
+    }
     numFiles++;
   }
   streambuf.savetofile();

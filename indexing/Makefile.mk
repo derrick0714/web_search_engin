@@ -38,6 +38,6 @@ lib%.so : %.o
 	$(CXX) $(LDFLAGS) -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
 
 % : %.o
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
+	$(CXX) $(CXXFLAGS) -lz -lpthread -o $@ $^ $(SYS_LIB_DIRS) $(STATIC_LIBS) $(DYNAMIC_LIBS)
 
 -include makefile

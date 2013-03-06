@@ -7,27 +7,8 @@
 
 #include "StreamBuffer.h"
 
-// int intCompare(const void *r1, const void *r2)
-// { if (*(int *)r1 > *(int *)r2) 
-// 	return(1); 
-//   if (*(int *)r1 < *(int *)r2) 
-// 	return(-1); 
-//   return(0); 
-// }
 int intCompare(const void *r1, const void *r2)
-{
-	if (*(int *)r1 > *(int *)r2)
-		return(1);
-	if (*(int *)r1 < *(int *)r2)
-		return(-1);
-	if (*(int *)r1 == *(int *)r2){
-		if(*(int *)((int *)r1+1) > *(int *)((int *)r2+1))
-			return (1);
-		if(*(int *)((int *)r1+1) < *(int *)((int *)r2+1))
-			return (-1);
-	}
-	return(0);
-}
+{ if (*(int *)r1 > *(int *)r2) return(1); else if (*(int *)r1 < *(int *)r2) return(-1); else return(0); }
 
 StreamBuffer::StreamBuffer() {
 	// TODO Auto-generated constructor stub
@@ -169,4 +150,12 @@ bool StreamBuffer::sort(int recsize, int cursize){
 
 void StreamBuffer::setpostingsize(int size){
 	postingsize = size;
+}
+
+int StreamBuffer::get_offset(){
+	return offset;
+}
+
+int StreamBuffer::get_filenum(){
+	return filenum;
 }
