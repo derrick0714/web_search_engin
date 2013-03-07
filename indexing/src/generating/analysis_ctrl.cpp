@@ -11,7 +11,7 @@ analysis_ctrl::analysis_ctrl()
     _dataset_path = "./dataset/";
 
     _file_start = 1800;
-    _file_end = 1820;
+    _file_end = 1899;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
