@@ -347,4 +347,3 @@ int analysis_ctrl::get_word_id(string word)
     return _word_id++;
 
 }   
-

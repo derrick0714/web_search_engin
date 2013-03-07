@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "StreamBuffer.h"
-#ifdef __APPLE__
+//#ifdef __APPLE__
 #  define off64_t off_t
 #  define fopen64 fopen
-#endif
+//#endif
 
 
 
