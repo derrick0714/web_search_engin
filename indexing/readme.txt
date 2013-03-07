@@ -5,7 +5,15 @@ HomeWork 2
 Xu Deng, Qi Wang
 
 [How to run the program:]
-
+1.cd indexing/        (go to the root folder of source code )
+2.gmake 			  (make the whole poject, will generate two executable files : generating and merge, 
+						these two files will be generated under the 'test' folder)
+3.uncompress the data into the 'test' folder which should named 'dataset'
+4.go to the 'test' folder, 
+	run ./generate 
+		to generate all the intermediate posting , doc_id table and word_id table 
+	run ./merge  
+		to merge the intermediate posting to the final posting lists and gentate inverted index	 
 
 [Filelist:]
 	
@@ -55,10 +63,12 @@ Xu Deng, Qi Wang
 										we build a min heap of that size, everytime we extract the root of the heap, we fill in another intermediate posting from the file of the root, for each element in the heap, we build a buffer to read data from the correspondin file and another two StreamBuffer objects for writing inverted index and corresponding posting lists, in this way we implement the I/O-efficient mergesort.
 										
 [Special Features beyond basic requirement:]
-	1. gizp compression out of main memory, uncompressed in main memory
+	1. gizp compression out of main memory, uncompressed in main memory, including the intermediate posting
 	2. add postion info in the inverted index
 	
 [Statistics & Performance:]
-										
+	1. base on the small_set( );
+		generating and sort will finish all the docs in 
+		Merge will finish all the docs in 								
 	
 	
