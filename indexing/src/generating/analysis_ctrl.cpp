@@ -15,7 +15,7 @@ analysis_ctrl::analysis_ctrl()
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
-    buffer = new StreamBuffer(2*1024*1024);
+    buffer = new StreamBuffer(12*1024*1024/4);
     mkdir("intermediate", S_IRWXU|S_IRGRP|S_IXGRP);
     buffer->setfilename("intermediate/posting");
     buffer->setpostingsize(12);

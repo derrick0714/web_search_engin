@@ -104,3 +104,4 @@ bool StreamBuffer::read(type* buffer){
 }
 #endif /* STREAMBUFFER_H_ */
 
+

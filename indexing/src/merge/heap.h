@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "StreamBuffer.h"
-//#ifdef __APPLE__
+#ifdef __APPLE__
 #  define off64_t off_t
 #  define fopen64 fopen
-//#endif
+#endif
 
 
 
@@ -86,7 +86,7 @@ int nextRecord(int i)
 void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
 {
-	int wordid,docid;
+	int wordid,docid,pos;
 	int lastwordid = -1;
 	int lastdocid = -1;
 	int filenum = 0;
@@ -101,7 +101,8 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
     	memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
     	memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
-    	cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<endl;
+    	memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
+    	cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
     	if(lastwordid==-1){
     	lastwordid = wordid;
     	lastdocid =  docid;
@@ -110,12 +111,14 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
     	stream1.write(&offset);
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //      stream.write(false,&(b->buf[j*recSize]),recSize);
+    	stream.write(&pos);
     	continue;
     	}
 
     	if(wordid==lastwordid){
     		if (docid == lastdocid){
     		freq++;
+    		stream.write(&pos);
     		continue;
     		}
     		if (docid != lastdocid){
@@ -123,6 +126,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
     		stream.write(&freq);
     		freq = 1;
     		lastdocid = docid;
+    		stream.write(&pos);
     		continue;
     		}
 
@@ -133,14 +137,14 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
     		stream.write(&freq);
     		filenum = stream.get_filenum();
     		offset  = stream.get_offset();
-    		stream1.write(&wordid);
-    		stream1.write(&filenum);
-    		stream1.write(&offset);
     	    freq = 1;
     	    lastwordid = wordid;
     	    lastdocid  = docid;
+    	    stream.write(&pos);
+    		stream1.write(&wordid);
+    		stream1.write(&filenum);
+    		stream1.write(&offset);
     	}
-
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //    	stream.write(&(b->buf[j*recSize]),recSize);
     }
