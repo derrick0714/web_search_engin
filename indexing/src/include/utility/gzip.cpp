@@ -15,13 +15,13 @@ gzip::~gzip()
 char* gzip::uncompress_from_file(const char* file_name, int size, int& already_len )
 {
 	if( file_name == NULL)
-		return false;
+		return NULL;
 
 	gzFile *p_file;
     p_file=(gzFile *)gzopen(file_name,"r");
     if(p_file == NULL)
     {	
-    	cout<<"uncompress open file fail"<<endl;
+    	cout<<"gzip::uncompress - open file fail -"<<endl;
     	return NULL;
     }
     already_len = 0;
@@ -41,3 +41,16 @@ char* gzip::uncompress_from_file(const char* file_name, int size, int& already_l
    return buffer;
 }
 
+bool gzip::compress_to_file(const char* file_name, char* data, int len)
+{
+    if( file_name == NULL || data == NULL || len ==0)
+        return false;
+    gzFile *fi = (gzFile *)gzopen(file_name,"wb");
+
+    if( fi == NULL)
+        return false;
+
+    gzwrite(fi, data,len);
+    gzclose(fi);
+
+}
