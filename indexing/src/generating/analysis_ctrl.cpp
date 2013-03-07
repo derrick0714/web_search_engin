@@ -11,7 +11,7 @@ analysis_ctrl::analysis_ctrl()
     _dataset_path = "./dataset/";
 
     _file_start = 1800;
-    _file_end = 1810;
+    _file_end = 1820;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
@@ -103,7 +103,7 @@ void analysis_ctrl::do_it()
 
         
         free(html_data);
-        cout<<"loop"<<endl;
+       // cout<<"loop"<<endl;
     }
 
     //save word map;
@@ -199,7 +199,8 @@ bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
         }
         
         free(pool);
-       // break;
+        
+       
        
     }
      return true;
@@ -270,8 +271,9 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 
         new_lexicon.word_id = get_word_id(word);
         new_lexicon.doc_id = doc_id;
+        new_lexicon.startpos = atoi(positon.c_str());
 
-        cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>"<<new_lexicon.word_id<<endl;
+        cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
 
         //save temp Lexicon
         (*buffer)>>new_lexicon;

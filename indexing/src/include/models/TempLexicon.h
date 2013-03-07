@@ -24,12 +24,15 @@ public:
 	{
 		stream.write(&word_id);
 		stream.write(&doc_id);
+		stream.write(&startpos);
+		//cout<<"word_id " <<word_id << " doc_id:"<<doc_id<<" startpos:"<<startpos<<endl;
 
 	}
 	void deserialize( StreamBuffer &stream  )
 	{
 		stream.read(&word_id);
 		stream.read(&doc_id);
+		stream.read(&startpos);
 
 	}
 	
