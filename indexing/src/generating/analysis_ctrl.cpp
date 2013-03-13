@@ -247,7 +247,7 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 
     int percent = _file_end - _file_start == 0? 100 : ( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
     
-
+    int pos_count = 0;
     while(pos < len )
     {
         string word="";
@@ -271,7 +271,7 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 
         new_lexicon.word_id = get_word_id(word);
         new_lexicon.doc_id = doc_id;
-        new_lexicon.startpos = atoi(positon.c_str());
+        new_lexicon.startpos = pos_count++;//atoi(positon.c_str());
 
         cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
 

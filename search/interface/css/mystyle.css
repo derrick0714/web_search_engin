@@ -1,0 +1,9 @@
+.my_main
+{
+    display: block;
+}
+
+.ctr-p {
+margin: 0 auto;
+min-width: 980px;
+}
