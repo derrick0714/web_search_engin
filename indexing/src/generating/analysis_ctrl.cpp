@@ -11,7 +11,7 @@ analysis_ctrl::analysis_ctrl()
     _dataset_path = "./dataset/";
 
     _file_start = 1800;
-    _file_end = 1899;
+    _file_end = 1820;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
@@ -135,8 +135,6 @@ bool analysis_ctrl::get_next_file_name(DataSet& data_set)
 
     if( _file_now <= _file_end)
     {
-
-
         data_set.set_num(_file_now);
   
         _file_now++;
@@ -271,7 +269,7 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 
         new_lexicon.word_id = get_word_id(word);
         new_lexicon.doc_id = doc_id;
-        new_lexicon.startpos = pos_count++;//atoi(positon.c_str());
+        new_lexicon.startpos =atoi(positon.c_str()); //pos_count++;//atoi(positon.c_str());
 
         cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
 

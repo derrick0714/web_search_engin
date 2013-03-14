@@ -28,7 +28,7 @@ StreamBuffer::StreamBuffer() {
 	offset	  = 0;
 	filename 	= "data";
 	filenum		= 0;
-	postingsize		= 8;
+	postingsize		= 12;
 	is_sort		= false;
 }
 
@@ -39,7 +39,7 @@ StreamBuffer::StreamBuffer(int size) {
 	offset		= 0;
 	filename	="data";
 	filenum		= 0;
-	postingsize		= 8;
+	postingsize		= 12;
 }
 
 StreamBuffer::~StreamBuffer() {
