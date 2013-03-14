@@ -50,6 +50,7 @@ public:
 
 template <class type>
 bool StreamBuffer::write(const type* buffer){
+
 	if(buffer==NULL){
 		return false;
 		cout<<"input buffer void pointer"<<endl;
@@ -59,6 +60,7 @@ bool StreamBuffer::write(const type* buffer){
 		cout<<"buffer too small for input buffer"<<endl;
 	}
 	if(offset+sizeof(type)>buffersize){
+		
 		//cout<<"2"<<endl;
 			savetofile();
 			cout<<"Auto save file, reset offset"<<endl;
@@ -74,6 +76,7 @@ bool StreamBuffer::write(const type* buffer){
 		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, sizeof(type));
 		offset = offset+sizeof(type);
+		
 		return true;
 	}
 	if(offset+sizeof(type)==buffersize){

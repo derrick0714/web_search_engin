@@ -40,6 +40,7 @@ StreamBuffer::StreamBuffer(int size) {
 	filename	="data";
 	filenum		= 0;
 	postingsize		= 12;
+	is_sort		= false;
 }
 
 StreamBuffer::~StreamBuffer() {
@@ -76,6 +77,8 @@ bool StreamBuffer::read(void* buffer, int size){
 }
 
 bool StreamBuffer::write(const void* buffer, int size){
+
+	
 	if(buffer==NULL){
 		return false;
 		cout<<"input buffer void pointer"<<endl;
@@ -86,6 +89,8 @@ bool StreamBuffer::write(const void* buffer, int size){
 	}
 	if(offset+size>buffersize){
 			//cout<<"2"<<endl;
+		cout<<"Auto save file, reset offset"<<endl;
+	
 			savetofile();
 //			delete[] mybuffer;
 //			mybuffer = new char[buffersize];
@@ -93,6 +98,9 @@ bool StreamBuffer::write(const void* buffer, int size){
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, size);
 			offset = offset + size;
+
+			
+
 			return true;
 		}
 	if(offset+size<buffersize){
@@ -110,13 +118,7 @@ bool StreamBuffer::write(const void* buffer, int size){
 		savetofile();
 //		delete[] mybuffer;
 //		mybuffer = new char[buffersize];
-		cout<<"Auto save file, reset offset"<<endl;
-//		for (int i=0; i<buffersize;i++){
-//						    	printf("%c",mybuffer[i]);
-//						    	cout<<endl;
-//
-//						    cout<<"buffer[i]: "<<i<<endl;
-//			}
+		
 		offset = 0;
 		return true;
 	}
@@ -130,13 +132,25 @@ char* StreamBuffer::getcontent(int index){
 
 bool StreamBuffer::savetofile(){
 
+
 	try{
 	char tmpname[100];
 	sprintf(tmpname, "%s%d", filename.c_str(), filenum);
 	cout<<"filename: "<<tmpname<<endl;
 	ofstream file (tmpname, ios::out | ios::binary);
 	if(is_sort==true)
-	sort(postingsize, offset);
+		sort(postingsize, offset);
+	/*
+	for (int i=0; i<32;i+=4){
+		int tmp=0;
+		memcpy(&tmp,mybuffer+i,4);
+    	printf("%x",tmp);
+    	cout<<endl;
+		}
+		int i ;
+		cin>>i;
+	*/
+
 	file.write(mybuffer,offset);
 	file.close();
 	filenum++;

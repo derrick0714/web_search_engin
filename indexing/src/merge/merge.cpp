@@ -64,6 +64,7 @@ int main(int argc)
   streambuf.setfilename("result/data");
   streambuf1.setfilename("result/index");
 
+
   //open all files
   degree = 0;
   while(get_next_posting(tmp))
