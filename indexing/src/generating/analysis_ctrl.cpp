@@ -10,8 +10,8 @@ analysis_ctrl::analysis_ctrl()
 {
     _dataset_path = "./dataset/";
 
-    _file_start = 1800;
-    _file_end = 1820;
+    _file_start = 0;
+    _file_end = 82;
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
@@ -103,6 +103,7 @@ void analysis_ctrl::do_it()
 
         
         free(html_data);
+        //break;
        // cout<<"loop"<<endl;
     }
 
@@ -214,23 +215,23 @@ bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index
     int offset_val =0;
     while(pos < len)
     {
-        string host ="", ip="", port="", sub_url="",state="",len="";  
+        string url ="", ip="", port="",state="",len="",unknow1="",unknow2="";
         //get host
         if(
-        !get_one_word(index_data,pos,host) ||     
+        !get_one_word(index_data,pos,url) ||     
+        !get_one_word(index_data,pos,unknow1) ||
+        !get_one_word(index_data,pos,unknow2) ||
+        !get_one_word(index_data,pos,len) ||
         !get_one_word(index_data,pos,ip) ||
-        !get_one_word(index_data,pos,port) ||
-        !get_one_word(index_data,pos,sub_url) ||
-        !get_one_word(index_data,pos,state) ||
-        !get_one_word(index_data,pos,len)
+        !get_one_word(index_data,pos,port)||
+        !get_one_word(index_data,pos,state)
         )
             break; // if read finish, break
-        
         int len_val = atoi(len.c_str());
 
         // if exit doc id, return it else create new id 
-        int doc_id = get_doc_id((host+sub_url).c_str());
-        index.put(doc_id,(host+sub_url).c_str(), offset_val,len_val);
+        int doc_id = get_doc_id(url.c_str());
+        index.put(doc_id,(url).c_str(), offset_val,len_val);
         offset_val+=len_val;
         
     }
@@ -246,6 +247,7 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
     int percent = _file_end - _file_start == 0? 100 : ( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
     
     int pos_count = 0;
+   // cout<<"[-"<<percent<<"\%-][doc:"<<doc_id<<"]"<<endl;
     while(pos < len )
     {
         string word="";
@@ -269,9 +271,9 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
 
         new_lexicon.word_id = get_word_id(word);
         new_lexicon.doc_id = doc_id;
-        new_lexicon.startpos =atoi(positon.c_str()); //pos_count++;//atoi(positon.c_str());
+        new_lexicon.startpos =pos_count++;//atoi(positon.c_str()); //atoi(positon.c_str());
 
-        cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
+        //cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
 
         //save temp Lexicon
         (*buffer)>>new_lexicon;

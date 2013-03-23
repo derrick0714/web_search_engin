@@ -102,7 +102,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
     	memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
     	memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
     	memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
-    	cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
+    	//cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
     	if(lastwordid==-1){
     	lastwordid = wordid;
     	lastdocid =  docid;
