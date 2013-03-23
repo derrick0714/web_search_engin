@@ -8,7 +8,7 @@
 #include "models/WordMap.h"
 #include "parser/parser.h"
 #include "models/StreamBuffer.h"
-
+#include <ctime>
 
 #include <string>
 
@@ -79,6 +79,7 @@ private:
 	int 			_doc_id;
 	int 			_word_id;
 	StreamBuffer* 	buffer;
+	time_t 			_time_now ; 
 
 
 	WordMap			_word_map;

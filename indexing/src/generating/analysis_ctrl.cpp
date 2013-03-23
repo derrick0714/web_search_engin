@@ -1,6 +1,7 @@
 #include "analysis_ctrl.h"
 #include <sys/stat.h>
 #include <iostream>
+
 using namespace std;
 
 #define INDEX_CHUNK 409600 //50KB
@@ -20,6 +21,7 @@ analysis_ctrl::analysis_ctrl()
     buffer->setfilename("intermediate/posting");
     buffer->setpostingsize(12);
     buffer->set_sort(true);
+    _time_now = time(0); 
 
 }
 
@@ -126,7 +128,7 @@ void analysis_ctrl::do_it()
      
      buffer->savetofile();
 
-     cout<<"ok!finish!"<<endl;
+     cout<<"[finish] time consumed: "<<_time_now-time(0)<<"s"<<endl;
     
 }
 
