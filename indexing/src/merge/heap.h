@@ -20,6 +20,7 @@
 
 static int lastwordid = -1;
 static int lastdocid = -1;
+static int freq=1;
 
 /* data structure for one input/output buffer */
 typedef struct {FILE *f; char* buf; int curRec; int numRec;} buffer;
@@ -91,7 +92,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
 	int filenum = 0;
 	int offset = 0;
-	int freq=1;
+	
     int j;
     //cout<<"call writeRecord"<<endl;
 
