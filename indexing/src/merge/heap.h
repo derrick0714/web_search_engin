@@ -12,15 +12,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <list>
 #include "StreamBuffer.h"
 //#ifdef __APPLE__
 #  define off64_t off_t
 #  define fopen64 fopen
 //#endif
+using namespace std;
 
-static int lastwordid = -1;
-static int lastdocid = -1;
-static int freq=1;
+  static int lastwordid = -1;
+  static int lastdocid = -1;
+  static int freq = 1;
+  static list<int> mylist;
 
 /* data structure for one input/output buffer */
 typedef struct {FILE *f; char* buf; int curRec; int numRec;} buffer;
@@ -83,96 +86,101 @@ int nextRecord(int i)
 }
 
 
-/* copy i-th record from heap cache to out buffer; write to disk if full */
-/* If i==-1, then out buffer is just flushed to disk (must be last call) */
 void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
 {
-	int wordid,docid,pos;
-
-	int filenum = 0;
-	int offset = 0;
-	
-    int j;
-    //cout<<"call writeRecord"<<endl;
+  int wordid,docid,pos;
+  int filenum = 0;
+  int offset = 0;
+  int j;
 
   /* flush buffer if needed */
   if ((i == -1) || (b->curRec == bufSize))
   {
-    for (j = 0; j < b->curRec; j++) 
-    {
-      //cout<<"[^^1]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-    	memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
-    	memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
-    	memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
-    	//cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
-    	if(lastwordid==-1)
-      {
-        //cout<<"[^^^]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-      	lastwordid = wordid;
-      	lastdocid =  docid;
-        filenum = stream.get_filenum();
-        offset  = stream.get_offset();
-      	stream1.write(&wordid);
-      	stream1.write(&filenum);
-      	stream1.write(&offset);
-       // if(offset == 0)
-      //  {
-          //cout<<"[**]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-         // int a;
-           // cin>>a;
-        //}
-  //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
-  //      stream.write(false,&(b->buf[j*recSize]),recSize);
-      	stream.write(&pos);
-      	continue;
-    	}
+    for (j = 0; j < b->curRec; j++) {
 
-    	if(wordid==lastwordid)
-      {
-      		if (docid == lastdocid)
-          {
-        		freq++;
-        		stream.write(&pos);
-            //cout<<"[^^2]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-        		continue;
-      		}
-      		if (docid != lastdocid)
-          {
-        		stream.write(&lastdocid);
-        		stream.write(&freq);
-        		freq = 1;
-        		lastdocid = docid;
-        		stream.write(&pos);
-            //cout<<"[^^3]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-        		continue;
-      		}
+      /*An intermidiate posting is coming, divide it in to wordid docid pos*/
+      memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
+      memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
+      memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
+      // cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
 
-    	}
-
-    	if(wordid!=lastwordid)
-      {
-      		stream.write(&lastdocid);
-      		stream.write(&freq);
-      		filenum = stream.get_filenum();
-      		offset  = stream.get_offset();
-    	    freq = 1;
-    	    lastwordid = wordid;
-    	    lastdocid  = docid;
-    	    stream.write(&pos);
-      		stream1.write(&wordid);
-      		stream1.write(&filenum);
-      		stream1.write(&offset);
-         // if(offset == 0)
-          //{
-          //  cout<<"offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
-          //  int a;
-          //  cin>>a;
-         // }
-
-    	}
+      /*If this is the first record coming in*/
+      if(lastwordid==-1){
+      lastwordid = wordid;
+      lastdocid =  docid;
+      stream1.write(&wordid);
+      stream1.write(&filenum);
+      stream1.write(&offset);
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
-//    	stream.write(&(b->buf[j*recSize]),recSize);
+//      stream.write(false,&(b->buf[j*recSize]),recSize);
+
+//      stream.write(&pos);
+      mylist.push_back(pos);
+
+      continue;
+      }
+
+      /*If this record's wordid is the same as the previous one*/
+      if(wordid==lastwordid){
+        if (docid == lastdocid){
+        /*when docid and wordid remains the same, store all the position data in to a list*/
+        freq++;
+
+//        stream.write(&pos);
+        mylist.push_back(pos);
+
+        continue;
+        }
+        if (docid != lastdocid){
+        /*when docid changes, write docid and freq into file*/
+        stream.write(&lastdocid);
+        stream.write(&freq);
+        /*add all the position data belongs to this doc to the back*/
+        while(!mylist.empty()){
+          stream.write(&mylist.front());
+          mylist.pop_front();
+        }
+        freq = 1;
+        lastdocid = docid;
+//        cout<<mylist.size()<<endl;
+//        mylist.clear();
+
+//        stream.write(&pos);
+        mylist.push_back(pos);
+
+        continue;
+        }
+
+      }
+
+      /*If this record's wordid is different from the previous one*/
+      if(wordid!=lastwordid){
+        /*when wordid changes, write docid and freq into file*/
+        stream.write(&lastdocid);
+        stream.write(&freq);
+        /*add all the position data belongs to this doc to the back*/
+        while(!mylist.empty()){
+          stream.write(&mylist.front());
+          mylist.pop_front();
+        }
+          freq = 1;
+          lastwordid = wordid;
+          lastdocid  = docid;
+//          cout<<mylist.size()<<endl;
+//          mylist.clear();
+
+//          stream.write(&pos);
+          mylist.push_back(pos);
+
+          filenum = stream.get_filenum();
+          offset  = stream.get_offset();
+        stream1.write(&wordid);
+        stream1.write(&filenum);
+        stream1.write(&offset);
+      }
+//      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
+//      stream.write(&(b->buf[j*recSize]),recSize);
     }
     b->curRec = 0;
   }
