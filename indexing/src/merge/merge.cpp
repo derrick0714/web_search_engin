@@ -59,7 +59,7 @@ int main(int argc)
   StreamBuffer streambuf(12*100000);
 
   //streambuf1 is for the index structure
-  StreamBuffer streambuf1(1000000);
+  StreamBuffer streambuf1(999996);
 
   streambuf.setfilename("result/data");
   streambuf1.setfilename("result/index");
