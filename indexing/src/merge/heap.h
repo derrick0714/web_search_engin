@@ -18,7 +18,8 @@
 #  define fopen64 fopen
 //#endif
 
-
+static int lastwordid = -1;
+static int lastdocid = -1;
 
 /* data structure for one input/output buffer */
 typedef struct {FILE *f; char* buf; int curRec; int numRec;} buffer;
@@ -87,63 +88,87 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
 {
 	int wordid,docid,pos;
-	int lastwordid = -1;
-	int lastdocid = -1;
+
 	int filenum = 0;
 	int offset = 0;
 	int freq=1;
     int j;
+    //cout<<"call writeRecord"<<endl;
 
   /* flush buffer if needed */
   if ((i == -1) || (b->curRec == bufSize))
   {
-    for (j = 0; j < b->curRec; j++) {
-
+    for (j = 0; j < b->curRec; j++) 
+    {
+      //cout<<"[^^1]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
     	memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
     	memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
     	memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
     	//cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
-    	if(lastwordid==-1){
-    	lastwordid = wordid;
-    	lastdocid =  docid;
-    	stream1.write(&wordid);
-    	stream1.write(&filenum);
-    	stream1.write(&offset);
-//      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
-//      stream.write(false,&(b->buf[j*recSize]),recSize);
-    	stream.write(&pos);
-    	continue;
+    	if(lastwordid==-1)
+      {
+        //cout<<"[^^^]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
+      	lastwordid = wordid;
+      	lastdocid =  docid;
+        filenum = stream.get_filenum();
+        offset  = stream.get_offset();
+      	stream1.write(&wordid);
+      	stream1.write(&filenum);
+      	stream1.write(&offset);
+       // if(offset == 0)
+      //  {
+          //cout<<"[**]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
+         // int a;
+           // cin>>a;
+        //}
+  //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
+  //      stream.write(false,&(b->buf[j*recSize]),recSize);
+      	stream.write(&pos);
+      	continue;
     	}
 
-    	if(wordid==lastwordid){
-    		if (docid == lastdocid){
-    		freq++;
-    		stream.write(&pos);
-    		continue;
-    		}
-    		if (docid != lastdocid){
-    		stream.write(&lastdocid);
-    		stream.write(&freq);
-    		freq = 1;
-    		lastdocid = docid;
-    		stream.write(&pos);
-    		continue;
-    		}
+    	if(wordid==lastwordid)
+      {
+      		if (docid == lastdocid)
+          {
+        		freq++;
+        		stream.write(&pos);
+            //cout<<"[^^2]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
+        		continue;
+      		}
+      		if (docid != lastdocid)
+          {
+        		stream.write(&lastdocid);
+        		stream.write(&freq);
+        		freq = 1;
+        		lastdocid = docid;
+        		stream.write(&pos);
+            //cout<<"[^^3]offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
+        		continue;
+      		}
 
     	}
 
-    	if(wordid!=lastwordid){
-    		stream.write(&lastdocid);
-    		stream.write(&freq);
-    		filenum = stream.get_filenum();
-    		offset  = stream.get_offset();
+    	if(wordid!=lastwordid)
+      {
+      		stream.write(&lastdocid);
+      		stream.write(&freq);
+      		filenum = stream.get_filenum();
+      		offset  = stream.get_offset();
     	    freq = 1;
     	    lastwordid = wordid;
     	    lastdocid  = docid;
     	    stream.write(&pos);
-    		stream1.write(&wordid);
-    		stream1.write(&filenum);
-    		stream1.write(&offset);
+      		stream1.write(&wordid);
+      		stream1.write(&filenum);
+      		stream1.write(&offset);
+         // if(offset == 0)
+          //{
+          //  cout<<"offset:"<<offset<<" lastwordid:"<<lastwordid<<" wid:"<<wordid<<endl;
+          //  int a;
+          //  cin>>a;
+         // }
+
     	}
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //    	stream.write(&(b->buf[j*recSize]),recSize);

@@ -44,12 +44,12 @@ int main(int argc)
     recSize = 12;
   //  memSize = atoi(argv[2]);
   // memSize is the total memory assigned to ioBufs
-    memSize = 6*100000;
+    memSize = 60*100000;
   //  memSize = 3*100;
     bufSpace = (char *) malloc(memSize);
   //  maxDegree = atoi(argv[3]);
   // masDegree is the number of files read in
-  maxDegree = posting_end_num - posting_start_num + 1;
+  maxDegree = posting_end_num - posting_start_num +1 ;
   ioBufs = (buffer *) malloc((maxDegree + 1) * sizeof(buffer));
   heap.arr = (int *) malloc((maxDegree + 1) * sizeof(int));
   heap.cache = (char *) malloc(maxDegree * recSize);
