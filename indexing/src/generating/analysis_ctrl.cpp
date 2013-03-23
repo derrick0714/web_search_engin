@@ -128,7 +128,7 @@ void analysis_ctrl::do_it()
      
      buffer->savetofile();
 
-     cout<<"[finish] time consumed: "<<_time_now-time(0)<<"s"<<endl;
+     cout<<"[finish] time consumed: "<<time(0)-_time_now<<"s"<<endl;
     
 }
 
