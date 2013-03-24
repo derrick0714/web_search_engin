@@ -22,6 +22,9 @@ using namespace std;
 
   static int lastwordid = -1;
   static int lastdocid = -1;
+  static int lastfilenum = -1;
+  static int lastoffset = -1;
+  static int doc_num = 1;
   static int freq = 1;
   static list<int> mylist;
 
@@ -89,29 +92,27 @@ int nextRecord(int i)
 void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
 {
-  int wordid,docid,pos;
-  int filenum = 0;
-  int offset = 0;
-  int j;
+  int wordid,docid,pos,j;
 
   /* flush buffer if needed */
   if ((i == -1) || (b->curRec == bufSize))
   {
     for (j = 0; j < b->curRec; j++) {
 
-      /*An intermidiate posting is coming, divide it in to wordid docid pos*/
+      /*intermidiate postings are coming in the order of increasing wordid docid and pos, divide each of them in to wordid docid pos*/
       memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
       memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
       memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
-      // cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
+      cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
 
       /*If this is the first record coming in*/
       if(lastwordid==-1){
+
       lastwordid = wordid;
       lastdocid =  docid;
-      stream1.write(&wordid);
-      stream1.write(&filenum);
-      stream1.write(&offset);
+      lastfilenum = 0;
+      lastoffset = 0;
+
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //      stream.write(false,&(b->buf[j*recSize]),recSize);
 
@@ -133,6 +134,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
         continue;
         }
         if (docid != lastdocid){
+        doc_num++;
         /*when docid changes, write docid and freq into file*/
         stream.write(&lastdocid);
         stream.write(&freq);
@@ -164,20 +166,26 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
           stream.write(&mylist.front());
           mylist.pop_front();
         }
-          freq = 1;
-          lastwordid = wordid;
-          lastdocid  = docid;
+
+        /*when wordid changes, write last word's info into index table*/
+        /*here we need to do sth with the last incoming posting to write the last word*/
+        stream1.write(&lastwordid);
+        stream1.write(&doc_num);
+        stream1.write(&lastfilenum);
+        stream1.write(&lastoffset);
+
+        freq = 1;
+        doc_num = 1;
+        lastwordid = wordid;
+        lastdocid  = docid;
+        lastfilenum = stream.get_filenum();
+        lastoffset = stream.get_offset();
 //          cout<<mylist.size()<<endl;
 //          mylist.clear();
 
 //          stream.write(&pos);
           mylist.push_back(pos);
 
-          filenum = stream.get_filenum();
-          offset  = stream.get_offset();
-        stream1.write(&wordid);
-        stream1.write(&filenum);
-        stream1.write(&offset);
       }
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //      stream.write(&(b->buf[j*recSize]),recSize);
