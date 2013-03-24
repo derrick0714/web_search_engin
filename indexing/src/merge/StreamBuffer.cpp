@@ -19,6 +19,12 @@ int intCompare(const void *r1, const void *r2)
 		if(*(int *)((int *)r1+1) < *(int *)((int *)r2+1))
 			return (-1);
 	}
+	if(*(int *)((int *)r1+1) == *(int *)((int *)r2+1)){
+		if(*(int *)((int *)r1+2) > *(int *)((int *)r2+2))
+			return (1);
+		if(*(int *)((int *)r1+2) < *(int *)((int *)r2+2))
+			return (-1);
+	}
 	return(0);
 }
 StreamBuffer::StreamBuffer() {

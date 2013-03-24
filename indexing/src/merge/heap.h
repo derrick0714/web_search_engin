@@ -35,7 +35,8 @@ typedef struct {int *arr; char *cache; int size; } heapStruct;
 #define WORD(z) (*(int *)(&(heap.cache[heap.arr[(z)]*recSize])))
 //Compare the doc ID part
 #define DOC(z) (*(int *)(&(heap.cache[heap.arr[(z)]*recSize+sizeof(int)])))
-
+//Compare the pos part
+#define POS(z) (*(int *)(&(heap.cache[heap.arr[(z)]*recSize+2*sizeof(int)])))
 buffer *ioBufs;          /* array of structures for in/output buffers */
 heapStruct heap;         /* heap structure */
 int recSize;             /* size of record (in bytes) */
@@ -53,8 +54,10 @@ void heapify(int i)
     /* find minimum key value of current node and its two children */
     if (((i<<1) <= heap.size) && (WORD(i<<1) < WORD(i)))  s = i<<1;
     if (((i<<1) <= heap.size) && (WORD(i<<1) == WORD(i)) && (DOC(i<<1) < DOC(i)))  s = i<<1;
+    if (((i<<1) <= heap.size) && (WORD(i<<1) == WORD(i)) && (DOC(i<<1) == DOC(i))&& (POS(i<<1) < POS(i)))  s = i<<1;
     if (((i<<1)+1 <= heap.size) && (WORD((i<<1)+1) < WORD(s)))  s = (i<<1)+1;
     if (((i<<1)+1 <= heap.size) && (WORD((i<<1)+1) == WORD(s)) && (DOC((i<<1)+1) < DOC(s)))  s = (i<<1)+1;
+    if (((i<<1)+1 <= heap.size) && (WORD((i<<1)+1) == WORD(s)) && (DOC((i<<1)+1) == DOC(s))&& (POS((i<<1)+1) < POS(s)))  s = (i<<1)+1;
 
 
     /* if current is minimum, then done. Else swap with child and go down */
@@ -124,6 +127,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
       /*If this record's wordid is the same as the previous one*/
       if(wordid==lastwordid){
+//    	cout<<"wordid==lastwordid"<<endl;
         if (docid == lastdocid){
         /*when docid and wordid remains the same, store all the position data in to a list*/
         freq++;
@@ -158,6 +162,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
       /*If this record's wordid is different from the previous one*/
       if(wordid!=lastwordid){
+//    	cout<<"wordid!=lastwordid"<<endl;
         /*when wordid changes, write docid and freq into file*/
         stream.write(&lastdocid);
         stream.write(&freq);
@@ -173,6 +178,9 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
         stream1.write(&doc_num);
         stream1.write(&lastfilenum);
         stream1.write(&lastoffset);
+//        cout<<lastwordid<<" "<<doc_num<<" "<<lastfilenum<<" "<<lastoffset<<endl;
+//        int a;
+//        cin>>a;
 
         freq = 1;
         doc_num = 1;
