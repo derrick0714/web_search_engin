@@ -13,17 +13,17 @@ endif
 
 VPATH= $(SRC_DIR)
 
-clean: dist-clean
-	rm -rf *
+clean: dist-clean build-clean
 
 dist-clean:
 	rm -rf $(DIST_DIR)/*
+
 
 include/%.o : CFLAGS := $(CFLAGS) -fPIC
 include/%.o : CXXFLAGS := $(CXXFLAGS) -fPIC
 lib/%.o : CFLAGS := $(CFLAGS) -fPIC
 lib/%.o : CXXFLAGS := $(CXXFLAGS) -fPIC
-lib/lib%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
+lib/%.so : LDFLAGS := $(LDFLAGS) -shared -fPIC \
 								-Xlinker -z -Xlinker now
 
 %.o : %.c

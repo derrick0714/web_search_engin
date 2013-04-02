@@ -4,6 +4,7 @@ OBJ_DIR= ./build
 DIST_DIR= ../dist
 INSTALL_PREFIX= ../test
 
+
 .SUFFIXES: 
 
 all:

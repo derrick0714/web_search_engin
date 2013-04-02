@@ -1,6 +1,10 @@
-all: generating merge
+all: generating merge searching
 	cp generating/generating $(MAKE_DIR)/test
 	cp merge/merge $(MAKE_DIR)/test 
+	cp searching/searching $(MAKE_DIR)/test 
+	cp searching/searching ~/www/web_search_engine/interface/demo/
+
+#cp searching/lib_searching.so $(MAKE_DIR)/test 
 
 dist: dist-generating 
 
@@ -38,6 +42,19 @@ merge-bin: merge/merge
 
 dist-merge: dist-tree merge
 	cp merge/merge $(DIST_DIR)/$(DIST_PREFIX)merge
+
+################################################################################
+# searching                                                                   #
+################################################################################
+
+searching:  searhing-bin
+	
+
+lib_searching: lib/lib_searching.so
+
+searhing-bin: searching/searching
+
+	@echo "finish compile lib_searching"
 
 
 ################################################################################
