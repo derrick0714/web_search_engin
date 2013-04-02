@@ -1,0 +1,4 @@
+searching/searching: searching/searching.o \
+			 		searching/result_ctrl.o 
+
+
