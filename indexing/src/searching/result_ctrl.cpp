@@ -27,6 +27,6 @@ void ResultCrtl::add_one(STRU_RESULT& res)
 
 void ResultCrtl::print()
 {
-	for(int i = 0 ; i < _now; i++)
-		_result[i].print();
+//	for(int i = 0 ; i < _now; i++)
+//		_result[i].print();
 }

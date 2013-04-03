@@ -5,8 +5,8 @@
  *      Author: Adam57
  */
 
-#ifndef __LP_H_
-#define __LP_H_
+#ifndef LP_H_
+#define LP_H_
 #include<string.h>
 #include<vector>
 #include<string>
@@ -17,7 +17,9 @@ using namespace std;
 typedef struct {int chunk_last_wordid; int chunk_last_docid; int filenum; int offset;} chunk;
 typedef struct {int doc_num; int chunk_num; int posting_num;} word_inf;
 typedef struct {int wordid; int docid; int freq;} posting;
-
+static map<int, word_inf> word_index;
+static map<int, chunk> chunk_index;
+static map<string, int> word_map;
 class Lp {
 
 //private:
@@ -40,8 +42,8 @@ public:
 	int    num_of_chunks;
 	int    cur_posting_docid;
 	int	   cur_posting_freq;
+	int    cur_first_pos;
 	vector <chunk> chunkvector;
 };
 
 #endif /* LP_H_ */
-

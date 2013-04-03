@@ -10,19 +10,17 @@ struct STRU_RESULT
 	std::string _title;
 	std::string _round_text;
 	float _bm25;
-	void print()
-	{
-		cout<<_url<<endl;
-		cout<<_title<<endl;
-		cout<<_round_text<<endl;
-		cout<<_bm25<<endl;
-	}
+	int _doc_id;
+	int _pos;
+
 	STRU_RESULT()
 	{
 		_url = "";
 		_title = "";
 		_round_text="";
 		_bm25=0.0;
+		_doc_id=0;
+		_pos=0;
 	}
 };
 

@@ -6,16 +6,10 @@
  */
 
 /**/
-#ifndef __OPP_H_
-#define __OPP_H_
-
 #include "Lp.h"
 #include "vbyte.h"
 using namespace std;
 
-static map<int, word_inf> word_index;
-static map<int, chunk> chunk_index;
-static map<string, int> word_map;
 inline Lp* openList(int wordid){
    Lp* mylp = new Lp;
    chunk mychunk;
@@ -84,14 +78,16 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 			break;
 		}
 		end_posting_num = mylp->end_posting_num+1;
-		
 	}
 		start_chunk_num = mylp->start_chunk + i;
 
 		if(i==0)
 		start_posting_num = mylp->start_posting_num+1;
 
+		//cout<<"start_chunk_num: "<<start_chunk_num<<endl;
+
 		if(chunk_index[start_chunk_num].filenum == chunk_index[start_chunk_num+1].filenum){
+			//cout<<"chunk didn't cross file"<<endl;
 			chunk_size = chunk_index[start_chunk_num+1].offset - chunk_index[start_chunk_num].offset;
 			chunk = new char[chunk_size];
 			uchunk = new unsigned char[chunk_size];
@@ -136,6 +132,7 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 
 		//cout<<"start_posting_num: "<<start_posting_num<<endl;
 		//cin>>test;
+
 		while(posting_num<=128){
 		 if(posting_num<start_posting_num){
 		 len = readVbyte(uchunk+total_len, res1);
@@ -143,41 +140,50 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 		 //cout<<"docid diff: "<<res1<<endl;
 		 len = readVbyte(uchunk+total_len, res2);
 		 total_len = total_len + len;
-		 //cout<<"freq: "<<res2<<endl;
+//		 cout<<"freq: "<<res2<<endl;
 
 		 for(int h = 0; h<res2; h++){
 			 len = readVbyte(uchunk+total_len, res3);
 			 total_len = total_len + len;
-			// cout<<"pos diff: "<<res3<<endl;
+//			 cout<<"pos diff: "<<res3<<endl;
 		 }
+		   //  cout<<"total_len: "<<total_len<<endl;
 		 }
 
 		 if(posting_num>=start_posting_num){
+			// cout<<"when posting_num equals start_posting_num"<<endl;
 			 len = readVbyte(uchunk+total_len, res1);
+			 //cout<<"total_len: "<<total_len<<endl;
 			 total_len = total_len + len;
+			 //cout<<"total_len: "<<total_len<<endl;
+			 //cout<<"res1: "<<res1<<endl;
 			 last_docid = last_docid + res1;
-			// cout<<"docid: "<<last_docid<<endl;
+			 //cout<<"docid: "<<last_docid<<endl;
 			 len = readVbyte(uchunk+total_len, res2);
 			 total_len = total_len + len;
-			// cout<<"freq: "<<res2<<endl;
+			 //cout<<"freq: "<<res2<<endl;
+
+
+			 if (last_docid>=search_docid){
+				 mylp->cur_posting_docid = last_docid;
+				 mylp->cur_posting_freq = res2;
+				 len = readVbyte(uchunk+total_len, res3);
+				 total_len = total_len + len;
+				 mylp->cur_first_pos = res3;
+				 return mylp->cur_posting_docid;
+			 }
 
 			 for(int h = 0; h<res2; h++){
 			 	len = readVbyte(uchunk+total_len, res3);
 			 	total_len = total_len + len;
-			 //	cout<<"pos diff: "<<res3<<endl;
+			 	//cout<<"pos diff: "<<res3<<endl;
 			 }
 
-		 if (last_docid>=search_docid){
-			 mylp->cur_posting_docid = last_docid;
-			 mylp->cur_posting_freq = res2;
-			 return mylp->cur_posting_docid;
-		 }
 		}
 //		 res_arr = new unsigned int[res2];
 		// cout<<"posting_num: "<<posting_num<<endl;
 		 posting_num++;
 	    }
-
 
 //	filenum = chunk_index[start_chunk_num].filenum;
 //	offset = chunk_index[start_chunk_num].offset;
@@ -191,6 +197,6 @@ inline int getFreq(Lp* mylp){
    return mylp->cur_posting_freq;
 }
 
-#endif
-
-
+inline int getPos(Lp* mylp){
+	 return mylp->cur_first_pos;
+}

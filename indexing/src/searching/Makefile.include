@@ -5,6 +5,7 @@ searching/searching: searching/searching.o \
 			 		include/models/Docmap.o \
 			 		include/models/WordMap.o \
 			 		include/utility/gzip.o \
+			 		include/parser/parser.o \
 			 		
 
 

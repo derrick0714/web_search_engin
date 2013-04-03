@@ -226,11 +226,12 @@ void SearchingAlgorim::do_searching(char* words)
 		{
 			float bm25_all = 0.0;
 			STRU_DOC one_doc = _doc_map[did];
-			for( int i = 0 ; i<p.size(); i++)
+			int target_pos = getPos(p[0]);
+			for( int k = 0 ; k<p.size(); k++)
 			{
-			
-			 	int freq= getFreq(p[i]);
-			 	int ft=p[i]->doc_num;
+			 	int freq= getFreq(p[k]);
+
+			 	int ft=p[k]->doc_num;
 			 	
 			 	if(one_doc.doc_name == "")
 			 		continue;
@@ -247,15 +248,18 @@ void SearchingAlgorim::do_searching(char* words)
 		 		
 				result_array[result_count]._url =one_doc.doc_name;
 				result_array[result_count]._bm25=bm25_all;
-		 		
+				result_array[result_count]._doc_id = did;
+				result_array[result_count]._pos = target_pos;
+ 		
 		 		result_count++;
 		 	}
 		 	else if(bm25_all > result_array[0]._bm25)
 		 	{
 				result_array[0]._url =one_doc.doc_name;
 				result_array[0]._bm25=bm25_all;
-
-				
+				result_array[0]._doc_id = did;
+				result_array[0]._pos = target_pos;
+	
 		 	}
 
 	 		sort(result_array,0,result_count-1);
@@ -266,10 +270,92 @@ void SearchingAlgorim::do_searching(char* words)
 
 		did++;
 	}
+	//around text
+	for(int i =0; i < result_count;i++)
+	{
+		STRU_DOC one_doc = _doc_map[result_array[i]._doc_id];
+		char filename[20];
+	 	sprintf(filename,"dataset/%d_data",one_doc.file_id);
+	 	int already_len = 0;
+	 	char* index_data = gzip::uncompress_from_file(filename, INDEX_CHUNK, already_len);
+        if( index_data == NULL || already_len == 0)
+        {
+            cout<<"read index data error: "<<filename<<endl;
+            continue;
+        }
+        char* html = new char[already_len];
+        memcpy(html,index_data+one_doc.offset,one_doc.len);
+        char *pool;
+
+        pool = (char*)malloc(2*one_doc.len+1);
+        
+
+        int ret = parser((char*)one_doc.doc_name.c_str(), html , pool, 2*one_doc.len+1);
+        
+  	
+  		cout<<"aound text:"<<request_list[0]<<endl;
+       	char* data = get_around_text(pool,already_len,result_array[i]._pos,result_array[i]._title);
+       	cout<<endl;
+
+       	free(pool);
+       	delete[] html;
+ //       cout<<html<<endl;
+
+	//	result_array[result_count]._round_text=;
+	}
 
 	for(int i =0 ;i <p.size();i++)
 		closeList(p[i]);
 
+}
+char* SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,string& title)
+{
+    int pos = 0;
+    int offset_val =0;
+    int start_colletion = 0;
+
+    cout<<"target_pos:"<<tartget_pos<<endl;
+    if(tartget_pos > 10)
+    	start_colletion = tartget_pos-4;
+    int end_colletion = start_colletion +10;
+
+    int pos_count = 0;
+   // cout<<"[-"<<percent<<"\%-][doc:"<<doc_id<<"]"<<endl;
+    while(pos < len )
+    {
+        string word="";
+        string context="";
+        string positon="";
+
+        if(
+            !get_one_word(html , pos, word) ||
+            !get_one_word(html , pos, positon) ||
+            !get_one_word(html , pos, context)
+            )
+            break;
+
+        //cout<<"["<<pos<<"]"<<"word=>"<<word<<" pos=>"<<positon<<" context=>"<<context<<endl ;
+        
+        if(pos_count >= start_colletion && pos_count <= end_colletion)
+        {
+        	cout<<word<<" "<<context<<endl;
+        }
+        if(context=="T")
+        {
+        	if(title=="")
+        		title+=word;
+        	else
+        		title+=" "+word;
+        }
+
+        pos_count++;//atoi(positon.c_str()); //atoi(positon.c_str());
+         
+    }
+
+   // cout<<"title"<<title<<endl;
+    //cout<<pos<<"--------------------------------"<<endl<<endl<<endl<<endl<<endl;
+
+    return NULL;
 }
 void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
 {
@@ -313,7 +399,7 @@ char* SearchingAlgorim::get_result()
 		offset+=strlen(result+offset);
 
 	}
-	cout<<result<<endl;
+	//cout<<result<<endl;
 	return result;
 }
 bool SearchingAlgorim::get_one_word(char* source ,int& pos,string& str)
