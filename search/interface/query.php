@@ -6,8 +6,8 @@ require_once( './loader.php' );
 
 $key_words = $_GET["key"];
 $output = query( $key_words);
-var_dump($output);
-exit(0);
+//var_dump($output);
+//exit(0);
 
 $result = format_result($output);
 load_template("query");
@@ -26,13 +26,13 @@ function format_result( $output )
 	$len =count($output);
 	$result = array();
 	$j=0;
-	for( $i = 0; $i < $len; $i+=4)
+	for( $i = 1; $i < $len; $i+=2)
 	{
 		$one_result = array();
 		$one_result['url'] = $output[$i];
-		$one_result['title'] = $output[$i+1];
-		$one_result['round'] = $output[$i+2];
-		$one_result['bm25'] = $output[$i+3];
+		$one_result['title'] = $output[$i];
+		$one_result['round'] = $output[$i];
+		$one_result['bm25'] = $output[$i+1];
 		$result[$j++] =$one_result;
 	}
 	//var_dump($result);

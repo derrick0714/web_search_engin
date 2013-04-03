@@ -35,28 +35,31 @@ int main(int argc,char** argv)
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(9998); 
+    serv_addr.sin_port = htons(9888); 
 
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
 
     listen(listenfd, 10); 
-    cout<<"start searching service...listen to 9998"<<endl;
-    // while(1)
-    // {
-    //     connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
-    //    	//if((numbytes = recv(connfd,recvBuff,sizeof(recvBuff),0))!=-1)
-    //    	{
-    //    		//cout<<"recv:"<<recvBuff<<endl;
-    //    		ticks = time(NULL);
-	   //      snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-	   //      write(connfd, sendBuff, strlen(sendBuff)); 
-    //    	}
+    cout<<"start searching service...listen to 9988"<<endl;
+    SearchingAlgorim demo;
+    
+    while(1)
+    {
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+        int numbytes = 0;
+       	if((numbytes = recv(connfd,recvBuff,sizeof(recvBuff),0))!=-1)
+       	{
+       		cout<<"query request:"<<recvBuff<<endl;
+	        //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
+            demo.do_searching(recvBuff);
+
+	        write(connfd, demo.get_result(), strlen(demo.get_result())); 
+       	}
         
 
-    //     close(connfd);
-    //     sleep(1);
-    //  }
-	SearchingAlgorim demo;
-	demo.do_searching("the");
+        close(connfd);
+        sleep(1);
+     }
+	
 	return 0;
 }

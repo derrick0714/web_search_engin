@@ -22,7 +22,10 @@ public:
 public:
 	void init_data();
 	char* init_buffer_from_file(string file_name,int& size);
-	void do_searching(string words);
+	void do_searching(char* words);
+	void sort(STRU_RESULT* array, int left , int right);
+	char* get_result();
+	bool get_one_word(char* source ,int& pos,string& str);
 private:
 	DocMap 		_doc_map;
 	WordMap		_word_map;
@@ -31,6 +34,9 @@ private:
 	float 		b;
 	int       	d_agv;
 	int 		N;
+	STRU_RESULT result_array[10];
+	int 		result_count;
+	char		result[1024];
 
 
 };

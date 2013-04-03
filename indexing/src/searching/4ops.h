@@ -134,21 +134,21 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 			memcpy(uchunk, chunk, chunk_size);
 		}
 
-		cout<<"start_posting_num: "<<start_posting_num<<endl;
-		cin>>test;
+		//cout<<"start_posting_num: "<<start_posting_num<<endl;
+		//cin>>test;
 		while(posting_num<=128){
 		 if(posting_num<start_posting_num){
 		 len = readVbyte(uchunk+total_len, res1);
 		 total_len = total_len + len;
-		 cout<<"docid diff: "<<res1<<endl;
+		 //cout<<"docid diff: "<<res1<<endl;
 		 len = readVbyte(uchunk+total_len, res2);
 		 total_len = total_len + len;
-		 cout<<"freq: "<<res2<<endl;
+		 //cout<<"freq: "<<res2<<endl;
 
 		 for(int h = 0; h<res2; h++){
 			 len = readVbyte(uchunk+total_len, res3);
 			 total_len = total_len + len;
-			 cout<<"pos diff: "<<res3<<endl;
+			// cout<<"pos diff: "<<res3<<endl;
 		 }
 		 }
 
@@ -156,15 +156,15 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 			 len = readVbyte(uchunk+total_len, res1);
 			 total_len = total_len + len;
 			 last_docid = last_docid + res1;
-			 cout<<"docid: "<<last_docid<<endl;
+			// cout<<"docid: "<<last_docid<<endl;
 			 len = readVbyte(uchunk+total_len, res2);
 			 total_len = total_len + len;
-			 cout<<"freq: "<<res2<<endl;
+			// cout<<"freq: "<<res2<<endl;
 
 			 for(int h = 0; h<res2; h++){
 			 	len = readVbyte(uchunk+total_len, res3);
 			 	total_len = total_len + len;
-			 	cout<<"pos diff: "<<res3<<endl;
+			 //	cout<<"pos diff: "<<res3<<endl;
 			 }
 
 		 if (last_docid>=search_docid){
@@ -174,7 +174,7 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 		 }
 		}
 //		 res_arr = new unsigned int[res2];
-		 cout<<"posting_num: "<<posting_num<<endl;
+		// cout<<"posting_num: "<<posting_num<<endl;
 		 posting_num++;
 	    }
 

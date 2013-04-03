@@ -1,6 +1,6 @@
 <div class="result_top">
 	<form class="form-search" action="query.php" method="get">
-	  <input name="key" type="text" class="input-xlarge" value=<?php echo$_GET["key"]?>>
+	  <input name="key" type="text" class="input-xlarge" value=<?php echo "\"".$_GET["key"]."\""?>>
 	  <button type="submit" class="btn">Search</button>
 	</form>
 </div>

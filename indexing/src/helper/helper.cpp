@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
         }
     }
     sendBuff[offset]='\0';
-   // cout<<sendBuff<<endl;
-    return 0;
+    //cout<<sendBuff<<endl;
+    
 
     memset(recvBuff, '0',sizeof(recvBuff));
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     memset(&serv_addr, '0', sizeof(serv_addr)); 
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(9998); 
+    serv_addr.sin_port = htons(9888); 
 
     if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
     {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
        return 1;
     } 
 
-
+    write(sockfd, sendBuff, strlen(recvBuff));
     while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         recvBuff[n] = 0;

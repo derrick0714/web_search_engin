@@ -175,52 +175,182 @@ char* SearchingAlgorim::init_buffer_from_file(string file_name, int& size)
 	}
 }
 
-void SearchingAlgorim::do_searching(string words)
+void SearchingAlgorim::do_searching(char* words)
 {	
-	cout<<"do searching...."<<endl<<" key words:"<<words;
+	cout<<"do searching...."<<endl<<" key words:"<<words<<endl;
 	//for(int i =0; i< key_words.size();i++)
 	//	cout<<key_words[i]<<" ";
-	cout<<endl;
-	_result.clear();
+	result_count = 0;
+	int request_count = 0;
+	string word="";
+	int pos=0;
+	vector<string> request_list;
+	while(get_one_word(words,pos,word))
+	{
+		cout<<"new:"<<word<<endl;
+		request_list.push_back(word);
+		request_count++;
+		word="";
 
-	STRU_RESULT test;
-	test._url ="http://www.sina.com.cn";
-	test._title="sina.com.cn";
-	test._round_text = "hahahahah";
-	test._bm25=12;
+	}
+	if(request_count == 0)
+		return;
 
-
-	_result.add_one(test);
-
+	vector<Lp*> p;
 //	_result.print();
-
-	int word_id=_word_map[words];
-	cout<<"word_id:"<<word_id<<endl;
-	Lp *p =openList(word_id);
+	for(int i = 0 ; i < request_list.size();i++)
+	{
+		int word_id=_word_map[request_list[i]];
+		cout<<"word: "<<request_list[i]<<" word_id:"<<word_id<<endl;
+		if(word_id == 0)
+			continue;
+		Lp* tmp = openList(word_id);
+		if(tmp == NULL)
+			continue;
+		p.push_back(tmp);
+	}
+	if(p.size() == 0)
+		return;
+	cout<<"p.size:"<<p.size()<<endl;
+	
+	
 	int did = 0;
 	while(did < N)
 	{
+		int d = 0;
+	 	did = nextGEQ(p[0],did);
 
-	 	did = nextGEQ(p,did);
+	 	for(int i = 1; (i< p.size())&& ((d=nextGEQ(p[i],did))==did);i++);
+		if(d > did) did = d-1;
+		else
+		{
+			float bm25_all = 0.0;
+			STRU_DOC one_doc = _doc_map[did];
+			for( int i = 0 ; i<p.size(); i++)
+			{
+			
+			 	int freq= getFreq(p[i]);
+			 	int ft=p[i]->doc_num;
+			 	
+			 	if(one_doc.doc_name == "")
+			 		continue;
+			 	//cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
+			 	//cout<<"req:"<<freq<<" ft:"<<ft<<endl;
+			 	//comput bm25
+			 	float K = (float)k1 * (float)((1-b) + b* ((float)one_doc.len / (float)d_agv ) );
+			 	float bm25 = log ( (float)(N-ft+0.5)/(float)(ft+0.5) ) * ((k1 + 1)*(float)freq)/(float)(K + freq);
+			 	cout<<"bm25:"<<bm25<<endl;
+			 	bm25_all+=bm25;
+	 		}
+		 	if(result_count < 10)
+		 	{
+		 		
+				result_array[result_count]._url =one_doc.doc_name;
+				result_array[result_count]._bm25=bm25_all;
+		 		
+		 		result_count++;
+		 	}
+		 	else if(bm25_all > result_array[0]._bm25)
+		 	{
+				result_array[0]._url =one_doc.doc_name;
+				result_array[0]._bm25=bm25_all;
 
-	 	int freq= getFreq(p);
-	 	int ft=p->doc_num;
-	 	STRU_DOC one_doc = _doc_map[did];
-	 	cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
-	 	cout<<"req:"<<freq<<" ft:"<<ft<<endl;
+				
+		 	}
 
-	 	//comput bm25
-	 	float K = (float)k1 * (float)((1-b) + b* ((float)one_doc.len / (float)d_agv ) );
-	 	cout<<"K:"<<K<<endl;
-	 	float inlog=(float)(N-ft+0.5)/(float)(ft+0.5);
-	 	cout<<"in log:"<<inlog<<endl;
-	 	float bm25 = log ( (float)(N-ft+0.5)/(float)(ft+0.5) ) * ((k1 + 1)*(float)freq)/(float)(K + freq);
-	 	cout<<"bm25:"<<bm25<<endl;
-	 	
+	 		sort(result_array,0,result_count-1);
+	 	}
+	 	//cout<<"list:";
+	 	//for(int j =0; j < result_count; j++)
+	 	//	cout<<"["<<j<<"] "<<result_array[j]._bm25<<endl;
 
 		did++;
 	}
 
+	for(int i =0 ;i <p.size();i++)
+		closeList(p[i]);
+
+}
+void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
+{
+	if(arr == NULL)
+		return;
+	float pivot = arr[(left+right)/2]._bm25;
+	int i = left, j=right;
+
+	//partition
+	while(i <= j)
+	{
+		while(arr[i]._bm25 < pivot)
+			i++;
+		while(arr[j]._bm25 > pivot)
+			j--;
+		if(i <= j)
+		{
+			STRU_RESULT tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+	if( j > left)
+		sort(arr, left ,j);
+	if( i < right)
+		sort(arr, i , right);
+}
+char* SearchingAlgorim::get_result()
+{
+	if(result_count ==0)
+		return "";
+	
+	int offset = 0;
+	for(int i = result_count-1; i >=0; i --)
+	{
+		sprintf(result+offset,"%s\n",result_array[i]._url.c_str());
+		offset+=strlen(result+offset);
+		sprintf(result+offset,"%f\n",result_array[i]._bm25);
+		offset+=strlen(result+offset);
+
+	}
+	cout<<result<<endl;
+	return result;
+}
+bool SearchingAlgorim::get_one_word(char* source ,int& pos,string& str)
+{
+
+
+    char get_num = 0;
+    while( source[pos] != '\0')
+    {
+
+        if(source[pos] == '\r' || source[pos]=='\n' || source[pos] == ' ')
+        {
+                
+            if( get_num == 0)
+            {
+                pos++;
+
+                continue;
+            }
+            else
+            {
+                pos++;
+                return true;
+            }
+        }
+        else 
+        {
+            str+=source[pos++];
+            get_num++;
+            //cout<<str.c_str()<<endl;
+        }
+    }
+    if( source[pos] == '\0' && get_num>0)
+    {
+    	return true; 
+    }
+    return false;
 }
 
 // char filename[20];
