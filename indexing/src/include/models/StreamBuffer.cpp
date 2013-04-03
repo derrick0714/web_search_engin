@@ -72,6 +72,7 @@ void StreamBuffer::set_sort(bool sort)
 }
 
 bool StreamBuffer::read(void* buffer, int size){
+		//cout<<"size:"<<size<<" buffersize:"<<buffersize<<endl;
 		if(offset>=buffersize)
 			return false;
 		else

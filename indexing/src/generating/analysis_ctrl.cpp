@@ -80,7 +80,7 @@ void analysis_ctrl::do_it()
         //save raw data into orgnized data structer
         original_index index;
 
-        if( !save_index(index_data, already_len, index ) )
+        if( !save_index(index_data, already_len, index, data_set._file_num) )
         {
             cout<<"save index data error"<<endl;
             continue;
@@ -113,13 +113,13 @@ void analysis_ctrl::do_it()
     //_word_map
 
    
-     StreamBuffer buffer1(1*1024*1024);
+     StreamBuffer buffer1(50*1024*1024);
      buffer1.setfilename("intermediate/word_map.data");
      buffer1>>_word_map;
      buffer1.savetofile();
 
       //save docs map;
-     StreamBuffer buffer2(1*1024*1024);
+     StreamBuffer buffer2(50*1024*1024);
      buffer2.setfilename("intermediate/docs_map.data");
      buffer2>>_docs_map;
      buffer2.savetofile();
@@ -208,7 +208,7 @@ bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
     
 }
 
-bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index)
+bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index, int file_num)
 {
     if( index_data == NULL || len == 0)
         return false;
@@ -232,7 +232,7 @@ bool analysis_ctrl::save_index(char* index_data , int len ,original_index& index
         int len_val = atoi(len.c_str());
 
         // if exit doc id, return it else create new id 
-        int doc_id = get_doc_id(url.c_str());
+        int doc_id = get_doc_id(url.c_str(),file_num, offset_val,len_val);
         index.put(doc_id,(url).c_str(), offset_val,len_val);
         offset_val+=len_val;
         
@@ -324,16 +324,18 @@ bool analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
     return false;
 }
 
-int analysis_ctrl::get_doc_id(string doc_name)
+int analysis_ctrl::get_doc_id(string doc_name,int file_num, int offset, int len)
 {
      if(_docs_map.isHas(doc_name))
     {   
-        cout<<"doc repeat:"<<doc_name<<"=>"<<_docs_map[doc_name]<<endl;
-        return _docs_map[doc_name];
+        cout<<"doc repeat:"<<doc_name<<"=>"<<_docs_map[doc_name].doc_id<<endl;
+        return _docs_map[doc_name].doc_id;
     }
 
-    _docs_map[doc_name] = _doc_id;
-
+    _docs_map[doc_name].doc_id = _doc_id;
+    _docs_map[doc_name].file_id = file_num;
+    _docs_map[doc_name].offset = offset;
+    _docs_map[doc_name].len = len;
     return _doc_id++;
 }
 

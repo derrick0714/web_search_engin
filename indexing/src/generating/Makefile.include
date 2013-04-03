@@ -6,6 +6,7 @@ generating/generating: generating/generating.o \
 					   include/utility/gzip.o \
 					   include/models/WordMap.o \
 					   include/models/StreamBuffer.o \
+					   include/models/Docmap.o \
 					   generating/analysis_ctrl.o \
 
 

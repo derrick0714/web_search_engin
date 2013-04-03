@@ -8,6 +8,7 @@
 #include "models/WordMap.h"
 #include "parser/parser.h"
 #include "models/StreamBuffer.h"
+#include "models/Docmap.h"
 #include <ctime>
 
 #include <string>
@@ -30,6 +31,7 @@ struct DataSet
 	std::string	_index;
 	std::string _data;
 	std::string _path;
+	int 		_file_num;
 
 	DataSet(std::string path)
 	{
@@ -37,6 +39,7 @@ struct DataSet
 	}
 	void set_num(int num)
 	{
+		_file_num = num;
 		char temp[64] = {0};
 		sprintf ( temp, "%d_index", num );
 		_index = _path+temp;
@@ -59,11 +62,11 @@ public:
 
 private:
 	void do_it();
-	bool save_index(char* index_data, int len, original_index& index);
+	bool save_index(char* index_data, int len, original_index& index, int file_num);
 	bool parse_data(char* html_data, int len, original_index& index);
 	bool save_data(int doc_id, char* save_data, int len);
 	bool get_next_file_name(DataSet& data_set);		//get next  file name
-	int  get_doc_id(std::string doc_name);
+	int  get_doc_id(std::string doc_name,int file_num, int offset, int len);
 	int  get_word_id(std::string word);
 	bool parse();
 	bool get_one_word(char* source, int& pos,string& str);
@@ -83,7 +86,7 @@ private:
 
 
 	WordMap			_word_map;
-	WordMap 		_docs_map;
+	DocMap 			_docs_map;
 
 };
 

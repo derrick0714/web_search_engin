@@ -1,11 +1,13 @@
 #include<iostream>
-#include"result_ctrl.h"
+
+#include "searching_algorim.h"
 using namespace std;
 
 
 int main(int argc,char** argv)
 {
 
+	/*
 	
 	STRU_RESULT test;
 	test._url="www.google.com";
@@ -20,5 +22,9 @@ int main(int argc,char** argv)
 		demo.add_one(test);
 	}
 	demo.print();
+	*/
+
+	SearchingAlgorim demo;
+
 	return 0;
 }
