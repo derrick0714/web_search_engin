@@ -14,6 +14,7 @@
 #include <string.h>
 #include <list>
 #include "StreamBuffer.h"
+#include "vbyte.h"
 //#ifdef __APPLE__
 #  define off64_t off_t
 #  define fopen64 fopen
@@ -22,10 +23,22 @@ using namespace std;
 
   static int lastwordid = -1;
   static int lastdocid = -1;
-  static int lastfilenum = -1;
-  static int lastoffset = -1;
+//  static int lastfilenum = 0;
+//  static int lastoffset = 0;
   static int doc_num = 1;
   static int freq = 1;
+  static int last_posting_num = 1;
+  static int last_chunk_num = 1;
+  static int posting_num = 0;
+  static int chunk_num = 1;
+  static int last_chunk_filenum = 0;
+  static int last_chunk_offset = 0;
+  static int previous_pos = -1;
+  static int diff_pos = -1;
+  static int diff_docid = -1;
+  static int test;
+  static int len;
+  static unsigned char buf[100] = {0};
   static list<int> mylist;
 
 /* data structure for one input/output buffer */
@@ -92,7 +105,7 @@ int nextRecord(int i)
 }
 
 
-void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
+void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1, StreamBuffer &stream2)
 
 {
   int wordid,docid,pos,j;
@@ -101,20 +114,19 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
   if ((i == -1) || (b->curRec == bufSize))
   {
     for (j = 0; j < b->curRec; j++) {
-
+//    	cin>>test;
       /*intermidiate postings are coming in the order of increasing wordid docid and pos, divide each of them in to wordid docid pos*/
       memcpy(&wordid,&(b->buf[j*recSize]),sizeof(int));
       memcpy(&docid,&(b->buf[j*recSize])+sizeof(int),sizeof(int));
       memcpy(&pos,&(b->buf[j*recSize])+2*sizeof(int),sizeof(int));
-      cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
+
+//      cout<<"#"<<j<<" wordid: "<<wordid<<" docdid: "<<docid<<" pos: "<<pos<<endl;
 
       /*If this is the first record coming in*/
       if(lastwordid==-1){
 
       lastwordid = wordid;
       lastdocid =  docid;
-      lastfilenum = 0;
-      lastoffset = 0;
 
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //      stream.write(false,&(b->buf[j*recSize]),recSize);
@@ -135,19 +147,68 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 //        stream.write(&pos);
         mylist.push_back(pos);
 
+        /*generate chunk index, however need to do something with the last few postings*/
+        if(posting_num==128) {
+            stream2.write(&chunk_num);
+            stream2.write(&wordid);
+            stream2.write(&docid);
+            stream2.write(&last_chunk_filenum);
+            stream2.write(&last_chunk_offset);
+            chunk_num++;
+            posting_num=0;
+            last_chunk_filenum = stream.get_filenum();
+            last_chunk_offset = stream.get_offset();
+        }
         continue;
         }
         if (docid != lastdocid){
         doc_num++;
+        posting_num++;
+//        cout<<posting_num<<endl;
+//        cin>>test;
         /*when docid changes, write docid and freq into file*/
-        stream.write(&lastdocid);
-        stream.write(&freq);
+        /*when the new chunk begins, we need to write the original docid*/
+        if(posting_num==1){
+        len = writeVbyte(lastdocid, buf);
+        stream.write(buf, len);
+//        stream.write(&lastdocid);
+        }
+        /*For the first docid for a new word, we need to write the original docid*/
+        if(posting_num!=1&&doc_num==2){
+        len = writeVbyte(lastdocid, buf);
+        stream.write(buf, len);
+//        stream.write(&lastdocid);
+        }
+        /*other times, we write the doc_id differences*/
+        if(posting_num!=1&&doc_num!=2){
+        len = writeVbyte(diff_docid, buf);
+        stream.write(buf, len);
+//        stream.write(&diff_docid);
+        }
+
+        /*they we write freq for this doc_id*/
+        len = writeVbyte(freq, buf);
+        stream.write(buf, len);
+//        stream.write(&freq);
+
         /*add all the position data belongs to this doc to the back*/
+        len = writeVbyte(mylist.front(), buf);
+        stream.write(buf, len);
+//        stream.write(&mylist.front());
+        previous_pos = mylist.front();
+        mylist.pop_front();
         while(!mylist.empty()){
-          stream.write(&mylist.front());
+          diff_pos = mylist.front() - previous_pos;
+//          if (diff_pos<0)  cin>>diff_pos;
+          len = writeVbyte(diff_pos, buf);
+          stream.write(buf, len);
+//          stream.write(&diff_pos);
+          previous_pos = mylist.front();
           mylist.pop_front();
         }
         freq = 1;
+
+        diff_docid = docid-lastdocid;
         lastdocid = docid;
 //        cout<<mylist.size()<<endl;
 //        mylist.clear();
@@ -155,6 +216,17 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 //        stream.write(&pos);
         mylist.push_back(pos);
 
+        if(posting_num==128) {
+            stream2.write(&chunk_num);
+            stream2.write(&wordid);
+            stream2.write(&docid);
+            stream2.write(&last_chunk_filenum);
+            stream2.write(&last_chunk_offset);
+            chunk_num++;
+            posting_num=0;
+            last_chunk_filenum = stream.get_filenum();
+            last_chunk_offset = stream.get_offset();
+        }
         continue;
         }
 
@@ -162,23 +234,40 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
 
       /*If this record's wordid is different from the previous one*/
       if(wordid!=lastwordid){
+//    	  cin>>test;
+    	  posting_num++;
 //    	cout<<"wordid!=lastwordid"<<endl;
         /*when wordid changes, write docid and freq into file*/
-        stream.write(&lastdocid);
-        stream.write(&freq);
+    	len = writeVbyte(lastdocid, buf);
+    	stream.write(buf, len);
+//        stream.write(&lastdocid);
+    	len = writeVbyte(freq, buf);
+    	stream.write(buf, len);
+//        stream.write(&freq);
         /*add all the position data belongs to this doc to the back*/
+    	len = writeVbyte(mylist.front(), buf);
+    	stream.write(buf, len);
+//        stream.write(&mylist.front());
+        previous_pos = mylist.front();
+        mylist.pop_front();
         while(!mylist.empty()){
-          stream.write(&mylist.front());
+          diff_pos = mylist.front() - previous_pos;
+//          if (diff_pos<0) cin>>diff_pos;
+          len = writeVbyte(diff_pos, buf);
+          stream.write(buf, len);
+//          stream.write(&diff_pos);
+          previous_pos = mylist.front();
           mylist.pop_front();
         }
-
         /*when wordid changes, write last word's info into index table*/
         /*here we need to do sth with the last incoming posting to write the last word*/
         stream1.write(&lastwordid);
         stream1.write(&doc_num);
-        stream1.write(&lastfilenum);
-        stream1.write(&lastoffset);
-//        cout<<lastwordid<<" "<<doc_num<<" "<<lastfilenum<<" "<<lastoffset<<endl;
+//        stream1.write(&lastfilenum);
+//        stream1.write(&lastoffset);
+        stream1.write(&last_chunk_num);
+        stream1.write(&last_posting_num);
+//        cout<<lastwordid<<" "<<doc_num<<" "<<chunk_num<<" "<<posting_num<<endl;
 //        int a;
 //        cin>>a;
 
@@ -186,15 +275,31 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1)
         doc_num = 1;
         lastwordid = wordid;
         lastdocid  = docid;
-        lastfilenum = stream.get_filenum();
-        lastoffset = stream.get_offset();
+//        lastfilenum = stream.get_filenum();
+//        lastoffset = stream.get_offset();
+        last_chunk_num = chunk_num;
+        last_posting_num = posting_num;
 //          cout<<mylist.size()<<endl;
 //          mylist.clear();
 
 //          stream.write(&pos);
           mylist.push_back(pos);
 
+        if(posting_num==128) {
+            stream2.write(&chunk_num);
+            stream2.write(&wordid);
+            stream2.write(&docid);
+            stream2.write(&last_chunk_filenum);
+            stream2.write(&last_chunk_offset);
+            chunk_num++;
+            posting_num=0;
+            last_chunk_filenum = stream.get_filenum();
+            last_chunk_offset = stream.get_offset();
+        }
       }
+
+
+
 //      fwrite(&(b->buf[j*recSize]), recSize, 1, b->f);
 //      stream.write(&(b->buf[j*recSize]),recSize);
     }

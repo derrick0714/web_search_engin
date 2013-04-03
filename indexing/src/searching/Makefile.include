@@ -2,5 +2,9 @@ searching/searching: searching/searching.o \
 			 		searching/result_ctrl.o \
 			 		searching/searching_algorim.o \
 			 		include/models/StreamBuffer.o \
+			 		include/models/Docmap.o \
+			 		include/models/WordMap.o \
+			 		include/utility/gzip.o \
+			 		
 
 

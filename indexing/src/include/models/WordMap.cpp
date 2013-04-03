@@ -34,28 +34,37 @@ void WordMap::serialize( StreamBuffer &stream )
 }
 
 
-void WordMap::deserialize( StreamBuffer &stream )
+void WordMap::deserialize( char* buffer, int size )
 {
 	map.clear();
-	/*
-	 		while(stream.active()){
-				int key;
-	            stream.read(&key);
-	            int length;
-	            stream.read(&length);
-	            char buffer[length+1];
-	            buffer[length]='\0';
-	            stream.read(buffer,length);
-	            string buf(buffer);
-	            map.insert(pair<int,string>(key,buf));
-	            
-	 }*/
+	//cout<<"buffer:"<<buffer<<"size:"<<size<<endl;
+	int offset = 0;
+	char key[1000];
+
+	while(offset < size)
+	{
+		int len;
+		memcpy(&len, buffer+offset, sizeof(int));
+		offset += sizeof(int);
+
+	    
+	    key[len]='\0';
+	 	memcpy(key, buffer+offset, len);
+	    offset+= len;
+
+	    int val;
+	    memcpy(&val, buffer+offset, sizeof(int));
+	    offset += sizeof(int);
+	    
+
+    	map[key]=val;
+
+    	//cout<<"word:"<<key<<"=>id:"<<val<<endl;
+   // 	cout<<"url:"<<key<<" doc_id:"<<val.doc_id<<" file_id:"<<val.file_id<<" offset:"<<val.offset<<" len:"<<val.len<<endl;	            
+	 }
 }
 
-StreamBuffer& operator<<(StreamBuffer &stream, WordMap &map){
-	map.deserialize(stream);
-	return stream;
-}
+
 
 StreamBuffer& operator>>(StreamBuffer &stream, WordMap &map) {
     map.serialize(stream);

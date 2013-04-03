@@ -10,19 +10,15 @@ DocMap::~DocMap() {
 	// TODO Auto-generated destructor stub
 }
 
-bool DocMap::isHas(string key)
-{
-	return _data.find(key) != _data.end();
-}
 
 void DocMap::serialize( StreamBuffer &stream )
 {
-	for ( std::map<string, STRU_DOC>::iterator it = _data.begin(); it!=_data.end(); ++it)
+	for ( std::map<int, STRU_DOC>::iterator it = _data.begin(); it!=_data.end(); ++it)
 	{
-			int tmp = it->first.length();
+			stream.write(&it->first);
+			int tmp = it->second.doc_name.length();
 			stream.write(&tmp);
-			stream.write(it->first.c_str(), it->first.length());
-			stream.write(&it->second.doc_id);
+			stream.write(it->second.doc_name.c_str(), it->second.doc_name.length());
 			stream.write(&it->second.file_id);
 			stream.write(&it->second.offset);
 			stream.write(&it->second.len);
@@ -33,30 +29,50 @@ void DocMap::serialize( StreamBuffer &stream )
 }
 
 
-void DocMap::deserialize( StreamBuffer &stream )
+void DocMap::deserialize( char* buffer, int size, int&d_agv, int& N  )
 {
 	_data.clear();
-/*	
-	while(stream.active())
+	//<<"buffer:"<<buffer<<"size:"<<size<<endl;
+	int offset = 0;
+	long tatal_size = 0;
+	N=0;
+	while(offset < size)
 	{
 		int key;
-	    stream.read(&key);
-	    int length;
-	    stream.read(&length);
-	    char buffer[length+1];
-	    buffer[length]='\0';
-	    stream.read(buffer,length);
-	    string buf(buffer);
+		memcpy(&key, buffer+offset, sizeof(int));
+		offset += sizeof(int);
 
-    map.insert(pair<int,string>(key,buf));
-	            
-	 }*/
+
+		int len;
+		memcpy(&len, buffer+offset, sizeof(int));
+		offset += sizeof(int);
+
+		STRU_DOC val;
+	    //cout<<"len:"<<len;
+	    char doc_name[len+1];
+	    doc_name[len]='\0';
+	 	memcpy(doc_name, buffer+offset, len);
+	    offset+= len;
+	    val.doc_name = doc_name;
+
+	  
+	    memcpy(&val.file_id, buffer+offset, sizeof(int));
+	    offset+= sizeof(int);
+	    memcpy(&val.offset, buffer+offset, sizeof(int));
+	    offset+= sizeof(int);
+	    memcpy(&val.len, buffer+offset, sizeof(int));
+	    offset+= sizeof(int);
+	   
+	   	tatal_size+=val.len;
+	    N++;
+    	_data[key]=val;
+
+    	//cout<<"doc_id:"<<key<<" doc_name:"<<val.doc_name<<" file_id:"<<val.file_id<<" offset:"<<val.offset<<" len:"<<val.len<<endl;	            
+	 }
+	 d_agv = tatal_size/N;
 }
 
-StreamBuffer& operator<<(StreamBuffer &stream, DocMap &data){
-	data.deserialize(stream);
-	return stream;
-}
+
 
 StreamBuffer& operator>>(StreamBuffer &stream, DocMap &data) {
     data.serialize(stream);

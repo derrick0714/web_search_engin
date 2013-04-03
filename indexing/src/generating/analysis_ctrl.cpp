@@ -326,16 +326,18 @@ bool analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
 
 int analysis_ctrl::get_doc_id(string doc_name,int file_num, int offset, int len)
 {
-     if(_docs_map.isHas(doc_name))
-    {   
-        cout<<"doc repeat:"<<doc_name<<"=>"<<_docs_map[doc_name].doc_id<<endl;
-        return _docs_map[doc_name].doc_id;
-    }
 
-    _docs_map[doc_name].doc_id = _doc_id;
-    _docs_map[doc_name].file_id = file_num;
-    _docs_map[doc_name].offset = offset;
-    _docs_map[doc_name].len = len;
+    if(_checker.find(doc_name) != _checker.end())
+    {   
+        cout<<"doc repeat:"<<doc_name<<"=>"<<_checker[doc_name]<<endl;
+        return _checker[doc_name];
+    }
+    _checker[doc_name]= _doc_id;
+
+    _docs_map[_doc_id].doc_name = doc_name;
+    _docs_map[_doc_id].file_id = file_num;
+    _docs_map[_doc_id].offset = offset;
+    _docs_map[_doc_id].len = len;
     return _doc_id++;
 }
 

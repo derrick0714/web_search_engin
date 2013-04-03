@@ -93,7 +93,7 @@ bool StreamBuffer::write(const type* buffer){
 
 template <class type>
 bool StreamBuffer::read(type* buffer){
-		if(offset>=buffersize)
+		if(offset>buffersize)
 			return false;
 		else
 		{

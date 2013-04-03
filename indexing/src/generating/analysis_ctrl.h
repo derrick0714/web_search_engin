@@ -87,6 +87,7 @@ private:
 
 	WordMap			_word_map;
 	DocMap 			_docs_map;
+	map<string,int>	_checker;
 
 };
 

@@ -73,13 +73,13 @@ void StreamBuffer::set_sort(bool sort)
 
 bool StreamBuffer::read(void* buffer, int size){
 		//cout<<"size:"<<size<<" buffersize:"<<buffersize<<endl;
-		if(offset>=buffersize)
+		if(offset>buffersize)
 			return false;
 		else
 		{
-		memcpy(buffer, mybuffer+offset, size);
-		offset = offset + size;
-		return true;
+			memcpy(buffer, mybuffer+offset, size);
+			offset = offset + size;
+			return true;
 		}
 }
 

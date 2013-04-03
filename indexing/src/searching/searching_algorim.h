@@ -3,7 +3,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "models/StreamBuffer.h"
+#include "models/Docmap.h"
+#include "models/WordMap.h"
+#include "result_ctrl.h"
+#include "utility/gzip.h"
+#include <vector>
+#include "4ops.h"
+//#include "vbyte.h"
+
 using namespace std;
 
 
@@ -14,10 +21,18 @@ public:
 	~SearchingAlgorim();
 public:
 	void init_data();
-	bool init_buffer_from_file(string file_name, StreamBuffer* buffer);
-	//void do_searching(string key_word);
+	char* init_buffer_from_file(string file_name,int& size);
+	void do_searching(string words);
 private:
-	//DocMap 		_doc_map;
+	DocMap 		_doc_map;
+	WordMap		_word_map;
+	ResultCrtl	_result;
+	float 		k1;
+	float 		b;
+	int       	d_agv;
+	int 		N;
+
+
 };
 
 

@@ -1,8 +1,9 @@
-all: generating merge searching
+all: generating merge searching helper
 	cp generating/generating $(MAKE_DIR)/test
 	cp merge/merge $(MAKE_DIR)/test 
 	cp searching/searching $(MAKE_DIR)/test 
-	cp searching/searching ~/www/web_search_engine/interface/demo/
+	cp helper/helper $(MAKE_DIR)/test 
+	
 
 #cp searching/lib_searching.so $(MAKE_DIR)/test 
 
@@ -56,6 +57,16 @@ searhing-bin: searching/searching
 
 	@echo "finish compile lib_searching"
 
+
+################################################################################
+# helper                                                                   #
+################################################################################
+
+helper: helper-bin
+	
+
+helper-bin: helper/helper
+	@echo "finish compile helper"
 
 ################################################################################
 # DIST                                                                         #

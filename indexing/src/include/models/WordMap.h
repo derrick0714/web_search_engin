@@ -19,9 +19,9 @@ public:
 	bool isHas(string key);
 	int& operator[](string key){return map[key];}
 	void serialize(  StreamBuffer &stream );
-	void deserialize( StreamBuffer &stream  );
+	void deserialize( char* buffer, int size );
 	
-	friend StreamBuffer& operator<<(StreamBuffer &stream, WordMap&);
+	//friend StreamBuffer& operator<<(StreamBuffer &stream, WordMap&);
 	friend StreamBuffer& operator>>(StreamBuffer &stream, WordMap&);
 private:
 	map<string, int> map;

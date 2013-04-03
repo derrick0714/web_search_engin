@@ -6,6 +6,8 @@ require_once( './loader.php' );
 
 $key_words = $_GET["key"];
 $output = query( $key_words);
+var_dump($output);
+exit(0);
 
 $result = format_result($output);
 load_template("query");
@@ -13,7 +15,7 @@ load_template("query");
 
 function query( $key_words )
 {
-	$cmd = "demo/searching ".$key_words;
+	$cmd = "demo/helper ".$key_words;
 	exec($cmd ,$output);
 	return $output;
 }
