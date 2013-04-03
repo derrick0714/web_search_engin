@@ -40,7 +40,7 @@ int main(int argc,char** argv)
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
 
     listen(listenfd, 10); 
-    cout<<"start searching service...listen to 9988"<<endl;
+    cout<<"start searching service...listen to 9998"<<endl;
     SearchingAlgorim demo;
     
     while(1)
@@ -52,8 +52,9 @@ int main(int argc,char** argv)
        		cout<<"query request:"<<recvBuff<<endl;
 	        //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
             demo.do_searching(recvBuff);
-
-	        write(connfd, demo.get_result(), strlen(demo.get_result())); 
+            string send_data = demo.get_result();
+	        write(connfd, send_data.c_str(), send_data.length()); 
+            cout<<"send reasult: len:"<<send_data.length()<<endl<<"data:"<<send_data<<endl;
        	}
         
 

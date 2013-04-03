@@ -11,7 +11,7 @@
 using namespace std;
 
 static int posting_start_num = 0;
-static int posting_end_num =106;
+static int posting_end_num =689;
 static int get_now = posting_start_num;
 bool get_next_posting(string& file_name)
 {

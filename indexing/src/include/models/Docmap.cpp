@@ -34,7 +34,7 @@ void DocMap::deserialize( char* buffer, int size, int&d_agv, int& N  )
 	_data.clear();
 	//<<"buffer:"<<buffer<<"size:"<<size<<endl;
 	int offset = 0;
-	long tatal_size = 0;
+	unsigned long long tatal_size = 0;
 	N=0;
 	while(offset < size)
 	{

@@ -11,7 +11,7 @@
 	{
 	?>
 	<div class="one_result">
-		<p><a href="<?=$value['url']?>"><?=$value['title']?></a> BM25:<?=$value['bm25']?></p>
+		<p><a href="http://<?=$value['url']?>"><?=$value['title']?></a> BM25:<?=$value['bm25']?></p>
 		<p> <?=$value['round']?></p>
 	</div>
 	<?

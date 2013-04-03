@@ -26,13 +26,15 @@ function format_result( $output )
 	$len =count($output);
 	$result = array();
 	$j=0;
-	for( $i = 1; $i < $len; $i+=2)
+	for( $i = 1; $i < $len; $i+=4)
 	{
 		$one_result = array();
 		$one_result['url'] = $output[$i];
-		$one_result['title'] = $output[$i];
-		$one_result['round'] = $output[$i];
 		$one_result['bm25'] = $output[$i+1];
+		$one_result['round'] = $output[$i+2];
+		$one_result['title'] = $output[$i+3];
+		
+		
 		$result[$j++] =$one_result;
 	}
 	//var_dump($result);

@@ -36,9 +36,9 @@ inline Lp* openList(int wordid){
    cout<<"cur_posting: "<<mylp->cur_posting_docid<<endl;
    cout<<"num_of_chunks: "<<mylp->num_of_chunks<<endl;
    cout<<"size of chunkvector: "<<mylp->chunkvector.size()<<endl;
-   for(int s = 0; s<mylp->chunkvector.size(); s++){
-   cout<<"chunk_id: "<<mylp->start_chunk+s<<" chunk_last_wordid: "<<mylp->chunkvector.at(s).chunk_last_wordid<<" chunk_last_docid: "<<mylp->chunkvector.at(s).chunk_last_docid<<" filenum: "<<mylp->chunkvector.at(s).filenum<<" offset: "<<mylp->chunkvector.at(s).offset<< " chunk_size: "<<chunk_index[mylp->start_chunk+s+1].offset-chunk_index[mylp->start_chunk+s].offset<<endl;
-   }
+  // for(int s = 0; s<mylp->chunkvector.size(); s++){
+  // cout<<"chunk_id: "<<mylp->start_chunk+s<<" chunk_last_wordid: "<<mylp->chunkvector.at(s).chunk_last_wordid<<" chunk_last_docid: "<<mylp->chunkvector.at(s).chunk_last_docid<<" filenum: "<<mylp->chunkvector.at(s).filenum<<" offset: "<<mylp->chunkvector.at(s).offset<< " chunk_size: "<<chunk_index[mylp->start_chunk+s+1].offset-chunk_index[mylp->start_chunk+s].offset<<endl;
+   //}
    return mylp;
 }
 

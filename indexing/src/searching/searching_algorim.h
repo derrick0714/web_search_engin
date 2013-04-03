@@ -27,7 +27,7 @@ public:
 	void sort(STRU_RESULT* array, int left , int right);
 	char* get_result();
 	bool get_one_word(char* source ,int& pos,string& str);
-	char* get_around_text(char* html, int len,int tartget_pos,string& title);
+	void get_around_text(char* html, int len,int tartget_pos,string& title,string& around_text);
 private:
 	DocMap 		_doc_map;
 	WordMap		_word_map;

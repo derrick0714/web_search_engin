@@ -212,20 +212,26 @@ void SearchingAlgorim::do_searching(char* words)
 	if(p.size() == 0)
 		return;
 	cout<<"p.size:"<<p.size()<<endl;
-	
-	
+	cout<<"doc_map_size"<<_doc_map._data.size()<<endl;
 	int did = 0;
 	while(did < N)
 	{
 		int d = 0;
 	 	did = nextGEQ(p[0],did);
-
+	 	if( did == 0)
+ 		{	
+ 			cout<<"did = 0"<<endl; 
+ 			continue;
+ 		}
 	 	for(int i = 1; (i< p.size())&& ((d=nextGEQ(p[i],did))==did);i++);
+	 	if(did> N)
+	 		break;
 		if(d > did) did = d-1;
 		else
 		{
 			float bm25_all = 0.0;
 			STRU_DOC one_doc = _doc_map[did];
+			//cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
 			int target_pos = getPos(p[0]);
 			for( int k = 0 ; k<p.size(); k++)
 			{
@@ -235,7 +241,7 @@ void SearchingAlgorim::do_searching(char* words)
 			 	
 			 	if(one_doc.doc_name == "")
 			 		continue;
-			 	//cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
+			 	cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
 			 	//cout<<"req:"<<freq<<" ft:"<<ft<<endl;
 			 	//comput bm25
 			 	float K = (float)k1 * (float)((1-b) + b* ((float)one_doc.len / (float)d_agv ) );
@@ -270,9 +276,11 @@ void SearchingAlgorim::do_searching(char* words)
 
 		did++;
 	}
+	cout<<"start to :get around text"<<endl;
 	//around text
 	for(int i =0; i < result_count;i++)
 	{
+		cout<<"get around text. doc id:"<<result_array[i]._doc_id<<endl;
 		STRU_DOC one_doc = _doc_map[result_array[i]._doc_id];
 		char filename[20];
 	 	sprintf(filename,"dataset/%d_data",one_doc.file_id);
@@ -294,8 +302,9 @@ void SearchingAlgorim::do_searching(char* words)
         
   	
   		cout<<"aound text:"<<request_list[0]<<endl;
-       	char* data = get_around_text(pool,already_len,result_array[i]._pos,result_array[i]._title);
-       	cout<<endl;
+
+        get_around_text(pool,already_len,result_array[i]._pos,result_array[i]._title,result_array[i]._round_text );
+       //	cout<<"	aound:"<<result_array[i]._round_text<<" title:"<<result_array[i]._title<<endl;
 
        	free(pool);
        	delete[] html;
@@ -306,18 +315,21 @@ void SearchingAlgorim::do_searching(char* words)
 
 	for(int i =0 ;i <p.size();i++)
 		closeList(p[i]);
-
+	cout<<"finsh searching"<<endl;
+	cout<<"-------------------"<<endl;
 }
-char* SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,string& title)
+void SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,string& title, string& around_text)
 {
+	around_text="";
+	title = "";
     int pos = 0;
     int offset_val =0;
     int start_colletion = 0;
 
     cout<<"target_pos:"<<tartget_pos<<endl;
     if(tartget_pos > 10)
-    	start_colletion = tartget_pos-4;
-    int end_colletion = start_colletion +10;
+    	start_colletion = tartget_pos-7;
+    int end_colletion = start_colletion +15;
 
     int pos_count = 0;
    // cout<<"[-"<<percent<<"\%-][doc:"<<doc_id<<"]"<<endl;
@@ -338,7 +350,12 @@ char* SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,stri
         
         if(pos_count >= start_colletion && pos_count <= end_colletion)
         {
-        	cout<<word<<" "<<context<<endl;
+        	//cout<<word<<" "<<context<<endl;
+        	if(around_text=="")
+        		around_text+=word;
+        	else
+        		around_text+=" "+word;
+        	
         }
         if(context=="T")
         {
@@ -355,7 +372,7 @@ char* SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,stri
    // cout<<"title"<<title<<endl;
     //cout<<pos<<"--------------------------------"<<endl<<endl<<endl<<endl<<endl;
 
-    return NULL;
+    
 }
 void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
 {
@@ -387,6 +404,7 @@ void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
 }
 char* SearchingAlgorim::get_result()
 {
+
 	if(result_count ==0)
 		return "";
 	
@@ -396,6 +414,10 @@ char* SearchingAlgorim::get_result()
 		sprintf(result+offset,"%s\n",result_array[i]._url.c_str());
 		offset+=strlen(result+offset);
 		sprintf(result+offset,"%f\n",result_array[i]._bm25);
+		offset+=strlen(result+offset);
+		sprintf(result+offset,"%s\n",result_array[i]._round_text.c_str());
+		offset+=strlen(result+offset);
+		sprintf(result+offset,"%s\n",result_array[i]._title.c_str());
 		offset+=strlen(result+offset);
 
 	}
