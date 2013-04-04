@@ -10,6 +10,7 @@
 #include <vector>
 #include "4ops.h"
 #include "parser/parser.h"
+
 //#include "vbyte.h"
 
 using namespace std;
@@ -28,6 +29,7 @@ public:
 	char* get_result();
 	bool get_one_word(char* source ,int& pos,string& str);
 	void get_around_text(char* html, int len,int tartget_pos,string& title,string& around_text);
+
 private:
 	DocMap 		_doc_map;
 	WordMap		_word_map;
@@ -39,7 +41,9 @@ private:
 	STRU_RESULT result_array[10];
 	int 		result_count;
 	char		result[1024];
-
+public:
+	int 		_whole_time;
+	int 		_searching_time;
 
 };
 

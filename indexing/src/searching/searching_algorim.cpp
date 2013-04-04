@@ -1,6 +1,9 @@
 #include "searching_algorim.h"
 #include <stdio.h>
 #include <math.h>
+#include <sys/time.h>
+#include <stdio.h>
+#include <unistd.h>
 using namespace std;
 #define INDEX_CHUNK 409600 //50KB
 #define DATA_CHUNK 20971520 //2.5MB
@@ -177,6 +180,10 @@ char* SearchingAlgorim::init_buffer_from_file(string file_name, int& size)
 
 void SearchingAlgorim::do_searching(char* words)
 {	
+	struct timeval start, end;
+ 
+    gettimeofday(&start, NULL);
+    
 	cout<<"do searching...."<<endl<<" key words:"<<words<<endl;
 	//for(int i =0; i< key_words.size();i++)
 	//	cout<<key_words[i]<<" ";
@@ -241,12 +248,12 @@ void SearchingAlgorim::do_searching(char* words)
 			 	
 			 	if(one_doc.doc_name == "")
 			 		continue;
-			 	cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
+			 	//cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
 			 	//cout<<"req:"<<freq<<" ft:"<<ft<<endl;
 			 	//comput bm25
 			 	float K = (float)k1 * (float)((1-b) + b* ((float)one_doc.len / (float)d_agv ) );
 			 	float bm25 = log ( (float)(N-ft+0.5)/(float)(ft+0.5) ) * ((k1 + 1)*(float)freq)/(float)(K + freq);
-			 	cout<<"bm25:"<<bm25<<endl;
+			 	//cout<<"bm25:"<<bm25<<endl;
 			 	bm25_all+=bm25;
 	 		}
 		 	if(result_count < 10)
@@ -276,6 +283,9 @@ void SearchingAlgorim::do_searching(char* words)
 
 		did++;
 	}
+	 gettimeofday(&end, NULL);
+	_searching_time  = (end.tv_sec  - start.tv_sec)*1000+ (end.tv_usec - start.tv_usec)/1000.0;
+
 	cout<<"start to :get around text"<<endl;
 	//around text
 	for(int i =0; i < result_count;i++)
@@ -315,6 +325,9 @@ void SearchingAlgorim::do_searching(char* words)
 
 	for(int i =0 ;i <p.size();i++)
 		closeList(p[i]);
+	gettimeofday(&end, NULL);
+	_whole_time  = (end.tv_sec  - start.tv_sec)*1000+ (end.tv_usec - start.tv_usec)/1000.0;
+	//cout<<"end.tv_sec:"<<end.tv_sec<<" start.tv_sec:"<<start.tv_sec<<" end.tv_usec:"<<end.tv_usec<<" start.tv_usec:"<<start.tv_usec<<endl;
 	cout<<"finsh searching"<<endl;
 	cout<<"-------------------"<<endl;
 }
@@ -372,7 +385,8 @@ void SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,strin
    // cout<<"title"<<title<<endl;
     //cout<<pos<<"--------------------------------"<<endl<<endl<<endl<<endl<<endl;
 
-    
+   
+	
 }
 void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
 {
@@ -460,6 +474,7 @@ bool SearchingAlgorim::get_one_word(char* source ,int& pos,string& str)
     }
     return false;
 }
+
 
 // char filename[20];
 // 	 	sprintf(filename,"dataset/%d_data",one_doc.file_id);
