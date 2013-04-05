@@ -56,9 +56,9 @@ int main(int argc,char** argv)
 	        //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
             demo.do_searching(recvBuff);
             string send_data = demo.get_result();
-            cout<<"-Time Use- "<<" all(searching+surrounding text):"<<demo._whole_time<<"(ms), just searching:"<<demo._searching_time<<"(ms)"<<endl;
+           
 	        write(connfd, send_data.c_str(), send_data.length()); 
-            cout<<"send reasult: len:"<<send_data.length()<<endl<<"data:"<<send_data<<endl;
+           // cout<<"send reasult: len:"<<send_data.length()<<endl<<"data:"<<send_data<<endl;
        	}
         
 

@@ -328,6 +328,7 @@ void SearchingAlgorim::do_searching(char* words)
 	gettimeofday(&end, NULL);
 	_whole_time  = (end.tv_sec  - start.tv_sec)*1000+ (end.tv_usec - start.tv_usec)/1000.0;
 	//cout<<"end.tv_sec:"<<end.tv_sec<<" start.tv_sec:"<<start.tv_sec<<" end.tv_usec:"<<end.tv_usec<<" start.tv_usec:"<<start.tv_usec<<endl;
+	 cout<<"-Time Use- "<<" all(searching+surrounding text):"<<_whole_time<<"(ms), just searching:"<<_searching_time<<"(ms)"<<endl;
 	cout<<"finsh searching"<<endl;
 	cout<<"-------------------"<<endl;
 }
