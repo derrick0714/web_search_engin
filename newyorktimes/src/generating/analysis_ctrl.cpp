@@ -1,6 +1,7 @@
 #include "analysis_ctrl.h"
 #include <sys/stat.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -36,8 +37,18 @@ bool analysis_ctrl::start()
     //set display call back
     //display::get_instance()->set_input_call_back(this);
     
-    do_it();
+    //do_it();
 
+    string n;
+    demo.get_next_file(n);
+    cout<<n<<endl;
+
+    int len = 1024*1024;
+    char* buffer = new char[len];
+    parse(n, buf, len);
+
+    
+   
     return true;
 }
 
@@ -56,6 +67,7 @@ void analysis_ctrl::input_event( char* key )
     else
         cout<<"press 'quit' to exit"<<endl;
 }
+
 
 // core algorithm
 void analysis_ctrl::do_it()
@@ -147,8 +159,41 @@ bool analysis_ctrl::get_next_file_name(DataSet& data_set)
 }
 
 
-bool analysis_ctrl::parse()
+bool analysis_ctrl::parse(std::string file_name, char* buf, int buf_len)
 {
+    if( buf == NULL)
+        return false;
+    ifstream file;
+    file.open(file_name.c_str());
+    string line;
+    int off_set;
+
+    if (file.is_open())
+    {
+        while ( file.good() )
+        {
+            getline (file, line);
+            if( line.compare("<block class=\"full_text\">") ==0 )
+            {
+                getline (file, line) 
+                while( line.compare("</block>") !=0 )
+                {
+                    cout<<line<<endl;
+                }
+            }
+
+        }
+        file.close();
+
+        return true;
+    }
+    else 
+    {
+        cout << "Unable to open file:"<<file_name<<endl;
+        return false;
+    } 
+     
+    return true;
 
 }
 

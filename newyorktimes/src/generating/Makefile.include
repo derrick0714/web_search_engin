@@ -4,6 +4,7 @@ generating/generating: generating/generating.o \
 					   include/utility/shell.o \
 					   include/utility/timer.o  \
 					   include/utility/gzip.o \
+					   include/utility/path_finder.o \
 					   include/models/WordMap.o \
 					   include/models/StreamBuffer.o \
 					   include/models/Docmap.o \

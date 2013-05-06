@@ -3,6 +3,7 @@
 
 #include "utility/display.h"
 #include "utility/gzip.h"
+#include "utility/path_finder.h"
 #include "models/original_index.h"
 #include "models/TempLexicon.h"
 #include "models/WordMap.h"
@@ -68,7 +69,7 @@ private:
 	bool get_next_file_name(DataSet& data_set);		//get next  file name
 	int  get_doc_id(std::string doc_name,int file_num, int offset, int len);
 	int  get_word_id(std::string word);
-	bool parse();
+	bool parse(std::string file_name, char* buf, int buf_len);
 	bool get_one_word(char* source, int& pos,string& str);
 
 
@@ -88,6 +89,7 @@ private:
 	WordMap			_word_map;
 	DocMap 			_docs_map;
 	map<string,int>	_checker;
+	PathFinder 		demo;
 
 };
 

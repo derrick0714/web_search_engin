@@ -1,4 +1,0 @@
-merge/merge: merge/merge.o \
-			 merge/StreamBuffer.o 
-
-
