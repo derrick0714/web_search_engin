@@ -45,8 +45,7 @@ bool analysis_ctrl::start()
 
     int len = 1024*1024;
     char* buffer = new char[len];
-    parse(n, buf, len);
-
+    parse(n, buffer, len);
     
    
     return true;
@@ -163,26 +162,40 @@ bool analysis_ctrl::parse(std::string file_name, char* buf, int buf_len)
 {
     if( buf == NULL)
         return false;
+   // cout<<"1"<<endl;
     ifstream file;
     file.open(file_name.c_str());
-    string line;
-    int off_set;
-
+    int off_start, off_end;
+    string content_start = "<block class=\"full_text\">";
     if (file.is_open())
     {
-        while ( file.good() )
-        {
-            getline (file, line);
-            if( line.compare("<block class=\"full_text\">") ==0 )
-            {
-                getline (file, line) 
-                while( line.compare("</block>") !=0 )
-                {
-                    cout<<line<<endl;
-                }
-            }
+        file.seekg (0, file.end);
+        int length = file.tellg();
+        file.seekg (0, file.beg);
+        char * xml_buffer = new char [length];
+        string xml_content; 
+        // read data as a block:
+        file.read(xml_buffer,length);
+        xml_content = xml_buffer;
 
+        
+        //cout<<line.find("$$$")<<" "<<line.find("<block class=\"full_text\">")<<endl;
+
+        if( (off_start = xml_content.find(content_start)) != string::npos && (off_end = xml_content.find("</block>",off_start+1)) != string::npos)
+        {
+            off_start = off_start + content_start.length();
+            string content = xml_content.substr(off_start , off_end-off_start);
+            cout<<xml_content<<endl;
+            cout<<content<<endl;
+            // while( line.compare("</block>") !=0 )
+            // {
+            //     cout<<line<<endl;
+            // }
         }
+
+        
+
+        delete[] xml_buffer;
         file.close();
 
         return true;
