@@ -1,0 +1,85 @@
+all: generating merge searching helper
+	cp generating/generating $(MAKE_DIR)/test
+	cp merge/merge $(MAKE_DIR)/test 
+	cp searching/searching $(MAKE_DIR)/test 
+	cp helper/helper $(MAKE_DIR)/test 
+	
+
+#cp searching/lib_searching.so $(MAKE_DIR)/test 
+
+dist: dist-generating 
+
+install:
+	cp -R $(DIST_DIR)/* $(INSTALL_PREFIX)/
+
+
+
+################################################################################
+# generating                                                                   #
+################################################################################
+
+generating: generating-bin
+	
+
+generating-bin: generating/generating
+	@echo "finish compile generating"
+
+
+
+dist-generating: dist-tree generating
+	cp generating/generating $(DIST_DIR)/$(DIST_PREFIX)generating
+
+################################################################################
+# merge                                                                   #
+################################################################################
+
+merge: merge-bin
+	
+
+merge-bin: merge/merge
+	@echo "finish compile merge"
+
+
+
+dist-merge: dist-tree merge
+	cp merge/merge $(DIST_DIR)/$(DIST_PREFIX)merge
+
+################################################################################
+# searching                                                                   #
+################################################################################
+
+searching:  searhing-bin
+	
+
+lib_searching: lib/lib_searching.so
+
+searhing-bin: searching/searching
+
+	@echo "finish compile lib_searching"
+
+
+################################################################################
+# helper                                                                   #
+################################################################################
+
+helper: helper-bin
+	
+
+helper-bin: helper/helper
+	@echo "finish compile helper"
+
+################################################################################
+# DIST                                                                         #
+################################################################################
+
+dist-tree:
+	mkdir -p $(DIST_DIR)/
+
+
+
+include $(MAKE_DIR)/Makefile.linux
+
+
+-include $(SRC_DIR)/*/Makefile.include
+
+include $(MAKE_DIR)/Makefile.mk
