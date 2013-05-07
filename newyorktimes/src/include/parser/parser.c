@@ -109,12 +109,13 @@ int tag_parser(char* tag, int len, char* back_tag)
 
 int parser(char* url, char* doc, char* buf, int blen)
 {
+
 	char *p, *purl, *word, *ptag, *pbuf,*pdoc_start;
 	char ch, back_tag, intag, inscript;
 	unsigned tag_flag;
 	int ret;
 
-	pdoc_start = parser_init(doc);
+	pdoc_start = doc;//parser_init(doc);
 	p = pdoc_start;
 	if (p == NULL)
 		return 0;
@@ -151,7 +152,6 @@ int parser(char* url, char* doc, char* buf, int blen)
 
 		*purl = ch;
 	}
-
 
 /* parsing page */
 	tag_flag = 0;

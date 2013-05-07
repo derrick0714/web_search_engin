@@ -59,18 +59,25 @@ int PathFinder::add_files(string dir)
   		//cout<<tmpName<<endl;
 
     	if( tmpName != "." && tmpName != "..")
-       		_files.push_back( dir+"/"+tmpName );
+    	{
+    		STRU_PATH path;
+    		path.name = tmpName;
+    		path.path = dir+"/"+tmpName;
+       		_files.push_back( path );
+       	}
     }
     closedir(dp);
     return 0;
 }
 
-bool PathFinder::get_next_file(std::string& file_path)
+bool PathFinder::get_next_file(std::string& file_name, std::string& file_path)
 {
 	if(_files.size() == 0)
 		return false;
 
-	file_path = _files.front();
+	file_path = _files.front().path;
+	file_name = _files.front().name;
+	
 	_files.pop_front();
 	return true;
 }

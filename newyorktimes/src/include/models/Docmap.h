@@ -11,9 +11,11 @@ using namespace std;
 struct STRU_DOC
 {
 	string doc_name;
+	string doc_path;
+	int len;
+
 	int file_id;
 	int offset;
-	int len;
 };
 class DocMap 
 {

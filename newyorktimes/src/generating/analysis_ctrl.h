@@ -27,27 +27,6 @@ struct status
 	}
 };
 
-struct DataSet
-{
-	std::string	_index;
-	std::string _data;
-	std::string _path;
-	int 		_file_num;
-
-	DataSet(std::string path)
-	{
-		_path = path;
-	}
-	void set_num(int num)
-	{
-		_file_num = num;
-		char temp[64] = {0};
-		sprintf ( temp, "%d_index", num );
-		_index = _path+temp;
-		sprintf ( temp, "%d_data", num );
-		_data = _path+temp;
-	}
-};
 
 class analysis_ctrl : d_key_event
 {
@@ -66,10 +45,9 @@ private:
 	bool save_index(char* index_data, int len, original_index& index, int file_num);
 	bool parse_data(char* html_data, int len, original_index& index);
 	bool save_data(int doc_id, char* save_data, int len);
-	bool get_next_file_name(DataSet& data_set);		//get next  file name
-	int  get_doc_id(std::string doc_name,int file_num, int offset, int len);
+	int  get_doc_id(std::string doc_name, std::string doc_path);
 	int  get_word_id(std::string word);
-	bool parse(std::string file_name, char* buf, int buf_len);
+	bool parse_xml(std::string file_path, char* buf, int buf_len);
 	bool get_one_word(char* source, int& pos,string& str);
 
 
@@ -82,14 +60,14 @@ private:
 	int 			_file_end;
 	int 			_doc_id;
 	int 			_word_id;
-	StreamBuffer* 	buffer;
+	StreamBuffer* 	_intermediate;
 	time_t 			_time_now ; 
 
 
 	WordMap			_word_map;
 	DocMap 			_docs_map;
 	map<string,int>	_checker;
-	PathFinder 		demo;
+	PathFinder 		_finder;
 
 };
 
