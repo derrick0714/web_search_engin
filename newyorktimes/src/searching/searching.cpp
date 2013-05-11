@@ -43,28 +43,28 @@ int main(int argc,char** argv)
     cout<<"start searching service...listen to 9998"<<endl;
    SearchingAlgorim demo;
 
-   // demo.do_searching("cat");
+    demo.do_searching("investigation");
+    cout<<"result:"<<demo.get_result()<<endl;
     
-    
-    while(1)
-    {
-        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
-        int numbytes = 0;
-       	if((numbytes = recv(connfd,recvBuff,sizeof(recvBuff),0))!=-1)
-       	{
-       		cout<<"query request:"<<recvBuff<<endl;
-	        //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-            demo.do_searching(recvBuff);
-            string send_data = demo.get_result();
+    // while(1)
+    // {
+    //     connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+    //     int numbytes = 0;
+    //    	if((numbytes = recv(connfd,recvBuff,sizeof(recvBuff),0))!=-1)
+    //    	{
+    //    		cout<<"query request:"<<recvBuff<<endl;
+	   //      //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
+    //         demo.do_searching(recvBuff);
+    //         string send_data = demo.get_result();
            
-	        write(connfd, send_data.c_str(), send_data.length()); 
-           // cout<<"send reasult: len:"<<send_data.length()<<endl<<"data:"<<send_data<<endl;
-       	}
+	   //      write(connfd, send_data.c_str(), send_data.length()); 
+    //        // cout<<"send reasult: len:"<<send_data.length()<<endl<<"data:"<<send_data<<endl;
+    //    	}
         
 
-        close(connfd);
-        sleep(1);
-     }
+    //     close(connfd);
+    //     sleep(1);
+    //  }
 	
 	return 0;
 }

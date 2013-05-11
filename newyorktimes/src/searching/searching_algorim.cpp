@@ -259,7 +259,8 @@ void SearchingAlgorim::do_searching(char* words)
 		 	if(result_count < 10)
 		 	{
 		 		
-				result_array[result_count]._url =one_doc.doc_name;
+				result_array[result_count]._url =one_doc.doc_url;
+				cout<<one_doc.doc_url<<endl;
 				result_array[result_count]._bm25=bm25_all;
 				result_array[result_count]._doc_id = did;
 				result_array[result_count]._pos = target_pos;
@@ -268,7 +269,7 @@ void SearchingAlgorim::do_searching(char* words)
 		 	}
 		 	else if(bm25_all > result_array[0]._bm25)
 		 	{
-				result_array[0]._url =one_doc.doc_name;
+				result_array[0]._url =one_doc.doc_url;
 				result_array[0]._bm25=bm25_all;
 				result_array[0]._doc_id = did;
 				result_array[0]._pos = target_pos;

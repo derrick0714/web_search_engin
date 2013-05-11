@@ -28,6 +28,14 @@ void DocMap::serialize( StreamBuffer &stream )
 			stream.write(&tmp);
 			stream.write(it->second.doc_title.c_str(), it->second.doc_title.length());
 
+			tmp = it->second.doc_url.length();
+			stream.write(&tmp);
+			stream.write(it->second.doc_url.c_str(), it->second.doc_url.length());
+
+			tmp = it->second.doc_location.length();
+			stream.write(&tmp);
+			stream.write(it->second.doc_location.c_str(), it->second.doc_location.length());
+
 			//stream.write(&it->second.file_id);
 			//stream.write(&it->second.file_id);
 			//stream.write(&it->second.offset);
@@ -85,8 +93,26 @@ void DocMap::deserialize( char* buffer, int size, int&d_agv, int& N  )
 	    offset+= len;
 	    val.doc_title = doc_title;
 
-	     memcpy(&val.doc_time, buffer+offset, sizeof(int));
-	     offset+= sizeof(int);
+	    memcpy(&len, buffer+offset, sizeof(int));
+		offset += sizeof(int);
+		char doc_url[len+1];
+	    doc_url[len]='\0';
+	 	memcpy(doc_url, buffer+offset, len);
+	    offset+= len;
+	    val.doc_url = doc_url;
+
+	    memcpy(&len, buffer+offset, sizeof(int));
+		offset += sizeof(int);
+		char doc_location[len+1];
+	    doc_location[len]='\0';
+	 	memcpy(doc_location, buffer+offset, len);
+	    offset+= len;
+	    val.doc_location = doc_location;
+
+
+
+	    memcpy(&val.doc_time, buffer+offset, sizeof(int));
+	    offset+= sizeof(int);
 
 	  
 	    // memcpy(&val.file_id, buffer+offset, sizeof(int));

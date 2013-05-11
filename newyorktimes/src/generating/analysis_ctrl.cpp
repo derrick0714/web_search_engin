@@ -69,8 +69,8 @@ void analysis_ctrl::do_it()
     int data_len = 0;
     while( _finder.get_next_file(next_file_name,next_file_path))
     {
-        string doc_title,doc_url,doc_location;
-        int doc_date;
+        string doc_title,doc_url="",doc_location="";
+        int doc_date=0;
         // parse xml data from file   
         if( !parse_xml(next_file_path, parsed_data, DATA_CHUNK, doc_title,doc_url,doc_location, doc_date))
         {
@@ -82,13 +82,13 @@ void analysis_ctrl::do_it()
         //gen a new doc id, store docs' information, and build index of docs
         int doc_id = get_doc_id(next_file_name ,next_file_path ,doc_title,doc_url,doc_location,doc_date);
         cout<<"parsing doc id:"<<doc_id<<"=>"<<next_file_path<<" title:"<<doc_title<<endl;
-        cout<<"url:"<<doc_url<<" location:"<<doc_location<<" date:"<<doc_date<<endl;
+       // cout<<"url:"<<doc_url<<" location:"<<doc_location<<" date:"<<doc_date<<endl;
 
 
         //save the data to form intermediate
         save_data(doc_id, parsed_data, DATA_CHUNK);
         
-        break;
+        //break;
     }
   
    
@@ -144,14 +144,15 @@ bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,stri
         }
 
         //get location
-        if( !get_new_info(xml_buffer,length, start_pos, "indexing_service\">", "</location>", url) )
+        if( !get_new_info(xml_buffer,length, start_pos, "indexing_service\">", "</location>", location) )
         {
             //cout<< "get url failed!"<<endl;
+            location = "NULL";
         }
 
 
         //get url
-        if( !get_new_info(xml_buffer,length, start_pos, "ex-ref=\"", " item", url) )
+        if( !get_new_info(xml_buffer,length, start_pos, "ex-ref=\"", " i", url) )
         {
             cout<< "get url failed!"<<endl;
         }
@@ -197,7 +198,7 @@ bool analysis_ctrl::get_new_info(char* source, int max, int& start_pos, std::str
     if( (offset_start = find(source, max, start_pos,key_start )) != -1 && (offset_end = find(source, max, offset_start+key_start.length(), key_end)) != -1)
     {
         offset_start = offset_start + key_start.length();
-        int len = offset_end - offset_start ;
+        int len = offset_end - offset_start;
         char* tmp = new char[len + 1];
         tmp[len]= '\0';
         memcpy( tmp, source+offset_start, len );
@@ -226,8 +227,8 @@ int analysis_ctrl::find(char* source, int max_len, int start, std::string key_wo
             same_len++;
             if( same_len == same_max)
             {
-                cout<<"find_key:"<<key_words<<endl;
-                return (i - same_max);
+               // cout<<"find_key:"<<key_words<<endl;
+                return (i - same_max+1);
             }
         }
         else
@@ -340,7 +341,7 @@ int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title
     _docs_map[_doc_id].doc_time = doc_time;
     // _docs_map[_doc_id].offset = offset;
     // _docs_map[_doc_id].len = len;
-    cout<<"doc_title:"<<_docs_map[_doc_id].doc_title<<"doc_time:"<<_docs_map[_doc_id].doc_time<<endl;
+   // cout<<"doc_title:"<<_docs_map[_doc_id].doc_title<<"doc_time:"<<_docs_map[_doc_id].doc_time<<endl;
     return _doc_id++;
 }
 
