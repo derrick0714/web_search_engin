@@ -11,7 +11,7 @@
 using namespace std;
 
 static int posting_start_num = 0;
-static int posting_end_num =106;
+static int posting_end_num =21;
 static int get_now = posting_start_num;
 bool get_next_posting(string& file_name)
 {
@@ -56,13 +56,13 @@ int main(int argc)
 
 
  //streambuf is for the postings structure
- StreamBuffer streambuf(12*100000);
+ StreamBuffer streambuf(12*100000*1000);
 
  //streambuf1 is for the index structure
- StreamBuffer streambuf1(1000000);
+ StreamBuffer streambuf1(12*1000000);
 
  //streambuf2 is for the chunk index
- StreamBuffer streambuf2(1000000);
+ StreamBuffer streambuf2(12*1000000);
 
  streambuf.setfilename("result/data");
  streambuf1.setfilename("result/word_index");

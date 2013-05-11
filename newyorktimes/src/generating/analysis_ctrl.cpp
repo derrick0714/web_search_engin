@@ -17,7 +17,7 @@ analysis_ctrl::analysis_ctrl()
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
-    _intermediate = new StreamBuffer(120*1024*1024/4);
+    _intermediate = new StreamBuffer(12*1024*1024/4);
     mkdir("intermediate", S_IRWXU|S_IRGRP|S_IXGRP);
     _intermediate->setfilename("intermediate/posting");
     _intermediate->setpostingsize(12);
@@ -69,9 +69,10 @@ void analysis_ctrl::do_it()
     int data_len = 0;
     while( _finder.get_next_file(next_file_name,next_file_path))
     {
-        
+        string doc_title,doc_url,doc_location;
+        int doc_date;
         // parse xml data from file   
-        if( !parse_xml(next_file_path, parsed_data, DATA_CHUNK))
+        if( !parse_xml(next_file_path, parsed_data, DATA_CHUNK, doc_title,doc_url,doc_location, doc_date))
         {
             cout<<"parse xml failed:"<<next_file_path<<endl;
             continue; 
@@ -79,47 +80,17 @@ void analysis_ctrl::do_it()
         //cout<<parsed_data<<endl;
 
         //gen a new doc id, store docs' information, and build index of docs
-        int doc_id = get_doc_id(next_file_name ,next_file_path );
-        cout<<"parsing doc id:"<<doc_id<<"=>"<<next_file_path<<endl;
+        int doc_id = get_doc_id(next_file_name ,next_file_path ,doc_title,doc_url,doc_location,doc_date);
+        cout<<"parsing doc id:"<<doc_id<<"=>"<<next_file_path<<" title:"<<doc_title<<endl;
+        cout<<"url:"<<doc_url<<" location:"<<doc_location<<" date:"<<doc_date<<endl;
 
 
         //save the data to form intermediate
         save_data(doc_id, parsed_data, DATA_CHUNK);
         
-        //break;
+        break;
     }
   
-
-    //     if( !save_index(index_data, already_len, index, data_set._file_num) )
-    //     {
-    //         cout<<"save index data error"<<endl;
-    //         continue;
-    //     }
-
-    //     free(index_data);
-
-    //     //get html data from file
-    //     char* html_data = gzip::uncompress_from_file(data_set._data.c_str(), DATA_CHUNK, already_len);
-    //     if( html_data == NULL || already_len == 0)
-    //     {
-    //         cout<<"read html data error :"<<data_set._data.c_str()<<endl;
-    //         continue;
-    //     }
-
-    //     //parse word from html data 
-    //     if(!parse_data(html_data, already_len, index))
-    //     {
-    //         cout<<"parse index data error"<<endl;
-    //         continue;
-    //     }
-
-        
-    //     free(html_data);
-    //     //break;
-    //    // cout<<"loop"<<endl;
-    // }
-
-
    
     StreamBuffer buffer1(50*1024*1024);
     buffer1.setfilename("intermediate/word_map.data");
@@ -127,7 +98,7 @@ void analysis_ctrl::do_it()
     buffer1.savetofile();
 
       //save docs map;
-     StreamBuffer buffer2(50*1024*1024);
+     StreamBuffer buffer2(200*1024*1024);
      buffer2.setfilename("intermediate/docs_map.data");
      buffer2>>_docs_map;
      buffer2.savetofile();
@@ -144,61 +115,65 @@ void analysis_ctrl::do_it()
 
 
 
-bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len)
+bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,string& title, string& url, string& location,int& date)
 {
     if( buf == NULL)
         return false;
-   // cout<<"1"<<endl;
+
+    //open file
     ifstream file;
     file.open(file_path.c_str());
     int off_start, off_end;
-    string content_start = "<block class=\"full_text\">";
-    string temp_title = "temp title";
+
     if (file.is_open())
     {
         file.seekg (0, file.end);
         int length = file.tellg();
         file.seekg (0, file.beg);
         char * xml_buffer = new char [length];
-        string xml_content; 
         // read data as a block:
         file.read(xml_buffer,length);
-        xml_content = xml_buffer;
 
-        
-        //cout<<line.find("$$$")<<" "<<line.find("<block class=\"full_text\">")<<endl;
+        int start_pos=0;
 
-        if( (off_start = xml_content.find(content_start)) != string::npos && (off_end = xml_content.find("</block>",off_start+1)) != string::npos)
+
+        //get title
+        if( !get_new_info(xml_buffer,length, start_pos, "<title>", "</title>", title) )
         {
-            //get content
-            off_start = off_start + content_start.length();
-            int len = off_end - off_start ;
-            char* content_buf = new char[len + 1];
-            content_buf[len]= '\0';
-            memcpy( content_buf, xml_buffer+off_start, len );
-
-            //cout<<content_buf<<endl;
-           
-            //parsing content
-            int ret = parser((char*)temp_title.c_str(), content_buf , buf, buf_len);
-            
-            delete content_buf;
-
-            //output words and their contexts
-            if (ret < 0)
-            {
-                cout<<"error during the parse"<<endl;
-               // printf("%s", pool);
-                 //save raw data into rgnized data structer
-                // if( !save_data( doc_id , pool, 2*index_val.len+1) )
-                // {
-                //      cout<<"save index data error"<<endl;
-                //     // continue;
-                // }
-            }
-                        
+            cout<< "get title failed!"<<endl;
         }
 
+        //get location
+        if( !get_new_info(xml_buffer,length, start_pos, "indexing_service\">", "</location>", url) )
+        {
+            //cout<< "get url failed!"<<endl;
+        }
+
+
+        //get url
+        if( !get_new_info(xml_buffer,length, start_pos, "ex-ref=\"", " item", url) )
+        {
+            cout<< "get url failed!"<<endl;
+        }
+
+
+        //get content & parse
+        string content;
+        if( !get_new_info(xml_buffer,length, start_pos, "<block class=\"full_text\">\n", "</block>", content) )
+        {
+            cout<< "get title failed!"<<endl;
+        }
+        // parse content
+        int ret = parser((char*)title.c_str(), (char*)content.c_str() , buf, buf_len);
+            
+        //output words and their contexts
+        if (ret < 0)
+        {
+            cout<<"error during the parse"<<endl;
+
+        }
+
+        //
         delete[] xml_buffer;
         file.close();
 
@@ -214,62 +189,53 @@ bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len)
 
 }
 
+bool analysis_ctrl::get_new_info(char* source, int max, int& start_pos, std::string key_start, std::string key_end, string& content)
+{
+    int offset_start;
+    int offset_end;
 
+    if( (offset_start = find(source, max, start_pos,key_start )) != -1 && (offset_end = find(source, max, offset_start+key_start.length(), key_end)) != -1)
+    {
+        offset_start = offset_start + key_start.length();
+        int len = offset_end - offset_start ;
+        char* tmp = new char[len + 1];
+        tmp[len]= '\0';
+        memcpy( tmp, source+offset_start, len );
+        content = tmp;
 
-// bool analysis_ctrl::parse_data(char* html_data, int len, original_index& index)
-// {
-//     original_index_content index_val;
-//     int doc_id =0;
+        delete[] tmp;
+        //cout<<"$$$"<<content<<endl;
+        start_pos = offset_end+key_end.length();
+        return true;
+    }
 
-//     index.set_to_start();
+    return false;
+}
 
-
-//     // get one doc offset and id from index list 
-//     while(index.get_next(doc_id ,index_val))
-//     {
-      
-//         cout<<"parsing: "<<doc_id<<" => "<<index_val.url<<":"<<index_val.offset<<":"<<index_val.len<<endl;
-
-//         char *pool;
-
-//         pool = (char*)malloc(2*index_val.len+1);
-
-
-//         //parsing page
-//         char* page = new char[index_val.len+1];
-        
-//         memcpy(page, html_data+index_val.offset, index_val.len);
-//         page[index_val.len]='\0';
-        
-
-//         int ret = parser((char*)index_val.url.c_str(), page , pool, 2*index_val.len+1);
-        
-//         delete page;
-
-//        // cout<<pool<<endl;
-//         //return false;
-//         //output words and their contexts
-//         if (ret > 0)
-//         {
-//             //printf("%s", pool);
-//              //save raw data into rgnized data structer
-//             if( !save_data( doc_id , pool, 2*index_val.len+1) )
-//             {
-//                 cout<<"save index data error"<<endl;
-//                // continue;
-//             }
-
-//         }
-        
-//         free(pool);
-        
-       
-       
-//     }
-//      return true;
+int analysis_ctrl::find(char* source, int max_len, int start, std::string key_words)
+{
+    if(source == NULL)
+        return false;
     
-// }
+    int same_len = 0;
+    int same_max = key_words.length();
+    for(int i = start; i< max_len; i++)
+    {
+        if(source[i] == key_words[same_len]) 
+        {
+            same_len++;
+            if( same_len == same_max)
+            {
+                cout<<"find_key:"<<key_words<<endl;
+                return (i - same_max);
+            }
+        }
+        else
+            same_len = 0;
+    }
 
+    return -1;
+}
 
 
 bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
@@ -277,7 +243,7 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
     int pos = 0;
     int offset_val =0;
 
-    int percent = _file_end - _file_start == 0? 100 : ( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
+   // int percent = _file_end - _file_start == 0? 100 : ( (float)(_file_now -1 - _file_start) / (float)(_file_end - _file_start) )*100;
     
     int pos_count = 0;
    // cout<<"[-"<<percent<<"\%-][doc:"<<doc_id<<"]"<<endl;
@@ -305,8 +271,9 @@ bool analysis_ctrl::save_data(int doc_id, char* save_data, int len)
         new_lexicon.word_id = get_word_id(word);
         new_lexicon.doc_id = doc_id;
         new_lexicon.startpos =pos_count++;//atoi(positon.c_str()); //atoi(positon.c_str());
+       //new_lexicon.issue_date = 
 
-        //cout<<"[-"<<percent<<"\%-][doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
+        //cout<<"[doc:"<<new_lexicon.doc_id<<"] : "<<word<<"=>word_id:"<<new_lexicon.word_id<<" position:"<<new_lexicon.startpos<<endl;
 
         //save temp Lexicon
         (*_intermediate)>>new_lexicon;
@@ -355,7 +322,7 @@ bool analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
     return false;
 }
 
-int analysis_ctrl::get_doc_id(string doc_name, string doc_path )
+int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title,string doc_url,string doc_location, int doc_time )
 {
 
     if(_checker.find(doc_name) != _checker.end())
@@ -367,8 +334,13 @@ int analysis_ctrl::get_doc_id(string doc_name, string doc_path )
 
     _docs_map[_doc_id].doc_name = doc_name;
     _docs_map[_doc_id].doc_path = doc_path;
+    _docs_map[_doc_id].doc_title = doc_title;
+    _docs_map[_doc_id].doc_url = doc_url;
+    _docs_map[_doc_id].doc_location = doc_location;
+    _docs_map[_doc_id].doc_time = doc_time;
     // _docs_map[_doc_id].offset = offset;
     // _docs_map[_doc_id].len = len;
+    cout<<"doc_title:"<<_docs_map[_doc_id].doc_title<<"doc_time:"<<_docs_map[_doc_id].doc_time<<endl;
     return _doc_id++;
 }
 

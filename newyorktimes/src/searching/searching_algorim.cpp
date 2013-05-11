@@ -286,42 +286,42 @@ void SearchingAlgorim::do_searching(char* words)
 	 gettimeofday(&end, NULL);
 	_searching_time  = (end.tv_sec  - start.tv_sec)*1000+ (end.tv_usec - start.tv_usec)/1000.0;
 
-	cout<<"start to :get around text"<<endl;
-	//around text
-	for(int i =0; i < result_count;i++)
-	{
-		cout<<"get around text. doc id:"<<result_array[i]._doc_id<<endl;
-		STRU_DOC one_doc = _doc_map[result_array[i]._doc_id];
-		char filename[20];
-	 	sprintf(filename,"dataset/%d_data",one_doc.file_id);
-	 	int already_len = 0;
-	 	char* index_data = gzip::uncompress_from_file(filename, INDEX_CHUNK, already_len);
-        if( index_data == NULL || already_len == 0)
-        {
-            cout<<"read index data error: "<<filename<<endl;
-            continue;
-        }
-        char* html = new char[already_len];
-        memcpy(html,index_data+one_doc.offset,one_doc.len);
-        char *pool;
+	// cout<<"start to :get around text"<<endl;
+	// //around text
+	// for(int i =0; i < result_count;i++)
+	// {
+	// 	cout<<"get around text. doc id:"<<result_array[i]._doc_id<<endl;
+	// 	STRU_DOC one_doc = _doc_map[result_array[i]._doc_id];
+	// 	char filename[20];
+	//  	sprintf(filename,"dataset/%d_data",one_doc.file_id);
+	//  	int already_len = 0;
+	//  	char* index_data = gzip::uncompress_from_file(filename, INDEX_CHUNK, already_len);
+ //        if( index_data == NULL || already_len == 0)
+ //        {
+ //            cout<<"read index data error: "<<filename<<endl;
+ //            continue;
+ //        }
+ //        char* html = new char[already_len];
+ //        memcpy(html,index_data+one_doc.offset,one_doc.len);
+ //        char *pool;
 
-        pool = (char*)malloc(2*one_doc.len+1);
+ //        pool = (char*)malloc(2*one_doc.len+1);
         
 
-        int ret = parser((char*)one_doc.doc_name.c_str(), html , pool, 2*one_doc.len+1);
+ //        int ret = parser((char*)one_doc.doc_name.c_str(), html , pool, 2*one_doc.len+1);
         
   	
-  		cout<<"aound text:"<<request_list[0]<<endl;
+ //  		cout<<"aound text:"<<request_list[0]<<endl;
 
-        get_around_text(pool,already_len,result_array[i]._pos,result_array[i]._title,result_array[i]._round_text );
-       //	cout<<"	aound:"<<result_array[i]._round_text<<" title:"<<result_array[i]._title<<endl;
+ //        get_around_text(pool,already_len,result_array[i]._pos,result_array[i]._title,result_array[i]._round_text );
+ //       //	cout<<"	aound:"<<result_array[i]._round_text<<" title:"<<result_array[i]._title<<endl;
 
-       	free(pool);
-       	delete[] html;
- //       cout<<html<<endl;
+ //       	free(pool);
+ //       	delete[] html;
+ // //       cout<<html<<endl;
 
-	//	result_array[result_count]._round_text=;
-	}
+	// //	result_array[result_count]._round_text=;
+	// }
 
 	for(int i =0 ;i <p.size();i++)
 		closeList(p[i]);

@@ -12,10 +12,15 @@ struct STRU_DOC
 {
 	string doc_name;
 	string doc_path;
+	string doc_title;
+	string doc_url;
+	string doc_location;
+	int    doc_time;
+	
 	int len;
 
-	int file_id;
-	int offset;
+	//int file_id;
+	//int offset;
 };
 class DocMap 
 {
