@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ analysis_ctrl::analysis_ctrl()
     _file_now = _file_start;
     _doc_id = 1;
     _word_id =1;
-    _intermediate = new StreamBuffer(12*1024*1024/4);
+    _intermediate = new StreamBuffer(120*1024*1024*5);
     mkdir("intermediate", S_IRWXU|S_IRGRP|S_IXGRP);
     _intermediate->setfilename("intermediate/posting");
     _intermediate->setpostingsize(12);
@@ -67,12 +68,13 @@ void analysis_ctrl::do_it()
     string next_file_name, next_file_path;
     char* parsed_data = new char[DATA_CHUNK];
     int data_len = 0;
+    int doc_len;
     while( _finder.get_next_file(next_file_name,next_file_path))
     {
         string doc_title,doc_url="",doc_location="";
         int doc_date=0;
         // parse xml data from file   
-        if( !parse_xml(next_file_path, parsed_data, DATA_CHUNK, doc_title,doc_url,doc_location, doc_date))
+        if( !parse_xml(next_file_path, parsed_data, DATA_CHUNK, doc_title,doc_url,doc_location, doc_date,doc_len))
         {
             cout<<"parse xml failed:"<<next_file_path<<endl;
             continue; 
@@ -80,7 +82,7 @@ void analysis_ctrl::do_it()
         //cout<<parsed_data<<endl;
 
         //gen a new doc id, store docs' information, and build index of docs
-        int doc_id = get_doc_id(next_file_name ,next_file_path ,doc_title,doc_url,doc_location,doc_date);
+        int doc_id = get_doc_id(next_file_name ,next_file_path ,doc_title,doc_url,doc_location,doc_date, doc_len);
         cout<<"parsing doc id:"<<doc_id<<"=>"<<next_file_path<<" title:"<<doc_title<<endl;
        // cout<<"url:"<<doc_url<<" location:"<<doc_location<<" date:"<<doc_date<<endl;
 
@@ -115,7 +117,7 @@ void analysis_ctrl::do_it()
 
 
 
-bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,string& title, string& url, string& location,int& date)
+bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,string& title, string& url, string& location,int& date,int& doc_len)
 {
     if( buf == NULL)
         return false;
@@ -135,6 +137,7 @@ bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,stri
         file.read(xml_buffer,length);
 
         int start_pos=0;
+        string year,month,day;
 
 
         //get title
@@ -143,16 +146,40 @@ bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,stri
             cout<< "get title failed!"<<endl;
         }
 
+        //get day
+        if( !get_new_info(xml_buffer,length, start_pos, "meta content=\"", "\" name=\"publication_day_of_month\"", day) )
+        {
+            cout<< "get day failed!"<<endl;
+        }
+
+        //get month
+        if( !get_new_info(xml_buffer,length, start_pos, "meta content=\"", "\" name=\"publication_month\"", month) )
+        {
+            cout<< "get month failed!"<<endl;
+        }
+
+        //get year
+        if( !get_new_info(xml_buffer,length, start_pos, "meta content=\"", "\" name=\"publication_year\"", year) )
+        {
+            cout<< "get year failed!"<<endl;
+        }
+
+        //cout<<"year:"<<year<<" month:"<<month<<" day:"<<day<<endl;
+        date = atoi(year.c_str())*10000 + atoi(month.c_str())*100 + atoi(day.c_str());
+
+       // cout<<date<<endl;
+
         //get location
         if( !get_new_info(xml_buffer,length, start_pos, "indexing_service\">", "</location>", location) )
         {
             //cout<< "get url failed!"<<endl;
             location = "NULL";
         }
-
+        //if( location != "NULL")
+           // cout<<location<<endl;
 
         //get url
-        if( !get_new_info(xml_buffer,length, start_pos, "ex-ref=\"", " i", url) )
+        if( !get_new_info(xml_buffer,length, start_pos, "ex-ref=\"", "\" i", url) )
         {
             cout<< "get url failed!"<<endl;
         }
@@ -166,7 +193,7 @@ bool analysis_ctrl::parse_xml(std::string file_path, char* buf, int buf_len,stri
         }
         // parse content
         int ret = parser((char*)title.c_str(), (char*)content.c_str() , buf, buf_len);
-            
+        doc_len = content.length();
         //output words and their contexts
         if (ret < 0)
         {
@@ -323,7 +350,7 @@ bool analysis_ctrl::get_one_word(char* source ,int& pos,string& str)
     return false;
 }
 
-int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title,string doc_url,string doc_location, int doc_time )
+int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title,string doc_url,string doc_location, int doc_time, int doc_len )
 {
 
     if(_checker.find(doc_name) != _checker.end())
@@ -339,6 +366,7 @@ int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title
     _docs_map[_doc_id].doc_url = doc_url;
     _docs_map[_doc_id].doc_location = doc_location;
     _docs_map[_doc_id].doc_time = doc_time;
+    _docs_map[_doc_id].len = doc_len;
     // _docs_map[_doc_id].offset = offset;
     // _docs_map[_doc_id].len = len;
    // cout<<"doc_title:"<<_docs_map[_doc_id].doc_title<<"doc_time:"<<_docs_map[_doc_id].doc_time<<endl;

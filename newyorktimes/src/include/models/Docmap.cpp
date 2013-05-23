@@ -123,10 +123,11 @@ void DocMap::deserialize( char* buffer, int size, int&d_agv, int& N  )
 	     offset+= sizeof(int);
 	   
 	   	tatal_size+=val.len;
+	   	//cout<<
 	    N++;
     	_data[key]=val;
 
-    	//cout<<"doc_id:"<<key<<" doc_name:"<<val.doc_name<<" file_id:"<<val.file_id<<" offset:"<<val.offset<<" len:"<<val.len<<endl;	            
+    	//cout<<"doc_id:"<<key<<" doc_name:"<<val.doc_name<<" len:"<<val.len<<" location:"<<val.doc_location<<" time:"<<val.doc_time<<" path:"<<doc_path<<endl;	            
 	 }
 	 d_agv = tatal_size/N;
 }

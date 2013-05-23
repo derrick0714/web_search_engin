@@ -45,14 +45,12 @@ private:
 	bool save_index(char* index_data, int len, original_index& index, int file_num);
 	bool parse_data(char* html_data, int len, original_index& index);
 	bool save_data(int doc_id, char* save_data, int len);
-	int  get_doc_id(std::string doc_name, std::string doc_path,std::string doc_title,std::string doc_url,std::string doc_location,int doc_date );
+	int  get_doc_id(std::string doc_name, std::string doc_path,std::string doc_title,std::string doc_url,std::string doc_location,int doc_date, int doc_len  );
 	int  get_word_id(std::string word);
-	bool parse_xml(std::string file_path, char* buf, int buf_len,std::string& title,string& url, string& location,int& date);
+	bool parse_xml(std::string file_path, char* buf, int buf_len,std::string& title,string& url, string& location,int& date, int& doc_len);
 	bool get_one_word(char* source, int& pos,string& str);
 	bool get_new_info(char* source, int max, int& start_pos, std::string key_start, std::string key_end, string& content);
 	int find(char* source, int max_len, int start, std::string key_words);
-
-
 private:
 	
 	status			_status;

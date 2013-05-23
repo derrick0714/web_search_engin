@@ -73,13 +73,13 @@
         <div id="searchHeader" class="searchHeader">
     <div class="insetPadded opposingFloatControl wrap">
         <div id="inlineSearchControl" class="searchInputForm inlineSearchControl element1">
-            <form>
+            <form class="form-search" action="query.php" method="get">
                 <div class="control horizontalControl lastControl">
                     <div class="labelContainer">
                         <label for="newSearchQueryTop">Your Search</label>
                     </div>
                     <div class="fieldContainer containingBlock" id="yourSearch">
-                        <input type="text" value="" id="newSearchQueryTop" class="newSearchQuery autoSuggestQuery" autocomplete="off">
+                        <input type="text" value="" name="key" class="newSearchQuery autoSuggestQuery" autocomplete="off">
                         <ol class="autoSuggestQueryResults"></ol>
                         <button class="button" type="submit">Go</button>
                     </div>

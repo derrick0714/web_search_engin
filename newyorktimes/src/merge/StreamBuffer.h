@@ -23,6 +23,7 @@ private:
 	int filenum;
 	int postingsize;
 	bool is_sort;
+	int total_offset;
 
 public:
 //	int offset;
@@ -63,12 +64,20 @@ bool StreamBuffer::write(const type* buffer){
 		
 		//cout<<"2"<<endl;
 			savetofile();
-			cout<<"Auto save file, reset offset"<<endl;
+			cout<<"During saving uncompressed int, Buffer size not enough, Auto save file, reset offset"<<endl;
 //			delete[] mybuffer;
 //			mybuffer = new char[buffersize];
+			cout<<"buffersize: "<<buffersize<<endl;
+			cout<<"input size: "<<sizeof(type)<<endl;
+			cout<<"larger than buffer size, offset: "<<offset<<endl;
+			cout<<"total offset: "<<total_offset<<endl;
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, sizeof(type));
 			offset = offset + sizeof(type);
+			total_offset = total_offset + sizeof(type);
+			cout<<"After saving"<<endl;
+			cout<<"offset: "<<offset<<endl;
+			cout<<"total offset: "<<total_offset<<endl;
 			return true;
 		}
 	if(offset+sizeof(type)<buffersize){
@@ -76,19 +85,28 @@ bool StreamBuffer::write(const type* buffer){
 		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, sizeof(type));
 		offset = offset+sizeof(type);
+		total_offset = total_offset + sizeof(type);
 		
 		return true;
 	}
 	if(offset+sizeof(type)==buffersize){
 		//cout<<"3"<<endl;
 		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"During saving uncompressed int, Buffer size just enough, Auto save file, reset offset"<<endl;
+				cout<<"buffersize: "<<buffersize<<endl;
+			    cout<<"input size: "<<sizeof(type)<<endl;
+			    cout<<"equal to buffer size, offset: "<<offset<<endl;
+			    cout<<"total offset: "<<total_offset<<endl;
 				memcpy(mybuffer+offset, buffer, sizeof(type));
 				offset = offset+sizeof(type);
+				total_offset = total_offset + sizeof(type);
 				savetofile();
 //				delete[] mybuffer;
 //				mybuffer = new char[buffersize];
-				cout<<"Auto save file, reset offset"<<endl;
 				offset = 0;
+				cout<<"After saving"<<endl;
+			    cout<<"offset: "<<offset<<endl;
+			    cout<<"total offset: "<<total_offset<<endl;
 				return true;
 	}
 	return false;

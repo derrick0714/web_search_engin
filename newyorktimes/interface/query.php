@@ -10,7 +10,7 @@ $output = query( $key_words);
 //exit(0);
 
 $result = format_result($output);
-load_template("query");
+load_template("index");
 
 
 function query( $key_words )
@@ -22,7 +22,7 @@ function query( $key_words )
 
 function format_result( $output )
 {
-	//var_dump($rs);
+	//var_dump($output);
 	$len =count($output);
 	$result = array();
 	$j=0;
@@ -31,7 +31,7 @@ function format_result( $output )
 		$one_result = array();
 		$one_result['url'] = $output[$i];
 		$one_result['bm25'] = $output[$i+1];
-		$one_result['round'] = $output[$i+2];
+		$one_result['time'] = $output[$i+2];
 		$one_result['title'] = $output[$i+3];
 		
 		

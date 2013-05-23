@@ -60,7 +60,6 @@ var regstatus = "non-registered";
 <script src="http://graphics8.nytimes.com/js/app/analytics/trackingTags_v1.1.js" type="text/javascript"></script><noscript><div><img alt="DCSIMG" id="DCSIMG" width="1" height="1" src="http://wt.o.nytimes.com/dcsym57yw10000s1s8g0boozt_9t1x/njs.gif?dcsuri=/nojavascript&amp;WT.js=No&amp;WT.tv=1.0.7"/></div></noscript>
 
 <!-- Start UPT call --><img height="1" width="3" border="0" src="http://up.nytimes.com/?d=0//&amp;t=&amp;s=0&amp;ui=&amp;r=http%3A%2F%2Fwww.nytimes.com%2F&amp;u=query.nytimes.com%2Fsearch%2Fsitesearch%2F"><!-- End UPT call -->
-              <script type="text/javascript" language="JavaScript" src="http://graphics8.nytimes.com/js2/build/sitewide/sitewide.js"></script>
                     <script type="text/javascript" language="JavaScript" src="http://graphics8.nytimes.com/js/app/googlecse/1.0/min.js"></script>
           
           </body>

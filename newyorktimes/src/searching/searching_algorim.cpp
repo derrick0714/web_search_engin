@@ -7,6 +7,7 @@
 using namespace std;
 #define INDEX_CHUNK 409600 //50KB
 #define DATA_CHUNK 20971520 //2.5MB
+enum SERACH_TYPE { REVL, TIME_DESC, TIME_ASC, LOCATION };
 
 SearchingAlgorim::SearchingAlgorim()
 {
@@ -30,7 +31,7 @@ void SearchingAlgorim::init_data()
 		return;
 	//cout<<buffer<<size;
 	_doc_map.deserialize(buffer,size,d_agv,N);
-	cout<<"d:"<<d_agv<<"N:"<<N<<endl;
+	cout<<"d:"<<d_agv<<" N:"<<N<<endl;
 
 	delete buffer;
 
@@ -260,19 +261,24 @@ void SearchingAlgorim::do_searching(char* words)
 		 	{
 		 		
 				result_array[result_count]._url =one_doc.doc_url;
-				cout<<one_doc.doc_url<<endl;
+				result_array[result_count]._title =one_doc.doc_title;
+				//cout<<one_doc.doc_url<<endl;
+
 				result_array[result_count]._bm25=bm25_all;
 				result_array[result_count]._doc_id = did;
 				result_array[result_count]._pos = target_pos;
+				result_array[result_count]._time = one_doc.doc_time;
  		
 		 		result_count++;
 		 	}
 		 	else if(bm25_all > result_array[0]._bm25)
 		 	{
 				result_array[0]._url =one_doc.doc_url;
+				result_array[0]._title =one_doc.doc_title;
 				result_array[0]._bm25=bm25_all;
 				result_array[0]._doc_id = did;
 				result_array[0]._pos = target_pos;
+				result_array[0]._time = one_doc.doc_time;
 	
 		 	}
 
@@ -329,7 +335,7 @@ void SearchingAlgorim::do_searching(char* words)
 	gettimeofday(&end, NULL);
 	_whole_time  = (end.tv_sec  - start.tv_sec)*1000+ (end.tv_usec - start.tv_usec)/1000.0;
 	//cout<<"end.tv_sec:"<<end.tv_sec<<" start.tv_sec:"<<start.tv_sec<<" end.tv_usec:"<<end.tv_usec<<" start.tv_usec:"<<start.tv_usec<<endl;
-	 cout<<"-Time Use- "<<" all(searching+surrounding text):"<<_whole_time<<"(ms), just searching:"<<_searching_time<<"(ms)"<<endl;
+	cout<<"-Time Use- "<<" all(searching+surrounding text):"<<_whole_time<<"(ms), just searching:"<<_searching_time<<"(ms)"<<endl;
 	cout<<"finsh searching"<<endl;
 	cout<<"-------------------"<<endl;
 }
@@ -431,7 +437,7 @@ char* SearchingAlgorim::get_result()
 		offset+=strlen(result+offset);
 		sprintf(result+offset,"%f\n",result_array[i]._bm25);
 		offset+=strlen(result+offset);
-		sprintf(result+offset,"%s\n",result_array[i]._round_text.c_str());
+		sprintf(result+offset,"%d\n",result_array[i]._time);
 		offset+=strlen(result+offset);
 		sprintf(result+offset,"%s\n",result_array[i]._title.c_str());
 		offset+=strlen(result+offset);

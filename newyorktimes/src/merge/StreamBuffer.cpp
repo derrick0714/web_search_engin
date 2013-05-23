@@ -32,6 +32,7 @@ StreamBuffer::StreamBuffer() {
 	buffersize = 0;
 	mybuffer = new char[buffersize];
 	offset	  = 0;
+	total_offset = 0;
 	filename 	= "data";
 	filenum		= 0;
 	postingsize		= 12;
@@ -43,6 +44,7 @@ StreamBuffer::StreamBuffer(int size) {
 	buffersize = size;
 	mybuffer = new char[buffersize];
 	offset		= 0;
+	total_offset = 0;
 	filename	="data";
 	filenum		= 0;
 	postingsize		= 12;
@@ -95,8 +97,11 @@ bool StreamBuffer::write(const void* buffer, int size){
 	}
 	if(offset+size>buffersize){
 			//cout<<"2"<<endl;
-		cout<<"Auto save file, reset offset"<<endl;
-	
+		    cout<<"During saving compressed int, Buffer size not enough, Auto save file, reset offset"<<endl;
+		    cout<<"buffersize: "<<buffersize<<endl;
+			cout<<"input size: "<<size<<endl;
+			cout<<"larger than buffer size, offset: "<<offset<<endl;
+			cout<<"total offset: "<<total_offset<<endl;
 			savetofile();
 //			delete[] mybuffer;
 //			mybuffer = new char[buffersize];
@@ -104,8 +109,10 @@ bool StreamBuffer::write(const void* buffer, int size){
 			offset = 0;
 			memcpy(mybuffer+offset, buffer, size);
 			offset = offset + size;
-
-			
+			total_offset = total_offset+size;
+			cout<<"After saving"<<endl;
+			cout<<"offset: "<<offset<<endl;
+			cout<<"total offset: "<<total_offset<<endl;
 
 			return true;
 		}
@@ -114,14 +121,24 @@ bool StreamBuffer::write(const void* buffer, int size){
 		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
+		total_offset = total_offset+size;
 		return true;
 	}
 	if(offset+size==buffersize){
 		//cout<<"3"<<endl;
 		//cout<<"offset changing:"<<offset<<" "<<buffersize<<endl;
+		cout<<"During saving compressed int, Buffer size just enough, Auto save file, reset offset"<<endl;
+		cout<<"buffersize: "<<buffersize<<endl;
+	    cout<<"input size: "<<size<<endl;
+	    cout<<"equal to buffer size, offset: "<<offset<<endl;
+	    cout<<"total offset: "<<total_offset<<endl;
 		memcpy(mybuffer+offset, buffer, size);
 		offset = offset+size;
+		total_offset = total_offset+size;
 		savetofile();
+		cout<<"After saving"<<endl;
+	    cout<<"offset: "<<offset<<endl;
+		cout<<"total offset: "<<total_offset<<endl;
 //		delete[] mybuffer;
 //		mybuffer = new char[buffersize];
 		
@@ -141,9 +158,9 @@ bool StreamBuffer::savetofile(){
 
 	try{
 	char tmpname[100];
-	sprintf(tmpname, "%s%d", filename.c_str(), filenum);
+	sprintf(tmpname, "%s%d", filename.c_str(), 0);
 	cout<<"filename: "<<tmpname<<endl;
-	ofstream file (tmpname, ios::out | ios::binary);
+	ofstream file (tmpname, ios::out | ios::binary | ios::app);
 	if(is_sort==true)
 		sort(postingsize, offset);
 	/*
@@ -159,7 +176,7 @@ bool StreamBuffer::savetofile(){
 
 	file.write(mybuffer,offset);
 	file.close();
-	filenum++;
+	// filenum++;
 	}
 	catch(char *str){
 		cout<<str<<endl;
@@ -184,7 +201,7 @@ void StreamBuffer::setpostingsize(int size){
 }
 
 int StreamBuffer::get_offset(){
-	return offset;
+	return total_offset;
 }
 
 int StreamBuffer::get_filenum(){

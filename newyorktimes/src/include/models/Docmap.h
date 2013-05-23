@@ -16,7 +16,6 @@ struct STRU_DOC
 	string doc_url;
 	string doc_location;
 	int    doc_time;
-	
 	int len;
 
 	//int file_id;
