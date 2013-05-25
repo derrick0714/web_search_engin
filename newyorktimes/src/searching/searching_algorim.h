@@ -25,7 +25,7 @@ public:
 	void init_data();
 	char* init_buffer_from_file(string file_name,int& size);
 	void do_searching(char* words);
-	void sort(STRU_RESULT* array, int left , int right);
+	void sort(STRU_RESULT* array, int left , int right,std::string type);
 	char* get_result();
 	bool get_one_word(char* source ,int& pos,string& str);
 	void get_around_text(char* html, int len,int tartget_pos,string& title,string& around_text);

@@ -185,7 +185,7 @@ void SearchingAlgorim::do_searching(char* words)
  
     gettimeofday(&start, NULL);
     
-	cout<<"do searching...."<<endl<<" key words:"<<words<<endl;
+	cout<<"do searching...."<<words<<endl;
 	//for(int i =0; i< key_words.size();i++)
 	//	cout<<key_words[i]<<" ";
 	result_count = 0;
@@ -193,14 +193,25 @@ void SearchingAlgorim::do_searching(char* words)
 	string word="";
 	int pos=0;
 	vector<string> request_list;
+	bool bType = false;
+	string searchType = "";
 	while(get_one_word(words,pos,word))
 	{
-		cout<<"new:"<<word<<endl;
+		if( bType == false)
+		{
+			searchType = word;
+			cout<<"Search type:"<<searchType<<endl;
+			bType = true;
+			word="";
+			continue;
+		}
+		cout<<"new words:"<<word<<endl;
 		request_list.push_back(word);
 		request_count++;
 		word="";
 
 	}
+
 	if(request_count == 0)
 		return;
 
@@ -257,6 +268,7 @@ void SearchingAlgorim::do_searching(char* words)
 			 	//cout<<"bm25:"<<bm25<<endl;
 			 	bm25_all+=bm25;
 	 		}
+	 		bool change_data = false;
 		 	if(result_count < 10)
 		 	{
 		 		
@@ -271,18 +283,39 @@ void SearchingAlgorim::do_searching(char* words)
  		
 		 		result_count++;
 		 	}
+		 	else if(searchType == "time_new")
+		 	{
+		 		if( one_doc.doc_time > result_array[0]._time)
+		 		{
+		 			change_data = true;
+		 		}
+		 	}
+		 	else if(searchType == "time_old")
+		 	{
+		 		if( one_doc.doc_time < result_array[0]._time)
+		 		{
+		 			change_data = true;
+		 		}
+		 	}
 		 	else if(bm25_all > result_array[0]._bm25)
 		 	{
-				result_array[0]._url =one_doc.doc_url;
+				change_data = true;
+		 	}
+
+		 	if( change_data == true)
+		 	{
+		 		result_array[0]._url =one_doc.doc_url;
 				result_array[0]._title =one_doc.doc_title;
 				result_array[0]._bm25=bm25_all;
 				result_array[0]._doc_id = did;
 				result_array[0]._pos = target_pos;
 				result_array[0]._time = one_doc.doc_time;
-	
 		 	}
 
-	 		sort(result_array,0,result_count-1);
+		 	//cout<<"new bm25:"<<bm25_all<<" time: "<<one_doc.doc_time<<" 0:"<<result_array[0]._bm25<<endl;
+
+	 		sort(result_array,0,result_count-1,searchType);
+	 		//cout<<"after sort bm25:"<<bm25_all<<" time"<<one_doc.doc_time<<" 0:"<<result_array[0]._bm25<<endl;
 	 	}
 	 	//cout<<"list:";
 	 	//for(int j =0; j < result_count; j++)
@@ -396,20 +429,51 @@ void SearchingAlgorim::get_around_text(char* html, int len,int tartget_pos,strin
    
 	
 }
-void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
+void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right,string type)
 {
 	if(arr == NULL)
 		return;
-	float pivot = arr[(left+right)/2]._bm25;
+	float pivot = 0.0;
+	int piv_day = 0;
+	if( type == "time_new")
+	{
+		piv_day = arr[(left+right)/2]._time;
+	}
+	else if( type == "time_old")
+	{
+		piv_day = arr[(left+right)/2]._time;
+	}
+	else
+	{
+		pivot = arr[(left+right)/2]._bm25;
+	}
 	int i = left, j=right;
 
 	//partition
 	while(i <= j)
 	{
-		while(arr[i]._bm25 < pivot)
-			i++;
-		while(arr[j]._bm25 > pivot)
-			j--;
+		if( type == "time_new")
+		{
+			//cout<<"time:"<<arr[i]._time<<" pivot:"<<piv_day<<endl;
+			while(arr[i]._time < piv_day)
+				i++;
+			while(arr[j]._time > piv_day)
+				j--;
+		}
+		else if( type == "time_old")
+		{
+			while(arr[i]._time > piv_day)
+				i++;
+			while(arr[j]._time < piv_day)
+				j--;
+		}
+		else
+		{
+			while(arr[i]._bm25 < pivot)
+				i++;
+			while(arr[j]._bm25 > pivot)
+				j--;
+		}
 		if(i <= j)
 		{
 			STRU_RESULT tmp = arr[i];
@@ -420,9 +484,9 @@ void SearchingAlgorim::sort(STRU_RESULT* arr, int left , int right)
 		}
 	}
 	if( j > left)
-		sort(arr, left ,j);
+		sort(arr, left ,j,type);
 	if( i < right)
-		sort(arr, i , right);
+		sort(arr, i , right,type);
 }
 char* SearchingAlgorim::get_result()
 {

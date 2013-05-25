@@ -148,7 +148,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1, 
         mylist.push_back(pos);
 
         /*generate chunk index, however need to do something with the last few postings*/
-        if(posting_num==128) {
+        if(posting_num==127) {
             stream2.write(&chunk_num);
             stream2.write(&wordid);
             stream2.write(&docid);
@@ -216,7 +216,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1, 
 //        stream.write(&pos);
         mylist.push_back(pos);
 
-        if(posting_num==128) {
+        if(posting_num==127) {
             stream2.write(&chunk_num);
             stream2.write(&wordid);
             stream2.write(&docid);
@@ -285,7 +285,7 @@ void writeRecord(buffer *b, int i, StreamBuffer &stream, StreamBuffer &stream1, 
 //          stream.write(&pos);
           mylist.push_back(pos);
 
-        if(posting_num==128) {
+        if(posting_num==127) {
             stream2.write(&chunk_num);
             stream2.write(&wordid);
             stream2.write(&docid);

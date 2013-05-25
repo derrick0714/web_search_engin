@@ -10,6 +10,7 @@
 #include "parser/parser.h"
 #include "models/StreamBuffer.h"
 #include "models/Docmap.h"
+#include <set>
 #include <ctime>
 
 #include <string>
@@ -67,6 +68,7 @@ private:
 	WordMap			_word_map;
 	DocMap 			_docs_map;
 	map<string,int>	_checker;
+	set<string> 	_locations;
 	PathFinder 		_finder;
 
 };

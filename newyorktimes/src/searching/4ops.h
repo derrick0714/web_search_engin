@@ -18,7 +18,8 @@ inline Lp* openList(int wordid){
    mylp->start_chunk = word_index[wordid].chunk_num;
    mylp->start_posting_num = word_index[wordid].posting_num;
    mylp->end_posting_num = word_index[wordid+1].posting_num-1;
-   mylp->cur_posting_docid = mylp->start_posting_num;
+   mylp->cur_posting_docid = 0;
+   /*This inverted list contains how many chunks*/
    mylp->num_of_chunks = word_index[wordid+1].chunk_num - word_index[wordid].chunk_num+1;
    int chunk_num = word_index[wordid].chunk_num;
    for (int i=0;i<mylp->num_of_chunks;i++){
@@ -33,12 +34,12 @@ inline Lp* openList(int wordid){
    cout<<"start_chunk: "<<mylp->start_chunk<<endl;
    cout<<"start_posting_num: "<<mylp->start_posting_num<<endl;
    cout<<"end_posting_num: "<<mylp->end_posting_num<<endl;
-   cout<<"cur_posting: "<<mylp->cur_posting_docid<<endl;
+   cout<<"cur_posting_docid(initially, not known): "<<mylp->cur_posting_docid<<endl;
    cout<<"num_of_chunks: "<<mylp->num_of_chunks<<endl;
    cout<<"size of chunkvector: "<<mylp->chunkvector.size()<<endl;
-  // for(int s = 0; s<mylp->chunkvector.size(); s++){
-  // cout<<"chunk_id: "<<mylp->start_chunk+s<<" chunk_last_wordid: "<<mylp->chunkvector.at(s).chunk_last_wordid<<" chunk_last_docid: "<<mylp->chunkvector.at(s).chunk_last_docid<<" filenum: "<<mylp->chunkvector.at(s).filenum<<" offset: "<<mylp->chunkvector.at(s).offset<< " chunk_size: "<<chunk_index[mylp->start_chunk+s+1].offset-chunk_index[mylp->start_chunk+s].offset<<endl;
-   //}
+  for(int s = 0; s<mylp->chunkvector.size(); s++){
+  cout<<"chunk_id: "<<mylp->start_chunk+s<<" chunk_last_wordid: "<<mylp->chunkvector.at(s).chunk_last_wordid<<" chunk_last_docid: "<<mylp->chunkvector.at(s).chunk_last_docid<<" filenum: "<<mylp->chunkvector.at(s).filenum<<" offset: "<<mylp->chunkvector.at(s).offset<< " chunk_size: "<<chunk_index[mylp->start_chunk+s+1].offset-chunk_index[mylp->start_chunk+s].offset<<endl;
+   }
    return mylp;
 }
 
@@ -84,11 +85,12 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 		if(i==0)
 		start_posting_num = mylp->start_posting_num+1;
 
-		//cout<<"start_chunk_num: "<<start_chunk_num<<endl;
+		// cout<<"start_chunk_num: "<<start_chunk_num<<endl;
+		// cout<<"start_posting_num: "<<start_posting_num<<endl;
 
 		if(chunk_index[start_chunk_num].filenum == chunk_index[start_chunk_num+1].filenum){
-			//cout<<"chunk didn't cross file"<<endl;
-			chunk_size = chunk_index[start_chunk_num+1].offset - chunk_index[start_chunk_num].offset;
+			// cout<<"chunk didn't cross file"<<endl;
+			chunk_size = chunk_index[start_chunk_num+1].offset - chunk_index[start_chunk_num].offset+50;
 			chunk = new char[chunk_size];
 			uchunk = new unsigned char[chunk_size];
 			sprintf (filename, "data%d", chunk_index[start_chunk_num].filenum);
@@ -99,36 +101,36 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 			memcpy(uchunk, chunk, chunk_size);
 		}
 
-		if(chunk_index[start_chunk_num].filenum < chunk_index[start_chunk_num+1].filenum){
-			int num_of_files = chunk_index[start_chunk_num+1].filenum - chunk_index[start_chunk_num].filenum-1;
-			chunk_size = (1200000 - chunk_index[start_chunk_num].offset) + chunk_index[start_chunk_num+1].offset + 1200000*num_of_files;
-			chunk = new char[chunk_size];
-			uchunk = new unsigned char[chunk_size];
-			sprintf (filename, "data%d", chunk_index[start_chunk_num].filenum);
-			file = file + filename;
-			ifstream myFile1 (file.c_str(), ios::in | ios::binary);
-			myFile1.seekg(chunk_index[start_chunk_num].offset, ios::beg);
-			myFile1.read(chunk,1200000 - chunk_index[start_chunk_num].offset);
-			file = "result/";
-			int chunk_offset = 1200000 - chunk_index[start_chunk_num].offset;
+		// if(chunk_index[start_chunk_num].filenum < chunk_index[start_chunk_num+1].filenum){
+		// 	int num_of_files = chunk_index[start_chunk_num+1].filenum - chunk_index[start_chunk_num].filenum-1;
+		// 	chunk_size = (1200000 - chunk_index[start_chunk_num].offset) + chunk_index[start_chunk_num+1].offset + 1200000*num_of_files;
+		// 	chunk = new char[chunk_size];
+		// 	uchunk = new unsigned char[chunk_size];
+		// 	sprintf (filename, "data%d", chunk_index[start_chunk_num].filenum);
+		// 	file = file + filename;
+		// 	ifstream myFile1 (file.c_str(), ios::in | ios::binary);
+		// 	myFile1.seekg(chunk_index[start_chunk_num].offset, ios::beg);
+		// 	myFile1.read(chunk,1200000 - chunk_index[start_chunk_num].offset);
+		// 	file = "result/";
+		// 	int chunk_offset = 1200000 - chunk_index[start_chunk_num].offset;
 
-			for(int k=0; k<num_of_files; k++){
-				sprintf (filename, "data%d", chunk_index[start_chunk_num].filenum+1+k);
-				file = file + filename;
-				ifstream myFile2 (file.c_str(), ios::in | ios::binary);
-				myFile2.read(chunk+chunk_offset,1200000);
-				chunk_offset = chunk_offset + 1200000;
-				file = "result/";
-			}
+		// 	for(int k=0; k<num_of_files; k++){
+		// 		sprintf (filename, "data%d", chunk_index[start_chunk_num].filenum+1+k);
+		// 		file = file + filename;
+		// 		ifstream myFile2 (file.c_str(), ios::in | ios::binary);
+		// 		myFile2.read(chunk+chunk_offset,1200000);
+		// 		chunk_offset = chunk_offset + 1200000;
+		// 		file = "result/";
+		// 	}
 
-			sprintf (filename, "data%d", chunk_index[start_chunk_num+1].filenum);
-			file = file + filename;
-			ifstream myFile3 (file.c_str(), ios::in | ios::binary);
-			myFile3.read(chunk+chunk_offset,chunk_index[start_chunk_num+1].offset);
-			chunk_offset = chunk_offset + chunk_index[start_chunk_num+1].offset;
-			file = "result/";
-			memcpy(uchunk, chunk, chunk_size);
-		}
+		// 	sprintf (filename, "data%d", chunk_index[start_chunk_num+1].filenum);
+		// 	file = file + filename;
+		// 	ifstream myFile3 (file.c_str(), ios::in | ios::binary);
+		// 	myFile3.read(chunk+chunk_offset,chunk_index[start_chunk_num+1].offset);
+		// 	chunk_offset = chunk_offset + chunk_index[start_chunk_num+1].offset;
+		// 	file = "result/";
+		// 	memcpy(uchunk, chunk, chunk_size);
+		// }
 
 		//cout<<"start_posting_num: "<<start_posting_num<<endl;
 		//cin>>test;
@@ -158,13 +160,20 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 			 //cout<<"total_len: "<<total_len<<endl;
 			 //cout<<"res1: "<<res1<<endl;
 			 last_docid = last_docid + res1;
+			 if (posting_num == 128)
+			 	last_docid = res1;
 			 //cout<<"docid: "<<last_docid<<endl;
 			 len = readVbyte(uchunk+total_len, res2);
 			 total_len = total_len + len;
 			 //cout<<"freq: "<<res2<<endl;
 
+			 // cout<<"last_docid: "<<last_docid<<endl;
+			 // cout<<"search_docid: "<<search_docid<<endl;
+			 // if(last_docid>=850)
+			 	   // return 100000000;
 
 			 if (last_docid>=search_docid){
+			 	 // cout<<"last_docid>=search_docid"<<endl;
 				 mylp->cur_posting_docid = last_docid;
 				 mylp->cur_posting_freq = res2;
 				 len = readVbyte(uchunk+total_len, res3);
@@ -181,7 +190,7 @@ inline int nextGEQ(Lp* mylp, int search_docid){
 
 		}
 //		 res_arr = new unsigned int[res2];
-		// cout<<"posting_num: "<<posting_num<<endl;
+		 // cout<<"posting_num: "<<posting_num<<endl;
 		 posting_num++;
 	    }
 

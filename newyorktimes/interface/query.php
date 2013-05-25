@@ -5,7 +5,11 @@ require_once( './loader.php' );
 
 
 $key_words = $_GET["key"];
-$output = query( $key_words);
+$type = $_GET["type"];
+if( !isset($type))
+	$type = "relevance";
+
+$output = query( $key_words, $type);
 //var_dump($output);
 //exit(0);
 
@@ -13,9 +17,11 @@ $result = format_result($output);
 load_template("index");
 
 
-function query( $key_words )
+function query( $key_words, $type )
 {
-	$cmd = "demo/helper ".$key_words;
+	
+
+	$cmd = "demo/helper ".$type." ".$key_words;
 	exec($cmd ,$output);
 	return $output;
 }

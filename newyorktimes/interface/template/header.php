@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-          <title>NYTimes.com Search</title>
+          <title>WSE Final Project</title>
               <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <meta name="robots" content="noarchive">
                                 <meta name="CG" content="Search">
@@ -16,6 +16,43 @@
         <link rel="stylesheet" type="text/css" href="http://graphics8.nytimes.com/css/0.1/screen/build/search/styles.css" />
     <script type="text/javascript" src="http://js.nyt.com/js/app/lib/jquery/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="http://js.nyt.com/js/app/lib/jquery/jquery-ui-1.8.16.min.js"></script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Region code biasing (US)</title>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <link rel="stylesheet" type="text/css" href="css/mystyle.css" />
+ <script>
+var geocoder;
+var map;
+var query = 'New York';
+function initialize() {
+  geocoder = new google.maps.Geocoder();
+  var mapOptions = {
+    zoom: 8,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  codeAddress();
+}
+
+function codeAddress() {
+  var address = query;
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      map.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+          map: map,
+          position: results[0].geometry.location
+      });
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
 
         <!--[if IE]>
         <style type="text/css">
@@ -79,7 +116,7 @@
                         <label for="newSearchQueryTop">Your Search</label>
                     </div>
                     <div class="fieldContainer containingBlock" id="yourSearch">
-                        <input type="text" value="" name="key" class="newSearchQuery autoSuggestQuery" autocomplete="off">
+                        <input type="text" value="<?=$_GET["key"]?>" name="key" class="newSearchQuery autoSuggestQuery" autocomplete="off">
                         <ol class="autoSuggestQueryResults"></ol>
                         <button class="button" type="submit">Go</button>
                     </div>
@@ -218,11 +255,12 @@
     
     <div class="sortContainer opposingFloatControl wrap">
         <div class="sortResults element1" id="sortResults">
-            <h3 class="horizontalMenuLabel">Sort by:</h3>
-            <ul class="horizontalMenu piped">
-                <li><a data-sortby="d">Newest</a></li>
-                <li><a data-sortby="a">Oldest</a></li>
-                <li><a data-sortby="r" class="selectedSort">Relevance</a></li>
+            <!--<h3 class="horizontalMenuLabel">Sort by:</h3> -->
+            <ul class="horizontalMenu piped" >
+                <li><a <?if($_GET["type"]=="time_new"){?>class="selectedSort"<?}?> href="query.php?type=time_new&key=<?=$_GET["key"]?>">Newest</a></li>
+                <li><a <?if($_GET["type"]=="time_old"){?>class="selectedSort"<?}?> href="query.php?type=time_old&key=<?=$_GET["key"]?>">Oldest</a></li>
+                <li><a <?if($_GET["type"]!="time_new"&&$_GET["type"]!="time_old" ){?>class="selectedSort"<?}?> href="query.php?key=<?=$_GET["key"]?>" >Relevance</a></li>
+                <li><a href="#map-canvas">Maps</a></li>
             </ul>
         </div>
         <div id="totalResultsCount" class="totalResultsCount element2">

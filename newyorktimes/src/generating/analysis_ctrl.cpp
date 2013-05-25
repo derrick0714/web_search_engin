@@ -106,8 +106,24 @@ void analysis_ctrl::do_it()
      buffer2.savetofile();
 
      //
-     
      _intermediate->savetofile();
+
+
+    StreamBuffer buffer3(50*1024*1024); 
+    buffer3.setfilename("intermediate/location.data");
+
+    for (set<string>::iterator it=_locations.begin(); it!=_locations.end(); ++it)
+    {     
+        int tmp = (*it).length();
+        buffer3.write((*it).c_str(), (*it).length());
+        buffer3.write("\n");
+       // cout<<tmp<<" "<<(*it).c_str()<<endl;
+    }
+
+    buffer3.savetofile();
+    
+
+     cout<<"location count:"<<_locations.size()<<endl;
 
      cout<<"[finish] time consumed: "<<time(0)-_time_now<<"s"<<endl;
     
@@ -367,6 +383,11 @@ int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title
     _docs_map[_doc_id].doc_location = doc_location;
     _docs_map[_doc_id].doc_time = doc_time;
     _docs_map[_doc_id].len = doc_len;
+    if(doc_location!= "NULL" && _locations.find(doc_location)== _locations.end())
+    {
+        _locations.insert(doc_location);
+        //cout<<doc_location<<endl;
+    }
     // _docs_map[_doc_id].offset = offset;
     // _docs_map[_doc_id].len = len;
    // cout<<"doc_title:"<<_docs_map[_doc_id].doc_title<<"doc_time:"<<_docs_map[_doc_id].doc_time<<endl;
