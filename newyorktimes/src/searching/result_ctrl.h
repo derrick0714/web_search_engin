@@ -8,6 +8,7 @@ struct STRU_RESULT
 {
 	std::string _url;
 	std::string _title;
+	std::string _location;
 	int _time;
 	float _bm25;
 	int _doc_id;
@@ -17,6 +18,7 @@ struct STRU_RESULT
 	{
 		_url = "";
 		_title = "";
+		_location="";
 		_time=0;
 		_bm25=0.0;
 		_doc_id=0;

@@ -23,7 +23,7 @@ public:
 	
 	//friend StreamBuffer& operator<<(StreamBuffer &stream, WordMap&);
 	friend StreamBuffer& operator>>(StreamBuffer &stream, WordMap&);
-private:
+public:
 	map<string, int> map;
 };
 

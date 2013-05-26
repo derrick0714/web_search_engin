@@ -100,7 +100,7 @@ void analysis_ctrl::do_it()
     buffer1.savetofile();
 
       //save docs map;
-     StreamBuffer buffer2(200*1024*1024);
+     StreamBuffer buffer2(450*1024*1024);
      buffer2.setfilename("intermediate/docs_map.data");
      buffer2>>_docs_map;
      buffer2.savetofile();
@@ -383,7 +383,7 @@ int analysis_ctrl::get_doc_id(string doc_name, string doc_path, string doc_title
     _docs_map[_doc_id].doc_location = doc_location;
     _docs_map[_doc_id].doc_time = doc_time;
     _docs_map[_doc_id].len = doc_len;
-    if(doc_location!= "NULL" && _locations.find(doc_location)== _locations.end())
+    if(doc_location!= "NULL"&& doc_location.length()<20 && _locations.find(doc_location)== _locations.end() )
     {
         _locations.insert(doc_location);
         //cout<<doc_location<<endl;

@@ -83,7 +83,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <div class="tabDropDown">
             <div class="tabDropDownHeader">
                 <div class="inset">
-                    <h5 class=""><a class="toggleControl">By Xu Deng & Wang Qi</a></h5>
+                    <h5 class=""><a class="toggleControl">By Xu Deng & Qi Wang</a></h5>
                 </div>
             </div><!-- close tabDropDownHeader -->
 
@@ -120,6 +120,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
                         <ol class="autoSuggestQueryResults"></ol>
                         <button class="button" type="submit">Go</button>
                     </div>
+                     <div class="fieldContainer containingBlock">
+                        <label for="newSearchQueryTop">Near By</label>
+                         <input type="text" value="<?=$_GET["location"]?>" name="location" class="" autocomplete="">
+                    </div>
+                    
+                    </div>
                 </div>
             </form>
         </div><!-- .inlineSearchControl -->
@@ -142,106 +148,43 @@ google.maps.event.addDomListener(window, 'load', initialize);
   <div class="columnGroup first">
     
     <div class="columnGroup firstColumn dateFilters">
-        <h2 class="sectionHeader">Date Range</h2>
-        <ul class="filterList flush">
-            <li class="firstItem">
-                <a data-refineby="since1851" class="searchFilter">All Since 1851</a>
-            </li>
-            <li>
-                 <a data-refineby="24hoursago" class="searchFilter">Past 24 Hours</a>
-            </li>
-            <li>
-                <a data-refineby="7daysago" class="searchFilter">Past 7 Days</a>
-            </li>
-            <li>
-                <a data-refineby="30daysago" class="searchFilter">Past 30 Days</a>
-            </li>
-            <li>
-                <a data-refineby="365daysago" class="searchFilter">Past 12 Months</a>
-            </li>
-            <li>
-                <a data-refineby="customDateRange" class="toggleControl flushToggleControl navToggleControl">Specific Dates</a>
-                <div class="navTabDropDown customDateFilter">
-                    <form>
-                        <div>
-                            <span class="dateLabel">From:</span>
-                            <input type="text" name="fromMonth" class="month" id="fromMonth" value="MM" maxlength="2" /> / 
-                            <input type="text" name="fromDay" class="day" id="fromDay" value="DD" maxlength="2" /> / 
-                            <input type="text" name="fromYear" class="year" id="fromYear" value="YYYY" maxlength="4" />
-                        </div>
-                        <div>
-                            <span class="dateLabel">To:</span>
-                            <input type="text" name="toMonth" class="month" id="toMonth" value="MM" maxlength="2" /> / 
-                            <input type="text" name="toDay" class="day" id="toDay" value="DD" maxlength="2" /> / 
-                            <input type="text" name="toYear" class="year" id="toYear" value="YYYY" maxlength="4" />
-                        </div>
-                        <div class="customFilterFooter">
-                            <a class="applyCustomFilter">Refine Search</a>
-                        </div>
-                    </form>
-                </div>
-            </li>
-        </ul>
-    </div><!-- .dateFilters -->
+        <h2>Tag Cloud:<h2>
+        <h2>world</h2>
+        <h6>against</h6>
+      
 
-    <div class="columnGroup pubTypeFilters">
-        <h2 class="sectionHeader">Result Type</h2>
-        <ul class="filterList flush">
-            <li class="firstItem">
-                <a data-refineby="all" class="searchFilter">All</a>
-            </li>
-            <li>
-                <a data-refineby="article" class="searchFilter">Articles</a>
-            </li>
-            <li>
-                <a data-refineby="blogs" class="searchFilter">Blogs</a>
-            </li>
-            <li>
-                <a data-refineby="multimedia" class="searchFilter">Multimedia</a>
-            </li>
-            <li>
-                <a data-refineby="video" class="searchFilter">Video</a>
-            </li>
-            <li>
-                <a data-refineby="recipes" class="searchFilter">Recipes</a>
-            </li>
-            <li>
-                <a data-refineby="help" class="searchFilter">FAQ</a>
-            </li>            
-        </ul>
+        <h3>today</h3>
+        
+
+<h6>our</h6>
+<h2>back</h2>
+<h5>state</h5>
+
+
+
+<h4>both</h4>
+<h1>get<h1>
+    <h6>take</h6>
+<h4>say</h4>
+<h3>5</h3>
+<h5>work</h5>
+<h3>down</h3>
+<h3>these</h3>
+<h6>week</h6>
+<h2>being</h2>
+<h6>part</h6> 
+<h2>her</h2> 
+<h5>under</h5> 
+
+
     </div><!-- .pubTypeFilters -->
 
-    <div class="columnGroup bylineFilters">
-        <h2 class="sectionHeader">Author</h2>
-        <ul class="filterList flush">
-            <li class="firstItem">
-                <a data-refineby="all" class="searchFilter">All Authors</a>
-            </li>
-            <li>
-                <a class="navToggleControl">Specific Author</a>
-                <div class="navTabDropDown customBylineFilter">
-                    <form>
-                        <input type="text" class="autoSuggestQuery">
-                        <ol class="autoSuggestQueryResults"></ol>
-                        <div class="customFilterFooter">
-                            <a class="applyCustomFilter">Refine Search</a>
-                        </div>
-                    </form>
-                </div>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="columnGroup sectionFilters">
-        <h2 class="sectionHeader">Section</h2>
-        <ul class="filterList flush"></ul>
-        <div class="toggleContainer navViewToggleContainer"></div>
-     </div>    
+ 
 
     <div class="columnGroup imageSearch">
         <ul class="filterList flush">
             <li class="firstItem">
-                <a href="http://beta620.nytimes.com/app/image-search/">Image Search <span>(BETA)</span></a>
+                <a href="http://beta620.nytimes.com/app/image-search/"> <span></span></a>
             </li>
         </ul>
     </div>    
@@ -257,9 +200,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <div class="sortResults element1" id="sortResults">
             <!--<h3 class="horizontalMenuLabel">Sort by:</h3> -->
             <ul class="horizontalMenu piped" >
-                <li><a <?if($_GET["type"]=="time_new"){?>class="selectedSort"<?}?> href="query.php?type=time_new&key=<?=$_GET["key"]?>">Newest</a></li>
-                <li><a <?if($_GET["type"]=="time_old"){?>class="selectedSort"<?}?> href="query.php?type=time_old&key=<?=$_GET["key"]?>">Oldest</a></li>
-                <li><a <?if($_GET["type"]!="time_new"&&$_GET["type"]!="time_old" ){?>class="selectedSort"<?}?> href="query.php?key=<?=$_GET["key"]?>" >Relevance</a></li>
+                <li><a <?if($_GET["type"]=="time_new"){?>class="selectedSort"<?}?> href="query.php?type=time_new&key=<?=$_GET["key"]?>&location=<?=$_GET["location"]?>">Newest</a></li>
+                <li><a <?if($_GET["type"]=="time_old"){?>class="selectedSort"<?}?> href="query.php?type=time_old&key=<?=$_GET["key"]?>&location=<?=$_GET["location"]?>">Oldest</a></li>
+                <li><a <?if($_GET["type"]!="time_new"&&$_GET["type"]!="time_old" ){?>class="selectedSort"<?}?> href="query.php?key=<?=$_GET["key"]?>&location=<?=$_GET["location"]?>" >Relevance</a></li>
                 <li><a href="#map-canvas">Maps</a></li>
             </ul>
         </div>

@@ -8,7 +8,7 @@ static int DAYS[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 PathFinder::PathFinder()
 {
 	now_year = 1987;
-	end_year = 1987;
+	end_year = 2007;
 	now_month = 1;
 	now_day = 1;
 	load_folder();

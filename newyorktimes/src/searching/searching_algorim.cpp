@@ -9,6 +9,7 @@ using namespace std;
 #define DATA_CHUNK 20971520 //2.5MB
 enum SERACH_TYPE { REVL, TIME_DESC, TIME_ASC, LOCATION };
 
+
 SearchingAlgorim::SearchingAlgorim()
 {
 	init_data();
@@ -147,6 +148,77 @@ void SearchingAlgorim::init_data()
 		//		cout << it->second << " => " << it->first<<endl;
 		printf("the size of word_map %d\n", word_map.size());
 
+		cout<<"making tages..."<<endl;
+
+		for (map<string, int>::iterator it=_word_map.map.begin(); it!=_word_map.map.end(); ++it)
+	    {
+	    	_word_map2[it->second]=it->first;
+	    }
+		
+		int big = 0;
+		int last_chunk_num = 0;
+		int last_word_id = 0;
+		int count = 0;
+		for(int i = 1; i < word_index.size()-1;i++)
+		{
+			int num_of_chunks = word_index[i+1].chunk_num - word_index[i].chunk_num+1;
+			if(count< 200)
+			{
+				tags[count].count = num_of_chunks;
+				tags[count].word = _word_map2[i];
+				count++;
+			}
+			else if(num_of_chunks > tags[0].count)
+			{
+				tags[0].count = num_of_chunks;
+	    		tags[0].word = _word_map2[i];
+	
+			}
+			sort_tags(tags,0,count-1);
+
+		}
+		int base = tags[80].count;
+		int max_font_size = 7;
+		int min_font_size = 1;
+
+		for(int i =0;i<20;i++)
+	    {
+	    	tags[i].count = (float)(tags[i+60].count- base)/(float)(tags[60].count-base)*(max_font_size-min_font_size) + min_font_size;
+	    	tags[i].word = tags[i+60].word;
+
+	    	cout<<tags[i].word<<" font:"<<tags[i].count<<endl;
+	    }
+
+}
+void SearchingAlgorim::sort_tags(TAGS* arr,int left, int right)
+{
+	if(arr == NULL)
+		return;
+	int pivot = arr[(left+right)/2].count;
+
+	int i = left, j=right;
+
+	//partition
+	while(i <= j)
+	{
+		while(arr[i].count < pivot)
+			i++;
+		while(arr[j].count > pivot)
+			j--;
+		
+		if(i <= j)
+		{
+			TAGS tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+	if( j > left)
+		sort_tags(arr, left ,j);
+	if( i < right)
+		sort_tags(arr, i , right);
 }
 
 char* SearchingAlgorim::init_buffer_from_file(string file_name, int& size)
@@ -193,24 +265,43 @@ void SearchingAlgorim::do_searching(char* words)
 	string word="";
 	int pos=0;
 	vector<string> request_list;
-	bool bType = false;
+	int bType = 0;
 	string searchType = "";
+	string searchLocation = "";
 	while(get_one_word(words,pos,word))
 	{
-		if( bType == false)
+		if( bType == 0)
 		{
 			searchType = word;
 			cout<<"Search type:"<<searchType<<endl;
-			bType = true;
+			bType = 1;
 			word="";
 			continue;
 		}
+		if( bType == 1)
+		{
+			if(word == "$")
+			{
+				bType = 2;
+				word = "";
+				continue;
+			}
+			if(searchLocation == "")
+				searchLocation = word;
+			else
+				searchLocation += " "+word;
+			word="";
+			continue;
+
+		}
+
 		cout<<"new words:"<<word<<endl;
 		request_list.push_back(word);
 		request_count++;
 		word="";
 
 	}
+	cout<<"Search location:"<<searchLocation<<endl;
 
 	if(request_count == 0)
 		return;
@@ -232,6 +323,7 @@ void SearchingAlgorim::do_searching(char* words)
 		return;
 	cout<<"p.size:"<<p.size()<<endl;
 	cout<<"doc_map_size"<<_doc_map._data.size()<<endl;
+
 	int did = 0;
 	while(did < N)
 	{
@@ -248,8 +340,15 @@ void SearchingAlgorim::do_searching(char* words)
 		if(d > did) did = d-1;
 		else
 		{
+
 			float bm25_all = 0.0;
 			STRU_DOC one_doc = _doc_map[did];
+			//location
+			if(!isInThisLocation(one_doc.doc_location,searchLocation))
+			{
+				did++;
+				continue;
+			}
 			//cout<<"doc_id:"<<did<<"url:"<<one_doc.doc_name<<" file: "<<one_doc.file_id<<" offset:"<<one_doc.offset<<" len:"<<one_doc.len<<endl;
 			int target_pos = getPos(p[0]);
 			for( int k = 0 ; k<p.size(); k++)
@@ -280,12 +379,13 @@ void SearchingAlgorim::do_searching(char* words)
 				result_array[result_count]._doc_id = did;
 				result_array[result_count]._pos = target_pos;
 				result_array[result_count]._time = one_doc.doc_time;
+				result_array[result_count]._location = one_doc.doc_location;
  		
 		 		result_count++;
 		 	}
 		 	else if(searchType == "time_new")
 		 	{
-		 		if( one_doc.doc_time > result_array[0]._time)
+		 		if( one_doc.doc_time > result_array[0]._time && one_doc.doc_time<20070701 )
 		 		{
 		 			change_data = true;
 		 		}
@@ -310,6 +410,7 @@ void SearchingAlgorim::do_searching(char* words)
 				result_array[0]._doc_id = did;
 				result_array[0]._pos = target_pos;
 				result_array[0]._time = one_doc.doc_time;
+				result_array[0]._location = one_doc.doc_location;
 		 	}
 
 		 	//cout<<"new bm25:"<<bm25_all<<" time: "<<one_doc.doc_time<<" 0:"<<result_array[0]._bm25<<endl;
@@ -505,6 +606,8 @@ char* SearchingAlgorim::get_result()
 		offset+=strlen(result+offset);
 		sprintf(result+offset,"%s\n",result_array[i]._title.c_str());
 		offset+=strlen(result+offset);
+		sprintf(result+offset,"%s\n",result_array[i]._location.c_str());
+		offset+=strlen(result+offset);
 
 	}
 	//cout<<result<<endl;
@@ -545,6 +648,15 @@ bool SearchingAlgorim::get_one_word(char* source ,int& pos,string& str)
     	return true; 
     }
     return false;
+}
+
+bool SearchingAlgorim::isInThisLocation(string askLocation,string sourceLocation)
+{
+	if(sourceLocation == "NULL")
+		return true;
+	if(askLocation == sourceLocation)
+		return true;
+	return false;
 }
 
 
